@@ -13,14 +13,11 @@ public class EnhancementManager : MonoBehaviour
     public Text[] levelTexts = new Text[6];                 // 각 아이템의 레벨을 표시할 텍스트 (강화 성공/실패 메시지용)
     public Text[] currentLevelTexts = new Text[6];          // 각 아이템의 현재 레벨을 표시할 텍스트
     public Button[] enhanceButtons = new Button[6];         // 각 아이템의 강화 버튼
+    public Toggle[] gradeToggles = new Toggle[6];           // 각 아이템의 등급 토글 버튼
 
     // 아이템 상점 관련 변수
     public Button buyButton;                                // 아이템 구매 버튼
-    public Button gradeUpgradeButton;                       // 아이템 등급 업그레이드 버튼
     private bool[] slotOccupied = new bool[6];              // 각 슬롯에 아이템이 있는지 확인하기 위한 배열
-
-    // 초기 확률 배열 (1등급 ~ 7등급)
-    private float[] gradeProbabilities = { 75.5f, 15f, 5f, 3f, 1f, 0.43f, 0.07f };
 
     // 강화 확률 배열
     private float[] successRates = {
@@ -30,7 +27,7 @@ public class EnhancementManager : MonoBehaviour
 
     // 등급에 따른 버튼 색상
     private Color[] gradeColors = {
-        Color.white,                 // 1단계: 옅은 흰색
+        Color.white,                 // 1단계: 흰색
         new Color(0.7f, 0.9f, 1f),   // 2단계: 하늘색
         new Color(0.8f, 0.6f, 1f),   // 3단계: 보라색
         new Color(1f, 0.6f, 0.8f),   // 4단계: 분홍색
@@ -53,7 +50,6 @@ public class EnhancementManager : MonoBehaviour
 
         // 상점 버튼에 아이템 구매 기능 추가
         buyButton.onClick.AddListener(BuyItem);
-        gradeUpgradeButton.onClick.AddListener(UpgradeItemGrade); // 새 버튼에 아이템 등급 업그레이드 기능 추가
     }
 
     // 특정 아이템 칸의 강화 시도
@@ -61,13 +57,23 @@ public class EnhancementManager : MonoBehaviour
     {
         if (!slotOccupied[index])
         {
-            levelTexts[index].text = "아이템 없음";  // 슬롯이 비어있을 경우 강화 불가
+            levelTexts[index].text = "아이템 없음";
             return;
         }
 
         if (currentLevels[index] >= maxLevel)
         {
             levelTexts[index].text = $"레벨 {currentLevels[index]} (최대)";
+            return;
+        }
+
+        // 강화 비용 계산 (레벨에 따라 2배씩 증가)
+        int enhancementCost = 100 * (int)Mathf.Pow(2, currentLevels[index]);
+
+        // 골드 검증 및 차감
+        if (!GameManager.Instance.SpendGold(enhancementCost))
+        {
+            levelTexts[index].text = $"골드 부족 (필요: {enhancementCost}원)";
             return;
         }
 
@@ -95,35 +101,49 @@ public class EnhancementManager : MonoBehaviour
         if (slotOccupied[index] && currentLevels[index] < maxLevel)
         {
             float nextSuccessRate = successRates[currentLevels[index]];
-            enhanceButtons[index].GetComponentInChildren<Text>().text = $"강화하기 ({nextSuccessRate}%)";
-            enhanceButtons[index].image.color = gradeColors[itemGrades[index] - 1]; // 등급에 맞는 색상 적용
+            int nextCost = 100 * (int)Mathf.Pow(2, currentLevels[index]);
+            enhanceButtons[index].GetComponentInChildren<Text>().text = $"강화하기 ({nextSuccessRate}%, {nextCost}원)";
+            enhanceButtons[index].image.color = gradeColors[itemGrades[index] - 1];
         }
         else if (!slotOccupied[index])
         {
             enhanceButtons[index].GetComponentInChildren<Text>().text = "아이템 없음";
-            enhanceButtons[index].image.color = Color.gray;  // 슬롯이 비어있으면 회색으로 표시
-            enhanceButtons[index].interactable = false;  // 버튼 비활성화
+            enhanceButtons[index].image.color = Color.gray;
+            enhanceButtons[index].interactable = false;
         }
         else
         {
             enhanceButtons[index].GetComponentInChildren<Text>().text = "최대 레벨";
-            enhanceButtons[index].interactable = false; // 버튼 비활성화
+            enhanceButtons[index].interactable = false;
         }
 
-        // 현재 레벨 텍스트 업데이트
         currentLevelTexts[index].text = slotOccupied[index] ? $"Lv. {currentLevels[index]}" : "";
     }
 
     // 아이템 초기화 (판매 기능)
     private void SellItem(int index)
     {
+        if (!slotOccupied[index])
+            return;
+
+        // 등급에 따른 판매 가격 계산
+        int sellPrice = 100 * (int)Mathf.Pow(2, itemGrades[index] - 1);
+
+        // 판매 대금 추가
+        GameManager.Instance.AddGold(sellPrice);
+
+        // 판매 메시지 출력
+        levelTexts[index].text = $"아이템 판매됨 (+{sellPrice}원)";
+
+        // 슬롯 초기화
         slotOccupied[index] = false;
         currentLevels[index] = 0;
         itemGrades[index] = 0;  // 등급 초기화
-        levelTexts[index].text = "아이템 판매됨";
         enhanceButtons[index].image.color = Color.gray;  // 판매 후 회색으로 변경
         enhanceButtons[index].interactable = false;  // 강화 버튼 비활성화
-        UpdateUI(index);  // UI 업데이트
+
+        // UI 업데이트
+        UpdateUI(index);
     }
 
     // 마우스 오른쪽 클릭 이벤트 추가
@@ -151,6 +171,15 @@ public class EnhancementManager : MonoBehaviour
     // 아이템 구매 함수
     private void BuyItem()
     {
+        int itemCost = 300;
+
+        // 골드 검증 및 차감
+        if (!GameManager.Instance.SpendGold(itemCost))
+        {
+            Debug.Log("골드가 부족합니다! (필요: 300원)");
+            return;
+        }
+
         // 첫 번째 빈 슬롯 찾기
         int emptySlot = -1;
         for (int i = 0; i < slotOccupied.Length; i++)
@@ -168,8 +197,39 @@ public class EnhancementManager : MonoBehaviour
             return;
         }
 
-        // 확률을 기반으로 아이템 등급 결정
-        int itemGrade = GetRandomItemGrade();
+        // 등급 설정 (1단계 흰색 ~ 6단계 노란색까지)
+        float randomValue = Random.Range(0f, 100f);
+        int itemGrade;
+
+        // 각 등급에 따른 확률 범위
+        if (randomValue <= 75.5f)       // 1단계: 흰색, 75.5% 확률
+        {
+            itemGrade = 1;
+        }
+        else if (randomValue <= 90.5f)  // 2단계: 하늘색, 15% 확률 (75.5% ~ 90.5%)
+        {
+            itemGrade = 2;
+        }
+        else if (randomValue <= 95.5f)  // 3단계: 보라색, 5% 확률 (90.5% ~ 95.5%)
+        {
+            itemGrade = 3;
+        }
+        else if (randomValue <= 98.5f)  // 4단계: 분홍색, 3% 확률 (95.5% ~ 98.5%)
+        {
+            itemGrade = 4;
+        }
+        else if (randomValue <= 99.5f)  // 5단계: 주황색, 1% 확률 (98.5% ~ 99.5%)
+        {
+            itemGrade = 5;
+        }
+        else if (randomValue <= 99.93f)  // 6단계: 노란색, 0.43% 확률 (99.5% ~ 99.93%)
+        {
+            itemGrade = 6;
+        }
+        else                          // 7단계: 빨간색, 0.07% 확률 (99.93% ~ 100%)
+        {
+            itemGrade = 7;
+        }
 
         itemGrades[emptySlot] = itemGrade; // 선택된 등급을 슬롯에 저장
 
@@ -178,59 +238,19 @@ public class EnhancementManager : MonoBehaviour
         slotOccupied[emptySlot] = true;
         enhanceButtons[emptySlot].interactable = true; // 구매 후 강화 버튼 활성화
         enhanceButtons[emptySlot].image.color = gradeColors[itemGrade - 1]; // 등급에 따른 버튼 색상 적용
-        UpdateUI(emptySlot);
 
-        Debug.Log($"아이템이 등급 {itemGrade}로 슬롯 {emptySlot + 1}에 배치되었습니다.");
-    }
-
-    // 확률을 기반으로 아이템 등급을 결정하는 함수
-    private int GetRandomItemGrade()
-    {
-        // 확률 조정 (높은 등급이 나올 확률을 높임)
-        float randomValue = Random.Range(0f, 100f);
-        float cumulativeProbability = 0f;
-
-        for (int i = gradeProbabilities.Length - 1; i >= 0; i--)
+        // 해당 아이템의 등급에 맞는 토글이 체크되어 있으면 즉시 판매
+        for (int i = 0; i < gradeToggles.Length; i++)
         {
-            cumulativeProbability += gradeProbabilities[i];
-            if (randomValue <= cumulativeProbability)
+            if (gradeToggles[i].isOn && itemGrade == (i + 1))
             {
-                return i + 1;  // 등급은 1부터 시작하므로 i + 1
-            }
-        }
-
-        return 1;  // 기본적으로 1등급
-    }
-
-    // 아이템 등급 업그레이드 함수
-    private void UpgradeItemGrade()
-    {
-        // 첫 번째 빈 슬롯 찾기
-        int emptySlot = -1;
-        for (int i = 0; i < slotOccupied.Length; i++)
-        {
-            if (!slotOccupied[i])
-            {
-                emptySlot = i;
+                SellItem(emptySlot);
                 break;
             }
         }
 
-        if (emptySlot == -1)
-        {
-            Debug.Log("모든 슬롯이 가득 찼습니다!");
-            return;
-        }
+        UpdateUI(emptySlot);
 
-        // 아이템을 구매하고 나서, 해당 슬롯의 등급을 업그레이드
-        if (itemGrades[emptySlot] < maxLevel)
-        {
-            itemGrades[emptySlot]++;
-            UpdateUI(emptySlot);
-        }
-        else
-        {
-            Debug.Log("아이템이 이미 최대 등급입니다.");
-        }
+        Debug.Log($"아이템이 등급 {itemGrade}로 슬롯 {emptySlot + 1}에 배치되었습니다.");
     }
 }
