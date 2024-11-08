@@ -48,11 +48,15 @@ public class EnhancementManager : MonoBehaviour
             UpdateUI(index);           // 초기 UI 업데이트
         }
 
-        // 상점 버튼에 아이템 구매 기능 추가
+        UpdateBuyButtonState();
         buyButton.onClick.AddListener(BuyItem);
     }
 
-    // 특정 아이템 칸의 강화 시도
+    private void Update()
+    {
+        InvokeRepeating("UpdateBuyButtonState", 0f, 0.1f);  
+    }
+
     private void TryEnhancement(int index)
     {
         if (!slotOccupied[index])
@@ -166,6 +170,18 @@ public class EnhancementManager : MonoBehaviour
         });
 
         trigger.triggers.Add(entry);
+    }
+    private void UpdateBuyButtonState()
+    {
+        // 골드가 300 이상이면 버튼을 활성화, 아니면 비활성화
+        if (GameManager.Instance.Gold >= 300)
+        {
+            buyButton.interactable = true;
+        }
+        else
+        {
+            buyButton.interactable = false;
+        }
     }
 
     // 아이템 구매 함수
