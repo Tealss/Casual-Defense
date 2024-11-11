@@ -35,7 +35,8 @@ public class GameUiManager : MonoBehaviour
     // 골드 UI 갱신 메서드
     public void UpdateGoldUI(int gold)
     {
-        goldText.text = $" : {gold}";
+        // 천 단위마다 쉼표(,)를 추가하여 텍스트로 표시
+        goldText.text = $" : {gold.ToString("N0")}";
     }
 
     // 골드 UI를 매 초마다 갱신하는 코루틴

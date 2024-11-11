@@ -71,8 +71,8 @@ public class EnhancementManager : MonoBehaviour
             return;
         }
 
-        // 강화 비용 계산 (레벨에 따라 2배씩 증가)
-        int enhancementCost = 100 * (int)Mathf.Pow(2, currentLevels[index]);
+        // 강화 비용 계산 (레벨에 따라 1.5배씩 증가)
+        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index]));
 
         // 골드 검증 및 차감
         if (!GameManager.Instance.SpendGold(enhancementCost))
@@ -104,8 +104,10 @@ public class EnhancementManager : MonoBehaviour
     {
         if (slotOccupied[index] && currentLevels[index] < maxLevel)
         {
+            int nextCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index]));
+
             float nextSuccessRate = successRates[currentLevels[index]];
-            int nextCost = 100 * (int)Mathf.Pow(2, currentLevels[index]);
+
             enhanceButtons[index].GetComponentInChildren<Text>().text = $"강화하기 ({nextSuccessRate}%, {nextCost}원)";
             enhanceButtons[index].image.color = gradeColors[itemGrades[index] - 1];
         }
@@ -173,7 +175,6 @@ public class EnhancementManager : MonoBehaviour
     }
     private void UpdateBuyButtonState()
     {
-        // 골드가 300 이상이면 버튼을 활성화, 아니면 비활성화
         if (GameManager.Instance.Gold >= 300)
         {
             buyButton.interactable = true;
@@ -184,7 +185,6 @@ public class EnhancementManager : MonoBehaviour
         }
     }
 
-    // 아이템 구매 함수
     private void BuyItem()
     {
         int itemCost = 300;
@@ -207,45 +207,28 @@ public class EnhancementManager : MonoBehaviour
             }
         }
 
+        // 모든 슬롯이 가득 찬 경우
         if (emptySlot == -1)
         {
             Debug.Log("모든 슬롯이 가득 찼습니다!");
+
+            // 골드 환불
+            GameManager.Instance.AddGold(itemCost);
+            Debug.Log($"구매 불가능 {itemCost}원 환불");
             return;
         }
 
         // 등급 설정 (1단계 흰색 ~ 6단계 노란색까지)
-        float randomValue = Random.Range(0f, 100f);
-        int itemGrade;
-
-        // 각 등급에 따른 확률 범위
-        if (randomValue <= 75.5f)       // 1단계: 흰색, 75.5% 확률
+        int itemGrade = Random.Range(0f, 100f) switch
         {
-            itemGrade = 1;
-        }
-        else if (randomValue <= 90.5f)  // 2단계: 하늘색, 15% 확률 (75.5% ~ 90.5%)
-        {
-            itemGrade = 2;
-        }
-        else if (randomValue <= 95.5f)  // 3단계: 보라색, 5% 확률 (90.5% ~ 95.5%)
-        {
-            itemGrade = 3;
-        }
-        else if (randomValue <= 98.5f)  // 4단계: 분홍색, 3% 확률 (95.5% ~ 98.5%)
-        {
-            itemGrade = 4;
-        }
-        else if (randomValue <= 99.5f)  // 5단계: 주황색, 1% 확률 (98.5% ~ 99.5%)
-        {
-            itemGrade = 5;
-        }
-        else if (randomValue <= 99.93f)  // 6단계: 노란색, 0.43% 확률 (99.5% ~ 99.93%)
-        {
-            itemGrade = 6;
-        }
-        else                          // 7단계: 빨간색, 0.07% 확률 (99.93% ~ 100%)
-        {
-            itemGrade = 7;
-        }
+            <= 80.5f => 1,
+            <= 90.5f => 2,
+            <= 96.5f => 3,
+            <= 98.5f => 4,
+            <= 99.5f => 5,
+            <= 99.93f => 6,
+            _ => 7
+        };
 
         itemGrades[emptySlot] = itemGrade; // 선택된 등급을 슬롯에 저장
 
@@ -255,7 +238,6 @@ public class EnhancementManager : MonoBehaviour
         enhanceButtons[emptySlot].interactable = true; // 구매 후 강화 버튼 활성화
         enhanceButtons[emptySlot].image.color = gradeColors[itemGrade - 1]; // 등급에 따른 버튼 색상 적용
 
-        // 해당 아이템의 등급에 맞는 토글이 체크되어 있으면 즉시 판매
         for (int i = 0; i < gradeToggles.Length; i++)
         {
             if (gradeToggles[i].isOn && itemGrade == (i + 1))
@@ -269,4 +251,5 @@ public class EnhancementManager : MonoBehaviour
 
         Debug.Log($"아이템이 등급 {itemGrade}로 슬롯 {emptySlot + 1}에 배치되었습니다.");
     }
+
 }
