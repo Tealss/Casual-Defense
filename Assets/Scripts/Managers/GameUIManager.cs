@@ -14,6 +14,7 @@ public class GameUiManager : MonoBehaviour
     public Text waveText;
     public Text timerText;
     public Text LifeText;
+    public Text TotalLifeText;
     public Text goldText;
 
     [Header("Game Over UI")]
@@ -33,24 +34,36 @@ public class GameUiManager : MonoBehaviour
     {
         InitializeToggleButtons();
         UpdateGoldUI(GameManager.I.Gold);
-        UpdateLifePointsText(GameManager.I.LifePoints);
+        UpdateLifePointsText(GameManager.I.LifePoints, GameManager.I.TotalLifePoints); 
         gameOverPanel.SetActive(false);
         StartCoroutine(UpdateGoldCoroutine());
     }
 
     public void UpdateWaveText(int waveNumber)
     {
-        waveText.text = $"Wave: {waveNumber}";
+        waveText.text = $"{waveNumber}   -";
     }
 
     public void UpdateTimerText(int secondsLeft)
     {
-        timerText.text = $"Time: {secondsLeft:00}";
+        int minutes = secondsLeft / 60;
+        int seconds = secondsLeft % 60;
+        timerText.text = $"{minutes:00} : {seconds:00}";
     }
 
-    public void UpdateLifePointsText(int lifePoints)
+    public void UpdateLifePointsText(int lifePoints, int totalLifePoints)
     {
-        LifeText.text = $"Life: {lifePoints}";
+        LifeText.text = $"{lifePoints}";
+        TotalLifeText.text = $"{totalLifePoints}";
+
+        if (lifePoints <= 10)
+        {
+            LifeText.color = Color.red;
+        }
+        else
+        {
+            LifeText.color = Color.white; 
+        }
     }
 
     public void UpdateGoldUI(int gold)

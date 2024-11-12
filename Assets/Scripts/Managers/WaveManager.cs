@@ -27,10 +27,7 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
-        // GameUIManager 찾기
         gameUIManager = FindObjectOfType<GameUiManager>();
-
-        // 웨이브 시작
         StartCoroutine(WaveRoutine());
     }
 
@@ -40,28 +37,25 @@ public class WaveManager : MonoBehaviour
         {
             Debug.Log($"Wave {currentWave} 시작!");
 
-            // 타이머 초기화
-            currentWaveTimer = waveDuration;
 
-            // UI 업데이트
+            currentWaveTimer = waveDuration;
             gameUIManager.UpdateWaveText(currentWave);
 
-            // 유닛 생성 시작
-            isSpawning = true;
-            StartCoroutine(SpawnUnits());
+            if (!isSpawning)
+            {
+                isSpawning = true;
+                StartCoroutine(SpawnUnits());
+            }
 
-            // 타이머 1초씩 감소
             while (currentWaveTimer > 0)
             {
                 currentWaveTimer -= 1f;
-
-                // UI 타이머 업데이트
                 gameUIManager.UpdateTimerText(Mathf.CeilToInt(currentWaveTimer));
-
                 yield return new WaitForSeconds(1f);
             }
 
-            // 웨이브 종료
+            isSpawning = false;
+
             Debug.Log($"Wave {currentWave} 종료!");
             currentWave++;
         }
