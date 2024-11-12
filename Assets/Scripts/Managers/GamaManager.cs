@@ -4,16 +4,23 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance { get; private set; }
-    public int Gold { get; private set; } = 100000; 
+    public static GameManager I { get; private set; }
+
+    public int Gold { get; private set; } = 100000;
+    public int LifePoints { get; private set; } = 50; 
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (I == null)
+        {
+            I = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    // 골드 감소 메서드
     public bool SpendGold(int amount)
     {
         if (Gold >= amount)
@@ -28,9 +35,27 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // 골드 증가 메서드 (예시)
+
     public void AddGold(int amount)
     {
         Gold += amount;
     }
+
+    public void DecreaseLifePoints(int amount)
+    {
+        LifePoints -= amount;
+        GameUiManager.I.UpdateLifePointsText(LifePoints);
+
+        if (LifePoints <= 0)
+        {
+            //GameOver();
+        }
+    }
+
+    //private void GameOver()
+    //{
+    //    Debug.Log("Game Over!");
+    //    GameUiManager.I.ShowGameOverPanel();
+    //    Time.timeScale = 0; // 게임 정지
+    //}
 }

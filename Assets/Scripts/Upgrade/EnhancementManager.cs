@@ -70,7 +70,7 @@ public class EnhancementManager : MonoBehaviour
 
         int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index]));
 
-        if (!GameManager.Instance.SpendGold(enhancementCost))
+        if (!GameManager.I.SpendGold(enhancementCost))
         {
             levelTexts[index].text = $"골드 부족 (필요: {enhancementCost}원)";
             return;
@@ -122,7 +122,7 @@ public class EnhancementManager : MonoBehaviour
             return;
 
         int sellPrice = 100 * (int)Mathf.Pow(2, itemGrades[index] - 1);
-        GameManager.Instance.AddGold(sellPrice);
+        GameManager.I.AddGold(sellPrice);
         levelTexts[index].text = $"아이템 판매됨 (+{sellPrice}원)";
         slotOccupied[index] = false;
         currentLevels[index] = 0;
@@ -154,7 +154,7 @@ public class EnhancementManager : MonoBehaviour
 
     private void UpdateBuyButtonState()
     {
-        if (GameManager.Instance.Gold >= 300)
+        if (GameManager.I.Gold >= 300)
         {
             buyButton.interactable = true;
         }
@@ -170,7 +170,7 @@ public class EnhancementManager : MonoBehaviour
 
         int itemCost = 300;
 
-        if (!GameManager.Instance.SpendGold(itemCost))
+        if (!GameManager.I.SpendGold(itemCost))
         {
             Debug.Log("골드가 부족합니다! (필요: 300원)");
             return;
@@ -189,7 +189,7 @@ public class EnhancementManager : MonoBehaviour
         if (emptySlot == -1)
         {
             Debug.Log("모든 슬롯이 가득 찼습니다!");
-            GameManager.Instance.AddGold(itemCost);
+            GameManager.I.AddGold(itemCost);
             Debug.Log($"구매 불가능 {itemCost}원 환불");
             return;
         }

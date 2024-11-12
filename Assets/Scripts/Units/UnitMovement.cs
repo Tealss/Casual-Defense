@@ -1,38 +1,40 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitMovement : MonoBehaviour
 {
-    private Transform[] waypoints; // 웨이포인트 배열
-    private int currentWaypointIndex = 0; // 현재 웨이포인트 인덱스
-    private float speed = 5f; // 이동 속도
-
+    private Transform[] waypoints;
+    private int currentWaypointIndex = 0;
+    private float speed;
+    private GameManager gameManager;
 
     public void Initialize(Transform[] waypoints, float speed)
     {
         this.waypoints = waypoints;
         this.speed = speed;
-        MoveToWaypoint();
+        gameManager = FindObjectOfType<GameManager>();
     }
 
-    private void MoveToWaypoint()
+    void Update()
     {
-        if (currentWaypointIndex >= waypoints.Length) return; 
+        if (waypoints == null || waypoints.Length == 0) return;
 
         Transform targetWaypoint = waypoints[currentWaypointIndex];
-        StartCoroutine(MoveToNext(targetWaypoint));
-    }
+        float step = speed * Time.deltaTime;
+        transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.position, step);
 
-    private IEnumerator MoveToNext(Transform targetWaypoint)
-    {
-        while (Vector3.Distance(transform.position, targetWaypoint.position) > 0.1f)
+        if (Vector3.Distance(transform.position, targetWaypoint.position) < 0.1f)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.position, speed * Time.deltaTime);
-            yield return null;
-        }
+            currentWaypointIndex++;
 
-        currentWaypointIndex++;
-        MoveToWaypoint();
+            // 마지막 웨이포인트에 도달했을 때
+            if (currentWaypointIndex >= waypoints.Length)
+            {
+                // GameManager의 라이프 포인트 감소
+                gameManager.DecreaseLifePoints(1);
+
+                // 유닛 삭제
+                Destroy(gameObject);
+            }
+        }
     }
 }

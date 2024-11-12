@@ -4,9 +4,20 @@ using System.Collections;
 
 public class GameUiManager : MonoBehaviour
 {
+    [Header("UI")]
+    [SerializeField]
     public GameObject[] popupWindows;
     public Button[] toggleButtons;
+
+    [Header("Text UI")]
+    [SerializeField]
+    public Text waveText;
+    public Text timerText;
+    public Text LifeText;
     public Text goldText;
+
+    [Header("Game Over UI")]
+    public GameObject gameOverPanel;
 
     public static GameUiManager I { get; private set; }
 
@@ -21,8 +32,44 @@ public class GameUiManager : MonoBehaviour
     void Start()
     {
         InitializeToggleButtons();
-        UpdateGoldUI(GameManager.Instance.Gold);
+        UpdateGoldUI(GameManager.I.Gold);
+        UpdateLifePointsText(GameManager.I.LifePoints);
+        gameOverPanel.SetActive(false);
         StartCoroutine(UpdateGoldCoroutine());
+    }
+
+    public void UpdateWaveText(int waveNumber)
+    {
+        waveText.text = $"Wave: {waveNumber}";
+    }
+
+    public void UpdateTimerText(int secondsLeft)
+    {
+        timerText.text = $"Time: {secondsLeft:00}";
+    }
+
+    public void UpdateLifePointsText(int lifePoints)
+    {
+        LifeText.text = $"Life: {lifePoints}";
+    }
+
+    public void UpdateGoldUI(int gold)
+    {
+        goldText.text = $" :  {gold:N0}";
+    }
+
+    public void ShowGameOverPanel()
+    {
+        gameOverPanel.SetActive(true);
+    }
+
+    private IEnumerator UpdateGoldCoroutine()
+    {
+        while (true)
+        {
+            UpdateGoldUI(GameManager.I.Gold);
+            yield return new WaitForSeconds(0.1f);
+        }
     }
 
     private void InitializeToggleButtons()
@@ -31,20 +78,6 @@ public class GameUiManager : MonoBehaviour
         {
             int index = i;
             toggleButtons[i].onClick.AddListener(() => TogglePopup(index));
-        }
-    }
-
-    public void UpdateGoldUI(int gold)
-    {
-        goldText.text = $" :  {gold:N0}";
-    }
-
-    private IEnumerator UpdateGoldCoroutine()
-    {
-        while (true)
-        {
-            UpdateGoldUI(GameManager.Instance.Gold);
-            yield return new WaitForSeconds(0.1f);
         }
     }
 
