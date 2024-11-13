@@ -25,7 +25,7 @@ public class EnhancementManager : MonoBehaviour
 
     public readonly float[] successRates = { 95f, 90f, 85f, 80f, 75f, 70f, 65f, 60f, 55f, 50f, 45f, 40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f, 3f };
     public readonly float[] probabilities = { 83.894f, 10f, 3f, 1.2f, 0.7f, 0.2f, 0.007f };
-    public readonly int[] sellPrices = { 100, 200, 1000, 3000, 10000, 20000, 50000 };
+    public readonly int[] sellPrices = { 50, 200, 500, 1000, 3000, 5000, 20000 };
     public readonly Color[] gradeColors = { Color.white, new Color(0.7f, 0.9f, 1f), new Color(0.8f, 0.6f, 1f), new Color(1f, 0.6f, 0.8f), new Color(1f, 0.8f, 0.4f), Color.yellow, Color.red };
 
     private void Awake()
