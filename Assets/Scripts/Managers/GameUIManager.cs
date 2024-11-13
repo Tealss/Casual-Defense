@@ -19,7 +19,7 @@ public class GameUiManager : MonoBehaviour
     public Text LifeText;
     public Text TotalLifeText;
     public Text goldText;
-    public Text probabilityText;  // 확률을 표시할 텍스트 UI 추가
+    public Text probabilityText;  // 확률을 표시할 텍스트 UI
 
     [Header("Game Over UI")]
     public GameObject gameOverPanel;
@@ -45,6 +45,7 @@ public class GameUiManager : MonoBehaviour
 
         AddEventTriggerToShopButton();
         UpdateProbabilityText();  // 확률 텍스트 업데이트 함수 호출
+        StartCoroutine(RefreshProbabilityText());  // 확률 값을 주기적으로 업데이트
     }
 
     private void AddEventTriggerToShopButton()
@@ -138,6 +139,7 @@ public class GameUiManager : MonoBehaviour
     // 확률 텍스트 업데이트
     private void UpdateProbabilityText()
     {
+        // EnhancementManager에서 확률 배열 가져오기
         float[] probabilities = EnhancementManager.I.probabilities;
 
         if (probabilities == null || probabilities.Length == 0)
@@ -154,10 +156,19 @@ public class GameUiManager : MonoBehaviour
             Color gradeColor = EnhancementManager.I.gradeColors[i % EnhancementManager.I.gradeColors.Length];  // 색상 배열의 범위 내에서 색상 가져오기
             string hexColor = ColorUtility.ToHtmlStringRGB(gradeColor); // 색상을 HTML 문자열로 변환
 
-            probabilityString += $"<color=#{hexColor}>Lv{i + 1} - {probabilities[i]:F3} % </color>\n";
+            probabilityString += $"<color=#{hexColor}>Lv{i + 1}  -  {probabilities[i]:F3} % </color>\n";
         }
 
         probabilityText.text = probabilityString;
     }
 
+    // 확률을 주기적으로 업데이트하는 코루틴 추가
+    private IEnumerator RefreshProbabilityText()
+    {
+        while (true)
+        {
+            UpdateProbabilityText();
+            yield return new WaitForSeconds(1f);  // 1초마다 업데이트
+        }
+    }
 }
