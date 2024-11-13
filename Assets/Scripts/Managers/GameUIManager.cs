@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
 
@@ -7,7 +8,9 @@ public class GameUiManager : MonoBehaviour
     [Header("UI")]
     [SerializeField]
     public GameObject[] popupWindows;
+    public GameObject[] pointWindows;
     public Button[] toggleButtons;
+    public Button ShopButton;
 
     [Header("Text UI")]
     [SerializeField]
@@ -16,6 +19,7 @@ public class GameUiManager : MonoBehaviour
     public Text LifeText;
     public Text TotalLifeText;
     public Text goldText;
+    public Text probabilityText;  // 확률을 표시할 텍스트 UI 추가
 
     [Header("Game Over UI")]
     public GameObject gameOverPanel;
@@ -32,11 +36,34 @@ public class GameUiManager : MonoBehaviour
 
     void Start()
     {
+        pointWindows[0].SetActive(false);
         InitializeToggleButtons();
         UpdateGoldUI(GameManager.I.Gold);
-        UpdateLifePointsText(GameManager.I.LifePoints, GameManager.I.TotalLifePoints); 
+        UpdateLifePointsText(GameManager.I.LifePoints, GameManager.I.TotalLifePoints);
         gameOverPanel.SetActive(false);
         StartCoroutine(UpdateGoldCoroutine());
+
+        AddEventTriggerToShopButton();
+        UpdateProbabilityText();  // 확률 텍스트 업데이트 함수 호출
+    }
+
+    private void AddEventTriggerToShopButton()
+    {
+        EventTrigger eventTrigger = ShopButton.gameObject.AddComponent<EventTrigger>();
+
+        EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry
+        {
+            eventID = EventTriggerType.PointerEnter
+        };
+        pointerEnterEntry.callback.AddListener((eventData) => OnPointerEnter());
+        eventTrigger.triggers.Add(pointerEnterEntry);
+
+        EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry
+        {
+            eventID = EventTriggerType.PointerExit
+        };
+        pointerExitEntry.callback.AddListener((eventData) => OnPointerExit());
+        eventTrigger.triggers.Add(pointerExitEntry);
     }
 
     public void UpdateWaveText(int waveNumber)
@@ -55,15 +82,7 @@ public class GameUiManager : MonoBehaviour
     {
         LifeText.text = $"{lifePoints}";
         TotalLifeText.text = $"{totalLifePoints}";
-
-        if (lifePoints <= 10)
-        {
-            LifeText.color = Color.red;
-        }
-        else
-        {
-            LifeText.color = Color.white; 
-        }
+        LifeText.color = lifePoints <= 10 ? Color.red : Color.white;
     }
 
     public void UpdateGoldUI(int gold)
@@ -105,4 +124,40 @@ public class GameUiManager : MonoBehaviour
             Debug.LogWarning("유효하지 않은 팝업창 인덱스");
         }
     }
+
+    public void OnPointerEnter()
+    {
+        pointWindows[0].SetActive(true);
+    }
+
+    public void OnPointerExit()
+    {
+        pointWindows[0].SetActive(false);
+    }
+
+    // 확률 텍스트 업데이트
+    private void UpdateProbabilityText()
+    {
+        float[] probabilities = EnhancementManager.I.probabilities;
+
+        if (probabilities == null || probabilities.Length == 0)
+        {
+            Debug.LogWarning("확률 배열이 비어 있습니다!");
+            probabilityText.text = "확률 데이터가 없습니다.";
+            return;
+        }
+
+        string probabilityString = "";
+        for (int i = 0; i < probabilities.Length; i++)
+        {
+            // 색상 적용
+            Color gradeColor = EnhancementManager.I.gradeColors[i % EnhancementManager.I.gradeColors.Length];  // 색상 배열의 범위 내에서 색상 가져오기
+            string hexColor = ColorUtility.ToHtmlStringRGB(gradeColor); // 색상을 HTML 문자열로 변환
+
+            probabilityString += $"<color=#{hexColor}>Lv{i + 1} - {probabilities[i]:F3} % </color>\n";
+        }
+
+        probabilityText.text = probabilityString;
+    }
+
 }
