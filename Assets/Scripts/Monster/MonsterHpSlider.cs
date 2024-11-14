@@ -3,23 +3,25 @@ using UnityEngine.UI;
 
 public class MonsterHPSlider : MonoBehaviour
 {
-    private Monster monster; // 몬스터 스크립트 참조
-    private Slider slider; // UI 슬라이더 참조
+    private Monster monster;
+    private Slider slider;
+    private Image sliderFillImage;
+
+    private Vector3 offset = new Vector3(0, 2f, 0); 
 
     void Awake()
     {
-        // 슬라이더 컴포넌트 할당
         slider = GetComponent<Slider>();
         if (slider == null)
         {
             Debug.LogError("슬라이더 컴포넌트를 찾을 수 없습니다.");
         }
+
+        sliderFillImage = slider.fillRect.GetComponent<Image>();
     }
 
-    // 초기화 메서드
     public void Initialize(GameObject unit)
     {
-        // 유닛에서 Monster 스크립트를 가져옵니다.
         monster = unit.GetComponent<Monster>();
 
         if (monster == null)
@@ -32,7 +34,6 @@ public class MonsterHPSlider : MonoBehaviour
         UpdateHealth();
     }
 
-    // 체력 최대값 설정
     public void SetMaxHealth(float maxHealth)
     {
         if (slider == null) return;
@@ -41,7 +42,6 @@ public class MonsterHPSlider : MonoBehaviour
         slider.value = maxHealth;
     }
 
-    // 체력 업데이트
     public void UpdateHealth()
     {
         if (monster == null || slider == null)
@@ -51,18 +51,45 @@ public class MonsterHPSlider : MonoBehaviour
         }
 
         slider.value = monster.CurrentHealth;
+
+        UpdateSliderColor();
     }
 
-    // 매 프레임마다 슬라이더 위치와 체력 업데이트
     void Update()
     {
         if (monster == null || slider == null) return;
 
         UpdateHealth();
 
-        // HP 슬라이더 위치 업데이트
-        Vector3 worldPosition = monster.transform.position + new Vector3(0, 2f, 0);
-        Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition);
+        Collider unitCollider = monster.GetComponent<Collider>();
+        if (unitCollider == null)
+        {
+            Debug.LogError("유닛에 콜라이더가 없습니다.");
+            return;
+        }
+
+        Vector3 headPosition = unitCollider.bounds.center + new Vector3(0, unitCollider.bounds.extents.y, 0);
+
+        Vector3 screenPosition = Camera.main.WorldToScreenPoint(headPosition);
+        screenPosition += new Vector3(0, offset.y, 0);  
         transform.position = screenPosition;
+    }
+
+    private void UpdateSliderColor()
+    {
+        float healthPercentage = monster.CurrentHealth / monster.MaxHealth;
+
+        if (healthPercentage > 0.5f)
+        {
+            sliderFillImage.color = Color.Lerp(Color.yellow, Color.green, (healthPercentage - 0.5f) * 2); // 초록색으로 변환
+        }
+        else if (healthPercentage > 0.2f)
+        {
+            sliderFillImage.color = Color.Lerp(Color.red, Color.yellow, (healthPercentage - 0.2f) * 5); // 노란색으로 변환
+        }
+        else
+        {
+            sliderFillImage.color = Color.red; // 빨간색
+        }
     }
 }

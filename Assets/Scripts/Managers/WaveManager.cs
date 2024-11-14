@@ -1,16 +1,12 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.UI;
 
 public class WaveManager : MonoBehaviour
 {
     [Header("유닛 이동")]
-    [SerializeField] private GameObject unitPrefab;
     [SerializeField] private Transform[] waypoints;
 
     [Header("HP 슬라이더")]
-    [SerializeField] private GameObject hpSliderPrefab;
     [SerializeField] private Transform hpSliderParent;
 
     [Header("웨이브 세팅")]
@@ -21,27 +17,21 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private float waveDuration = 60f;
     [SerializeField] private float spawnDuration = 30f;
 
-    private List<GameObject> activeUnits = new List<GameObject>();
-    private List<GameObject> activeSliders = new List<GameObject>();
     private int currentWave = 1;
     private bool isSpawning = false;
     private float currentWaveTimer;
 
     private GameUiManager gameUIManager;
+    private ObjectPool objectPool;
 
     void Start()
     {
         gameUIManager = FindObjectOfType<GameUiManager>();
+        objectPool = FindObjectOfType<ObjectPool>();
 
-        // 슬라이더 부모 체크
         if (hpSliderParent == null)
         {
             Debug.LogError("hpSliderParent가 null입니다. UI/Canvas/HpSlider가 할당되지 않았습니다.");
-        }
-
-        if (hpSliderPrefab == null)
-        {
-            Debug.LogError("hpSliderPrefab이 null입니다. 슬라이더 프리팹이 할당되지 않았습니다.");
         }
 
         StartCoroutine(WaveRoutine());
@@ -82,34 +72,43 @@ public class WaveManager : MonoBehaviour
         int unitsSpawned = 0;
         float spawnEndTime = Time.time + spawnDuration;
 
-        // HpSlider의 부모 UI 위치 찾기
-        Transform hpSliderParent = GameObject.Find("UI/Canvas/HpSlider").transform;
-
         while (unitsSpawned < unitCountPerWave && Time.time < spawnEndTime)
         {
-            // 몬스터 생성
-            GameObject unit = Instantiate(unitPrefab, waypoints[0].position, Quaternion.identity);
-            activeUnits.Add(unit);
+            GameObject unit = objectPool.GetFromPool(objectPool.unitPool);
+            if (unit == null)
+            {
+                Debug.LogWarning("Unit Pool이 부족합니다.");
+                yield break;
+            }
 
-            // HP 슬라이더 생성
-            GameObject hpSlider = Instantiate(hpSliderPrefab, hpSliderParent);
+            unit.transform.position = waypoints[0].position;
 
-            // HP 슬라이더 초기화
+            GameObject hpSlider = objectPool.GetFromPool(objectPool.hpSliderPool);
+            if (hpSlider == null)
+            {
+                Debug.LogWarning("HP Slider Pool이 부족합니다.");
+                yield break;
+            }
+
+            hpSlider.transform.SetParent(hpSliderParent, false);
+            Vector3 unitPosition = unit.transform.position;
+            hpSlider.transform.position = new Vector3(unitPosition.x, unitPosition.y + 2f, unitPosition.z);
+
             MonsterHPSlider hpSliderScript = hpSlider.GetComponent<MonsterHPSlider>();
             if (hpSliderScript != null)
             {
-                hpSliderScript.Initialize(unit); // 여기서 몬스터(GameObject) 전달
+                hpSliderScript.Initialize(unit);
             }
             else
             {
                 Debug.LogError("MonsterHPSlider 컴포넌트를 찾을 수 없습니다.");
             }
 
-            // 유닛 이동 초기화
             UnitMovement unitMovement = unit.GetComponent<UnitMovement>();
             if (unitMovement != null)
             {
-                unitMovement.Initialize(waypoints, unitSpeed);
+                unitMovement.Initialize(waypoints, unitSpeed, objectPool);
+                unitMovement.SetHpSlider(hpSlider);
             }
 
             unitsSpawned++;
@@ -121,16 +120,9 @@ public class WaveManager : MonoBehaviour
 
     public void RemoveUnit(GameObject unit)
     {
-        int index = activeUnits.IndexOf(unit);
-
-        if (index != -1)
+        if (unit != null)
         {
-            Destroy(activeSliders[index]); 
-            activeUnits.RemoveAt(index);
-            activeSliders.RemoveAt(index);
+            objectPool.ReturnToPool(unit, objectPool.unitPool);
         }
-
-        Destroy(unit);
     }
-
 }
