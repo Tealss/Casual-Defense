@@ -3,54 +3,66 @@ using UnityEngine.UI;
 
 public class MonsterHPSlider : MonoBehaviour
 {
-    private Slider slider;
-    private Monster monster;
+    private Monster monster; // 몬스터 스크립트 참조
+    private Slider slider; // UI 슬라이더 참조
 
-    void Start() // Start로 변경
+    void Awake()
     {
-        // 슬라이더 컴포넌트를 초기화
-        slider = GetComponentInChildren<Slider>();
+        // 슬라이더 컴포넌트 할당
+        slider = GetComponent<Slider>();
         if (slider == null)
         {
-            Debug.LogError("슬라이더가 자식 오브젝트에 없습니다!");
+            Debug.LogError("슬라이더 컴포넌트를 찾을 수 없습니다.");
         }
     }
 
-    public void Initialize(Monster monster)
+    // 초기화 메서드
+    public void Initialize(GameObject unit)
     {
+        // 유닛에서 Monster 스크립트를 가져옵니다.
+        monster = unit.GetComponent<Monster>();
+
         if (monster == null)
         {
-            Debug.LogError("Monster 객체가 null입니다!");
+            Debug.LogError("Monster 스크립트를 찾을 수 없습니다.");
             return;
         }
 
-        this.monster = monster;
-
-        // 초기화 후 체력 설정
         SetMaxHealth(monster.MaxHealth);
         UpdateHealth();
     }
 
+    // 체력 최대값 설정
     public void SetMaxHealth(float maxHealth)
     {
-        if (slider == null)
-        {
-            Debug.LogError("슬라이더가 초기화되지 않았습니다.");
-            return;
-        }
+        if (slider == null) return;
 
         slider.maxValue = maxHealth;
         slider.value = maxHealth;
     }
 
+    // 체력 업데이트
     public void UpdateHealth()
     {
-        if (slider == null || monster == null)
+        if (monster == null || slider == null)
         {
             Debug.LogError("슬라이더나 몬스터가 null입니다.");
             return;
         }
 
         slider.value = monster.CurrentHealth;
+    }
+
+    // 매 프레임마다 슬라이더 위치와 체력 업데이트
+    void Update()
+    {
+        if (monster == null || slider == null) return;
+
+        UpdateHealth();
+
+        // HP 슬라이더 위치 업데이트
+        Vector3 worldPosition = monster.transform.position + new Vector3(0, 2f, 0);
+        Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition);
+        transform.position = screenPosition;
     }
 }

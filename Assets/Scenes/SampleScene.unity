@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5144712, g: 0.70139736, b: 0.839058, a: 1}
+  m_IndirectSpecularColor: {r: 0.51520467, g: 0.7015458, b: 0.83919823, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -38254,8 +38254,9 @@ MonoBehaviour:
   - {fileID: 2121403071}
   - {fileID: 502800061}
   - {fileID: 821941501}
-  hpSliderPrefab: {fileID: 3108736623319472167, guid: fa97addece4b0314a87a7ab4d893085a, type: 3}
-  unitSpeed: 2
+  hpSliderPrefab: {fileID: 1292146651817448466, guid: fa97addece4b0314a87a7ab4d893085a, type: 3}
+  hpSliderParent: {fileID: 242555413}
+  unitSpeed: 10
   maxWaveCount: 100
   unitCountPerWave: 30
   spawnInterval: 1

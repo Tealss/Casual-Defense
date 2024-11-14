@@ -9,9 +9,11 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private GameObject unitPrefab;
     [SerializeField] private Transform[] waypoints;
 
-    [Header("HP Slider")]
-    [SerializeField] private GameObject hpSliderPrefab; // HP Slider 프리팹
+    [Header("HP 슬라이더")]
+    [SerializeField] private GameObject hpSliderPrefab;
+    [SerializeField] private Transform hpSliderParent;
 
+    [Header("웨이브 세팅")]
     [SerializeField] private float unitSpeed = 5f;
     [SerializeField] private int maxWaveCount = 100;
     [SerializeField] private int unitCountPerWave = 30;
@@ -20,7 +22,7 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private float spawnDuration = 30f;
 
     private List<GameObject> activeUnits = new List<GameObject>();
-    private List<GameObject> activeSliders = new List<GameObject>(); // 생성된 HP 슬라이더 목록
+    private List<GameObject> activeSliders = new List<GameObject>();
     private int currentWave = 1;
     private bool isSpawning = false;
     private float currentWaveTimer;
@@ -30,6 +32,18 @@ public class WaveManager : MonoBehaviour
     void Start()
     {
         gameUIManager = FindObjectOfType<GameUiManager>();
+
+        // 슬라이더 부모 체크
+        if (hpSliderParent == null)
+        {
+            Debug.LogError("hpSliderParent가 null입니다. UI/Canvas/HpSlider가 할당되지 않았습니다.");
+        }
+
+        if (hpSliderPrefab == null)
+        {
+            Debug.LogError("hpSliderPrefab이 null입니다. 슬라이더 프리팹이 할당되지 않았습니다.");
+        }
+
         StartCoroutine(WaveRoutine());
     }
 
@@ -68,24 +82,35 @@ public class WaveManager : MonoBehaviour
         int unitsSpawned = 0;
         float spawnEndTime = Time.time + spawnDuration;
 
-        // UI 하이어라키에서 HPSlider 폴더 찾기
-        //Transform hpSliderParent = GameObject.Find("UI/HPSlider").transform;
+        // HpSlider의 부모 UI 위치 찾기
+        Transform hpSliderParent = GameObject.Find("UI/Canvas/HpSlider").transform;
 
         while (unitsSpawned < unitCountPerWave && Time.time < spawnEndTime)
         {
-            // 유닛 생성
+            // 몬스터 생성
             GameObject unit = Instantiate(unitPrefab, waypoints[0].position, Quaternion.identity);
             activeUnits.Add(unit);
 
-            //// HP Slider 생성 및 초기화
-            //GameObject hpSlider = Instantiate(hpSliderPrefab, hpSliderParent);
-            //activeSliders.Add(hpSlider);
+            // HP 슬라이더 생성
+            GameObject hpSlider = Instantiate(hpSliderPrefab, hpSliderParent);
 
-            //hpSlider.GetComponent<UnitHP>().Initialize(unit);
+            // HP 슬라이더 초기화
+            MonsterHPSlider hpSliderScript = hpSlider.GetComponent<MonsterHPSlider>();
+            if (hpSliderScript != null)
+            {
+                hpSliderScript.Initialize(unit); // 여기서 몬스터(GameObject) 전달
+            }
+            else
+            {
+                Debug.LogError("MonsterHPSlider 컴포넌트를 찾을 수 없습니다.");
+            }
 
             // 유닛 이동 초기화
             UnitMovement unitMovement = unit.GetComponent<UnitMovement>();
-            unitMovement.Initialize(waypoints, unitSpeed);
+            if (unitMovement != null)
+            {
+                unitMovement.Initialize(waypoints, unitSpeed);
+            }
 
             unitsSpawned++;
             yield return new WaitForSeconds(spawnInterval);
@@ -100,11 +125,12 @@ public class WaveManager : MonoBehaviour
 
         if (index != -1)
         {
-            Destroy(activeSliders[index]); // HP Slider 제거
+            Destroy(activeSliders[index]); 
             activeUnits.RemoveAt(index);
             activeSliders.RemoveAt(index);
         }
 
-        Destroy(unit); // 유닛 제거
+        Destroy(unit);
     }
+
 }
