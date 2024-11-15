@@ -4,33 +4,32 @@ using UnityEngine;
 public class ObjectPool : MonoBehaviour
 {
     [Header("Ç® ¼³Á¤")]
-    [SerializeField] private GameObject unitPrefab;
-    [SerializeField] private GameObject hpSliderPrefab;
-    [SerializeField] private GameObject towerBuildButtonPrefab;  
-    [SerializeField] private int poolSize = 100;
+    public GameObject unitPrefab;
+    public GameObject hpSliderPrefab;
+    public GameObject towerBuildButtonPrefab;
+    [SerializeField] private int initialPoolSize = 10; 
 
     public Queue<GameObject> unitPool = new Queue<GameObject>();
     public Queue<GameObject> hpSliderPool = new Queue<GameObject>();
-    public Queue<GameObject> towerBuildButtonPool = new Queue<GameObject>(); 
+    public Queue<GameObject> towerBuildButtonPool = new Queue<GameObject>();
 
     void Start()
     {
-        InitializePool(unitPrefab, unitPool);
-        InitializePool(hpSliderPrefab, hpSliderPool);
-        InitializePool(towerBuildButtonPrefab, towerBuildButtonPool); 
+        InitializePool(unitPrefab, unitPool, initialPoolSize);
+        InitializePool(hpSliderPrefab, hpSliderPool, initialPoolSize);
+        InitializePool(towerBuildButtonPrefab, towerBuildButtonPool, initialPoolSize);
     }
 
-    private void InitializePool(GameObject prefab, Queue<GameObject> pool)
+    private void InitializePool(GameObject prefab, Queue<GameObject> pool, int size)
     {
-        for (int i = 0; i < poolSize; i++)
+        for (int i = 0; i < size; i++)
         {
             GameObject obj = Instantiate(prefab);
             obj.SetActive(false);
             pool.Enqueue(obj);
         }
     }
-
-    public GameObject GetFromPool(Queue<GameObject> pool)
+    public GameObject GetFromPool(Queue<GameObject> pool, GameObject prefab)
     {
         if (pool.Count > 0)
         {
@@ -40,7 +39,9 @@ public class ObjectPool : MonoBehaviour
         }
         else
         {
-            return null;
+            GameObject newObj = Instantiate(prefab);
+            newObj.SetActive(true);
+            return newObj;
         }
     }
 

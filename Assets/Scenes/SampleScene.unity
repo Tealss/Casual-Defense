@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5152098, g: 0.7015939, b: 0.83921117, a: 1}
+  m_IndirectSpecularColor: {r: 0.514362, g: 0.70133716, b: 0.839172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -16141,7 +16141,7 @@ MonoBehaviour:
   unitPrefab: {fileID: 6219210345957537360, guid: 56fd69e7b762ff54fac20581f3224592, type: 3}
   hpSliderPrefab: {fileID: 1292146651817448466, guid: fa97addece4b0314a87a7ab4d893085a, type: 3}
   towerBuildButtonPrefab: {fileID: 8528711583076128337, guid: 5702c37976668514dbb0663126ba39fb, type: 3}
-  poolSize: 35
+  initialPoolSize: 1
 --- !u!1 &625648348
 GameObject:
   m_ObjectHideFlags: 0

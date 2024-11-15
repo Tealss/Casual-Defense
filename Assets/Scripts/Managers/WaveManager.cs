@@ -74,23 +74,12 @@ public class WaveManager : MonoBehaviour
 
         while (unitsSpawned < unitCountPerWave && Time.time < spawnEndTime)
         {
-            GameObject unit = objectPool.GetFromPool(objectPool.unitPool);
-            if (unit == null)
-            {
-                Debug.LogWarning("Unit Pool이 부족합니다.");
-                yield break;
-            }
-
+            GameObject unit = objectPool.GetFromPool(objectPool.unitPool, objectPool.unitPrefab);
             unit.transform.position = waypoints[0].position;
 
-            GameObject hpSlider = objectPool.GetFromPool(objectPool.hpSliderPool);
-            if (hpSlider == null)
-            {
-                Debug.LogWarning("HP Slider Pool이 부족합니다.");
-                yield break;
-            }
-
+            GameObject hpSlider = objectPool.GetFromPool(objectPool.hpSliderPool, objectPool.hpSliderPrefab);
             hpSlider.transform.SetParent(hpSliderParent, false);
+
             Vector3 unitPosition = unit.transform.position;
             hpSlider.transform.position = new Vector3(unitPosition.x, unitPosition.y + 2f, unitPosition.z);
 
@@ -117,6 +106,7 @@ public class WaveManager : MonoBehaviour
 
         isSpawning = false;
     }
+
 
     public void RemoveUnit(GameObject unit)
     {
