@@ -6,8 +6,8 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager I { get; private set; }
     public int Gold { get; private set; } = 100000;
-    public int LifePoints { get; private set; } = 15;
-    public int TotalLifePoints { get; private set; } = 50;
+    public int LifePoints { get; private set; } = 30;
+    public int TotalLifePoints { get; private set; } = 30;
 
     private void Awake()
     {

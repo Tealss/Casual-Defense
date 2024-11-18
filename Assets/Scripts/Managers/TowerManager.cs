@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Linq;
 
-
 public class TowerManager : MonoBehaviour
 {
     private GameObject currentBuildButton;
@@ -57,10 +56,13 @@ public class TowerManager : MonoBehaviour
             else if (hit.collider.CompareTag("Tower"))
             {
                 selectedTower = hit.collider.GetComponent<Tower>();
-                if (selectedTower != null && CanMergeByTypeAndLevel(selectedTower))
+                if (selectedTower != null)
                 {
-                    HideBuildButton();
-                    ShowMergeButton(selectedTower);
+                    if (CanMergeByTypeAndLevel(selectedTower))
+                    {
+                        HideBuildButton();
+                        ShowMergeButton(selectedTower);
+                    }
                 }
             }
             else
@@ -196,4 +198,5 @@ public class TowerManager : MonoBehaviour
     {
         return FindObjectsOfType<Tower>().Count(t => t.towerType == tower.towerType && t.level == tower.level) > 1;
     }
+
 }

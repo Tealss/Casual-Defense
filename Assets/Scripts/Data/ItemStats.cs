@@ -1,13 +1,15 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Tower Stats", menuName = "Tower Defense/Tower Stats", order = 1)]
-public class TowerStats : ScriptableObject
+[CreateAssetMenu(fileName = "New Item Stats", menuName = "Tower Defense/Item Stats", order = 2)]
+public class ItemStats : ScriptableObject
 {
-    public string towerName;
+    public string itemName;
+    public string itemDescription;  
+    public Sprite itemIcon;
+
     public float attackDamage;
     public float attackRange;
     public float attackSpeed;
-    public float projectileSpeed;
     public float criticalChance;
     public float criticalDamage;
     public float enemySlowAmount;

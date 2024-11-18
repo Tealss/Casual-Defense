@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    public TowerStats towerStats;  // 타워의 스탯
-    public int level = 1;  // 타워 레벨
-    public int towerIndex;  // 각 타워의 인덱스 (0부터 6까지)
+    public TowerStats towerStats; 
+    public int level = 1;  
+    public int towerIndex;  
+
     private float attackTimer;
     private ObjectPool objectPool;
     public string towerType;
@@ -33,7 +34,7 @@ public class Tower : MonoBehaviour
     {
         if (towerStats != null)
         {
-            Debug.Log($"타워 {towerStats.towerName} 생성 - 공격력: {towerStats.attackDamage}, 범위: {towerStats.attackRange}, 공격속도: {towerStats.attackSpeed}");
+            //Debug.Log($"타워 {towerStats.towerName} 생성 - 공격력: {towerStats.attackDamage}, 범위: {towerStats.attackRange}, 공격속도: {towerStats.attackSpeed}");
         }
         else
         {
@@ -58,7 +59,6 @@ public class Tower : MonoBehaviour
         GameObject target = FindNearestMonster();
         if (target != null)
         {
-            // 각 타워에 맞는 Projectile을 풀에서 가져옴
             GameObject projectile = objectPool.GetProjectileFromPool(towerIndex);
             if (projectile == null)
             {

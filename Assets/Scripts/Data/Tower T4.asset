@@ -17,6 +17,6 @@ MonoBehaviour:
   attackRange: 100
   attackSpeed: 1
   projectileSpeed: 3
-  criticalChance: 10
+  criticalChance: 0.1
   criticalDamage: 2
   defense: 0

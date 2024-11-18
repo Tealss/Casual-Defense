@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float speed = 10f;
-    public float damage = 10f;
+    public float speed = 0f;
+    public float damage = 0f;
     private Transform target;
     private bool isActive = false;
 
@@ -108,6 +108,7 @@ public class Projectile : MonoBehaviour
 
         if (isCriticalHit)
         {
+            // 0.1 = 10%
             Debug.Log($"[DealDamageToTarget] 크리티컬 히트 발생! (확률: {criticalChance * 100}%)");
             damage *= criticalDamage;
         }

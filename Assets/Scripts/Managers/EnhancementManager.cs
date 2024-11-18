@@ -15,6 +15,7 @@ public class EnhancementManager : MonoBehaviour
     [SerializeField] private Toggle[] gradeToggles = new Toggle[6];
     [SerializeField] private GameObject[] itemPrefabs = new GameObject[6];
 
+    private TowerStats towerStats;
     private SoundManager soundManager;
     private GameObject[] instantiatedItems = new GameObject[6];
     private int[] currentLevels = new int[6];
@@ -33,6 +34,10 @@ public class EnhancementManager : MonoBehaviour
     {
         if (I == null) I = this;
         else Destroy(gameObject);
+
+        // TowerStats 객체가 null인지 확인
+        towerStats = FindObjectOfType<TowerStats>();  // 타워의 능력치 참조
+
     }
 
     private void Start()
@@ -75,7 +80,6 @@ private void TryEnhancement(int index)
         return;
     }
 
-    // 강화 성공 여부 판단
     if (Random.Range(0f, 100f) <= successRate)
     {
         currentLevels[index]++;
@@ -177,8 +181,36 @@ private void TryEnhancement(int index)
         int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[slotIndex]));
         levelTexts[slotIndex].text = $"$ {enhancementCost}"; // 강화 비용 텍스트 업데이트
 
+        //ApplyItemEffect(itemGrade, currentLevels[slotIndex]);
         UpdateUI(slotIndex);
     }
+    //private void ApplyItemEffect(int itemGrade, int level)
+    //{
+    //    switch (itemGrade)
+    //    {
+    //        case 1: // 공격력 증가
+    //            towerStats.attackDamage = 5 + 5 * level; // 기본 5에서 레벨에 따라 5씩 증가
+    //            break;
+    //        case 2: // 공격 속도 증가
+    //            towerStats.attackSpeed = 1 + 0.1f * level; // 기본 1에서 레벨에 따라 0.1씩 증가
+    //            break;
+    //        case 3: // 공격 범위 증가
+    //            towerStats.attackRange = 5 + 1 * level; // 기본 5에서 레벨에 따라 1씩 증가
+    //            break;
+    //        case 4: // 크리티컬 확률 증가
+    //            towerStats.criticalChance = 0.05f * level; // 기본 0에서 레벨에 따라 5%씩 증가
+    //            break;
+    //        case 5: // 크리티컬 데미지 증가
+    //            towerStats.criticalDamage = 2 + 0.5f * level; // 기본 2에서 레벨에 따라 0.5씩 증가
+    //            break;
+    //        case 6: // 적의 이동 속도 감소
+    //            towerStats.enemySlowAmount = 0.1f * level; // 기본 0에서 레벨에 따라 10%씩 증가
+    //            break;
+    //        case 7: // 골드 획득 확률 증가
+    //            towerStats.goldEarnRate = 1f * level; // 기본 0에서 레벨에 따라 1씩 증가
+    //            break;
+    //    }
+    //}
 
     private void AddRightClickEvent(Button button, int index)
     {
@@ -213,6 +245,7 @@ private void TryEnhancement(int index)
     }
 
     private void UpdateQuantityText() => quantityText.text = $"x{buyQuantity}";
+
 
     private void UpdateUI(int index)
     {
@@ -250,4 +283,6 @@ private void TryEnhancement(int index)
         enhanceButtons[index].image.color = Color.gray;
         UpdateUI(index);
     }
+
+
 }
