@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerName: Tower T1
   attackDamage: 10
-  attackSpeed: 10
-  range: 100
-  towercost: 500
-  towerPrefab: {fileID: 8930476200067898172, guid: 9429e8a68860d8f4c87544b7d600ae9f, type: 3}
+  attackRange: 1000
+  attackSpeed: 5
+  projectileSpeed: 3
+  criticalChance: 10
+  criticalDamage: 2
+  defense: 0

@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbdc8b2587741694fac39dfc3d0de68d, type: 3}
   m_Name: Tower T6
   m_EditorClassIdentifier: 
-  towerName: Tower T1
+  towerName: Tower T6
   attackDamage: 10
-  attackSpeed: 10
-  range: 100
-  towercost: 500
-  towerPrefab: {fileID: 8930476200067898172, guid: 7b59f6156916a624291c3ea7a8db70cf, type: 3}
+  attackRange: 2000
+  attackSpeed: 1
+  projectileSpeed: 3
+  criticalChance: 10
+  criticalDamage: 2
+  defense: 0

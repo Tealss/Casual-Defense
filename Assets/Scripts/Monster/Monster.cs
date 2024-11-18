@@ -6,7 +6,8 @@ public class Monster : MonoBehaviour
     public float MaxHealth = 100f;
     public float CurrentHealth;
 
-    private GameObject hpSlider;  // HP 슬라이더 참조
+    private GameObject hpSlider;
+    private bool isAlive = true;  // 몬스터가 살아있는지 여부
 
     void Start()
     {
@@ -25,10 +26,24 @@ public class Monster : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
+        if (!isAlive) return;
+
         CurrentHealth -= damage;
         if (CurrentHealth <= 0)
         {
             CurrentHealth = 0;
+            isAlive = false;  
+            Die();  
         }
+    }
+
+    public bool IsAlive()
+    {
+        return isAlive;
+    }
+
+    private void Die()
+    {
+        gameObject.SetActive(false);
     }
 }

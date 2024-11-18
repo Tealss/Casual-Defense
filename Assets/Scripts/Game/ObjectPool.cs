@@ -5,17 +5,15 @@ public class ObjectPool : MonoBehaviour
 {
     [Header("Pools")]
     [SerializeField]
-
     public GameObject unitPrefab;
     public GameObject hpSliderPrefab;
     public GameObject towerBuildButtonPrefab;
     public GameObject towerMergeButtonPrefab;
-    public GameObject projectilePrefab;
 
     public GameObject[] towerPrefabs = new GameObject[7];
     public GameObject[] mergeEftPrefabs = new GameObject[7];
-
-    //---------------------------------------------------------------------
+    public GameObject[] projectilePrefabs = new GameObject[7];
+    public TowerStats[] towerStatsArray = new TowerStats[7];
 
     public Queue<GameObject> unitPool = new Queue<GameObject>();
     public Queue<GameObject> hpSliderPool = new Queue<GameObject>();
@@ -26,7 +24,7 @@ public class ObjectPool : MonoBehaviour
     public Queue<GameObject>[] towerPools = new Queue<GameObject>[7];
     public Queue<GameObject>[] mergeEftPools = new Queue<GameObject>[7];
 
-    private int initialPoolSize = 5;
+    private int initialPoolSize = 0;
 
     void Start()
     {
@@ -34,7 +32,7 @@ public class ObjectPool : MonoBehaviour
         InitializePool(hpSliderPrefab, hpSliderPool, initialPoolSize);
         InitializePool(towerBuildButtonPrefab, towerBuildButtonPool, initialPoolSize);
         InitializePool(towerMergeButtonPrefab, towerMergeButtonPool, initialPoolSize);
-        InitializePool(projectilePrefab, projectilePool, initialPoolSize);
+        InitializePool(projectilePrefabs[0], projectilePool, initialPoolSize);  
 
         for (int i = 0; i < towerPrefabs.Length; i++)
         {
@@ -86,7 +84,16 @@ public class ObjectPool : MonoBehaviour
             return null;
         }
 
-        return GetFromPool(towerPools[towerIndex], towerPrefabs[towerIndex]);
+        GameObject tower = GetFromPool(towerPools[towerIndex], towerPrefabs[towerIndex]);
+        Tower towerComponent = tower.GetComponent<Tower>();
+
+        if (towerComponent != null)
+        {
+            towerComponent.towerStats = towerStatsArray[towerIndex];
+            towerComponent.InitializeStats();
+        }
+
+        return tower;
     }
 
     public void ReturnTowerToPool(GameObject obj, int towerIndex)
@@ -122,13 +129,29 @@ public class ObjectPool : MonoBehaviour
         ReturnToPool(obj, mergeEftPools[effectIndex]);
     }
 
-    public GameObject GetProjectileFromPool()
+    public GameObject GetProjectileFromPool(int towerIndex)
     {
-        return GetFromPool(projectilePool, projectilePrefab);
+        if (towerIndex < 0 || towerIndex >= projectilePrefabs.Length)
+        {
+            Debug.LogError("Projectile Index Error");
+            return null;
+        }
+
+        return GetFromPool(projectilePool, projectilePrefabs[towerIndex]);
     }
 
     public void ReturnProjectileToPool(GameObject projectile)
     {
         ReturnToPool(projectile, projectilePool);
     }
+    public void ReturnUnitToPool(GameObject unit)
+    {
+        ReturnToPool(unit, unitPool);
+    }
+    public void ReturnHpSliderToPool(GameObject slider)
+    {
+        ReturnToPool(slider, hpSliderPool);
+    }
+
+
 }

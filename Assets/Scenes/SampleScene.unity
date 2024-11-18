@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.51507926, g: 0.7014702, b: 0.83925885, a: 1}
+  m_IndirectSpecularColor: {r: 0.514438, g: 0.70130783, b: 0.8391972, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -11448,7 +11448,6 @@ MonoBehaviour:
   hpSliderPrefab: {fileID: 1292146651817448466, guid: fa97addece4b0314a87a7ab4d893085a, type: 3}
   towerBuildButtonPrefab: {fileID: 6010510747048211428, guid: 5702c37976668514dbb0663126ba39fb, type: 3}
   towerMergeButtonPrefab: {fileID: 3299047786225081237, guid: 9e812cf6aec6ac54e8529cc79e3fca3b, type: 3}
-  projectilePrefab: {fileID: 4462660241276832453, guid: 9ff626e31f54e0c44b6a55919a29f0f1, type: 3}
   towerPrefabs:
   - {fileID: 8930476200067898172, guid: 9429e8a68860d8f4c87544b7d600ae9f, type: 3}
   - {fileID: 8930476200067898172, guid: a573149d8157ea14cbd67c830f1afd12, type: 3}
@@ -11465,6 +11464,22 @@ MonoBehaviour:
   - {fileID: 4885401288791810238, guid: 6d40bb9f6266f3447a77927503319aad, type: 3}
   - {fileID: 4885401288791810238, guid: 1a49e819e02d7b544819dc64e186914d, type: 3}
   - {fileID: 4885401288791810238, guid: 19a8167631a5bd742940e2a5c19d969f, type: 3}
+  projectilePrefabs:
+  - {fileID: 8989613270798163308, guid: ebdbd24d52d83b642aaa3338033a7d31, type: 3}
+  - {fileID: 8989613270798163308, guid: ebdbd24d52d83b642aaa3338033a7d31, type: 3}
+  - {fileID: 8989613270798163308, guid: ebdbd24d52d83b642aaa3338033a7d31, type: 3}
+  - {fileID: 8989613270798163308, guid: ebdbd24d52d83b642aaa3338033a7d31, type: 3}
+  - {fileID: 8989613270798163308, guid: ebdbd24d52d83b642aaa3338033a7d31, type: 3}
+  - {fileID: 8989613270798163308, guid: ebdbd24d52d83b642aaa3338033a7d31, type: 3}
+  - {fileID: 8989613270798163308, guid: ebdbd24d52d83b642aaa3338033a7d31, type: 3}
+  towerStatsArray:
+  - {fileID: 11400000, guid: 68b8b51bab3a73e4c8c7933e6c6a2d8d, type: 2}
+  - {fileID: 11400000, guid: 890250a8ab9c90241b103fe04da4e8bd, type: 2}
+  - {fileID: 11400000, guid: 3c7bd1fbe3dca3444a4c85221ec986cc, type: 2}
+  - {fileID: 11400000, guid: 0973c70e8a331d34daec0e4f6af4a56d, type: 2}
+  - {fileID: 11400000, guid: 40c812b5bce79274ea390fcd77ee4300, type: 2}
+  - {fileID: 11400000, guid: dda8d2dbc45495d4e945a7fd15d41c6c, type: 2}
+  - {fileID: 11400000, guid: e63ee942dcf76c04db14d58d43ff2940, type: 2}
 --- !u!1 &625648348
 GameObject:
   m_ObjectHideFlags: 0

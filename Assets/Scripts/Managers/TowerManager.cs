@@ -1,12 +1,6 @@
 using UnityEngine;
 using System.Linq;
 
-public class Tower : MonoBehaviour
-{
-    public TowerStats towerStats;
-    public int level = 1;
-    public string towerType;
-}
 
 public class TowerManager : MonoBehaviour
 {
@@ -141,11 +135,15 @@ public class TowerManager : MonoBehaviour
 
         if (selectedTowerGO != null)
         {
-            Tower newTower = selectedTowerGO.AddComponent<Tower>();
+            Tower newTower = selectedTowerGO.GetComponent<Tower>();
+            if (newTower == null)
+            {
+                newTower = selectedTowerGO.AddComponent<Tower>();
+            }
             newTower.level = 1;
             newTower.towerType = selectedTowerGO.name;
-            Vector3 towerPosition = clickedTile.transform.position;
 
+            Vector3 towerPosition = clickedTile.transform.position;
             Collider tileCollider = clickedTile.GetComponent<Collider>();
             if (tileCollider != null)
             {
