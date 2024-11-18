@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Tower : MonoBehaviour
@@ -9,6 +10,16 @@ public class Tower : MonoBehaviour
     private float attackTimer;
     private ObjectPool objectPool;
     public string towerType;
+
+    public List<ItemStats> itemStats = new List<ItemStats>(); 
+
+    public float attackDamage;
+    public float attackSpeed;
+    public float attackRange;
+    public float criticalChance;
+    public float criticalDamage;
+    public float enemySlowAmount;
+    public float goldEarnRate;
 
     private void Start()
     {

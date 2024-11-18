@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 
 public class EnhancementManager : MonoBehaviour
 {
+
     [Header("강화")]
     [SerializeField] private int maxLevel = 20;
     [SerializeField] private Button buyButton;
@@ -18,9 +19,9 @@ public class EnhancementManager : MonoBehaviour
     private TowerStats towerStats;
     private SoundManager soundManager;
     private GameObject[] instantiatedItems = new GameObject[6];
-    private int[] currentLevels = new int[6];
-    private int[] itemGrades = new int[6];
-    private bool[] slotOccupied = new bool[6];
+    public int[] currentLevels = new int[6];
+    public int[] itemGrades = new int[6];
+    public bool[] slotOccupied = new bool[6];
     private int buyQuantity = 1;
 
     public static EnhancementManager I { get; private set; }
@@ -184,33 +185,58 @@ private void TryEnhancement(int index)
         //ApplyItemEffect(itemGrade, currentLevels[slotIndex]);
         UpdateUI(slotIndex);
     }
+
     //private void ApplyItemEffect(int itemGrade, int level)
     //{
+    //    if (towerStats == null)
+    //    {
+    //        Debug.LogError("타워 스탯이 할당되지 않았습니다.");
+    //        return;
+    //    }
+
     //    switch (itemGrade)
     //    {
     //        case 1: // 공격력 증가
-    //            towerStats.attackDamage = 5 + 5 * level; // 기본 5에서 레벨에 따라 5씩 증가
+    //            towerStats.attackDamage += 5 * level; // 레벨당 5 증가
+    //            Debug.Log($"공격력 증가: {towerStats.attackDamage}");
     //            break;
+
     //        case 2: // 공격 속도 증가
-    //            towerStats.attackSpeed = 1 + 0.1f * level; // 기본 1에서 레벨에 따라 0.1씩 증가
+    //            towerStats.attackSpeed += 0.1f * level; // 레벨당 0.1 증가
+    //            Debug.Log($"공격 속도 증가: {towerStats.attackSpeed}");
     //            break;
+
     //        case 3: // 공격 범위 증가
-    //            towerStats.attackRange = 5 + 1 * level; // 기본 5에서 레벨에 따라 1씩 증가
+    //            towerStats.attackRange += 1 * level; // 레벨당 1 증가
+    //            Debug.Log($"공격 범위 증가: {towerStats.attackRange}");
     //            break;
+
     //        case 4: // 크리티컬 확률 증가
-    //            towerStats.criticalChance = 0.05f * level; // 기본 0에서 레벨에 따라 5%씩 증가
+    //            towerStats.criticalChance += 0.05f * level; // 레벨당 5% 증가
+    //            Debug.Log($"크리티컬 확률 증가: {towerStats.criticalChance}");
     //            break;
+
     //        case 5: // 크리티컬 데미지 증가
-    //            towerStats.criticalDamage = 2 + 0.5f * level; // 기본 2에서 레벨에 따라 0.5씩 증가
+    //            towerStats.criticalDamage += 0.5f * level; // 레벨당 0.5 증가
+    //            Debug.Log($"크리티컬 데미지 증가: {towerStats.criticalDamage}");
     //            break;
+
     //        case 6: // 적의 이동 속도 감소
-    //            towerStats.enemySlowAmount = 0.1f * level; // 기본 0에서 레벨에 따라 10%씩 증가
+    //            towerStats.enemySlowAmount += 0.1f * level; // 레벨당 10% 증가
+    //            Debug.Log($"적 이동 속도 감소: {towerStats.enemySlowAmount}");
     //            break;
+
     //        case 7: // 골드 획득 확률 증가
-    //            towerStats.goldEarnRate = 1f * level; // 기본 0에서 레벨에 따라 1씩 증가
+    //            towerStats.goldEarnRate += 1f * level; // 레벨당 1 증가
+    //            Debug.Log($"골드 획득 확률 증가: {towerStats.goldEarnRate}");
+    //            break;
+
+    //        default:
+    //            Debug.LogWarning("알 수 없는 아이템 등급입니다.");
     //            break;
     //    }
     //}
+
 
     private void AddRightClickEvent(Button button, int index)
     {
