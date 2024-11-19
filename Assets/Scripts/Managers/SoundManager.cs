@@ -18,12 +18,21 @@ public class SoundManager : MonoBehaviour
     public Button muteEffectsButton;
     public Image effectsMuteOffImage;
 
+    public static SoundManager I { get; private set; }
+
     private AudioSource backgroundAudioSource;
     private AudioSource effectsAudioSource;
 
     private bool isBackgroundMuted = false;
     private bool isEffectsMuted = false;
 
+    private void Awake()
+    {
+        if (I == null)
+            I = this;
+        else
+            Destroy(gameObject);
+    }
     void Start()
     {
         backgroundAudioSource = gameObject.AddComponent<AudioSource>();
@@ -177,7 +186,7 @@ public class SoundManager : MonoBehaviour
     {
         if (index >= 0 && index < soundEffects.Count)
         {
-            float volumeMultiplier = (index == 3 || index == 4) ? 0.25f : 1.0f;
+            float volumeMultiplier = (index == 3 || index == 4 || index == 5) ? 0.1f : 1.0f;
             effectsAudioSource.PlayOneShot(soundEffects[index], effectsAudioSource.volume * volumeMultiplier);
         }
         else

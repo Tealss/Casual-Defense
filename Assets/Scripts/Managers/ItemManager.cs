@@ -12,12 +12,11 @@ public class ItemManager : MonoBehaviour
 
     [SerializeField] private Text[] levelTexts = new Text[6];
     [SerializeField] private Text[] currentLevelTexts = new Text[6];
-    [SerializeField] private Button[] itemSlotButtons = new Button[6];  // enhanceButtons -> itemSlotButtons
+    [SerializeField] private Button[] itemSlotButtons = new Button[6];
     [SerializeField] private Toggle[] gradeToggles = new Toggle[6];
     [SerializeField] private GameObject[] itemPrefabs = new GameObject[6];
 
     private TowerStats towerStats;
-    private SoundManager soundManager;
     private GameObject[] instantiatedItems = new GameObject[6];
     public int[] currentLevels = new int[6];
     public int[] itemGrades = new int[6];
@@ -43,20 +42,19 @@ public class ItemManager : MonoBehaviour
 
     private void Start()
     {
-        InitializeItemSlotButtons();  // 함수명 수정
+        InitializeItemSlotButtons();  
         SetupRightClickEventForBuyButton();
-        soundManager = FindObjectOfType<SoundManager>();
         InvokeRepeating(nameof(UpdateBuyButtonState), 0f, 0.1f);
         buyButton.onClick.AddListener(PurchaseItem);
     }
 
-    private void InitializeItemSlotButtons()  // 함수명 수정
+    private void InitializeItemSlotButtons()  
     {
         for (int i = 0; i < itemSlotButtons.Length; i++)
         {
             int index = i;
-            itemSlotButtons[index].onClick.AddListener(() => AttemptEnhancement(index));  // 강화 시도 함수 호출
-            AddRightClickEventForItemSlotButton(itemSlotButtons[index], index);  // 우클릭 이벤트 처리
+            itemSlotButtons[index].onClick.AddListener(() => AttemptEnhancement(index));  
+            AddRightClickEventForItemSlotButton(itemSlotButtons[index], index); 
             UpdateUIForSlot(index);
         }
     }
@@ -76,11 +74,11 @@ public class ItemManager : MonoBehaviour
         if (Random.Range(0f, 100f) <= successRate)
         {
             currentLevels[index]++;
-            soundManager.PlaySoundEffect(3); // 강화 성공
+            SoundManager.I.PlaySoundEffect(3);
         }
         else
         {
-            soundManager.PlaySoundEffect(4); // 강화 실패
+            SoundManager.I.PlaySoundEffect(4);
         }
 
         string itemDescription = GetItemDescription(itemGrades[index], currentLevels[index]);
@@ -116,7 +114,7 @@ public class ItemManager : MonoBehaviour
             {
                 int sellPrice = sellPrices[itemGrade - 1];
                 GameManager.I.AddGold(sellPrice);
-                continue; // 판매 후 다음 아이템
+                continue;
             }
 
             CreateItemInSlot(emptySlot, itemGrade);
@@ -228,7 +226,7 @@ public class ItemManager : MonoBehaviour
         GameManager.I.AddGold(sellPrice);
 
         Destroy(instantiatedItems[index]);
-        soundManager.PlaySoundEffect(2);
+        SoundManager.I.PlaySoundEffect(2);
         slotOccupied[index] = false;
         currentLevels[index] = 0;
         itemGrades[index] = 0;

@@ -11,14 +11,6 @@ public class Tower : MonoBehaviour
     private ObjectPool objectPool;
     public string towerType;
 
-    public float attackDamage;
-    public float attackSpeed;
-    public float attackRange;
-    public float criticalChance;
-    public float criticalDamage;
-    public float enemySlowAmount;
-    public float goldEarnAmount;
-
     private void Start()
     {
         objectPool = FindObjectOfType<ObjectPool>();
@@ -30,26 +22,15 @@ public class Tower : MonoBehaviour
 
         attackTimer = 0f;
 
-        if (towerStats == null)
-        {
-            Debug.LogError($"타워 스탯이 할당되지 않았음 {gameObject.name}");
-            return;
-        }
+        //if (towerStats == null)
+        //{
+        //    Debug.LogError($"타워 스탯이 할당되지 않았음 {gameObject.name}");
+        //    return;
+        //}
 
         InitializeStats();
     }
 
-    public void ApplyItemStats()
-    {
-        attackDamage = 0;
-        attackSpeed = 0;
-        attackRange = 0;
-        criticalChance = 0;
-        criticalDamage = 0;
-        enemySlowAmount = 0;
-        goldEarnAmount = 0;
-
-    }
 
     public void InitializeStats()
     {
@@ -92,6 +73,7 @@ public class Tower : MonoBehaviour
 
             if (projectileScript != null)
             {
+                SoundManager.I.PlaySoundEffect(5);
                 projectileScript.SetTarget(target.transform);  // 타겟 설정
                 projectileScript.speed = towerStats.projectileSpeed;  // 프로젝타일 속도 설정
                 projectileScript.SetTowerStats(towerStats);  // 타워의 스탯 설정
