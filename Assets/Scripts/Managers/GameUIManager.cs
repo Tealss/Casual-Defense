@@ -6,20 +6,20 @@ using System.Collections;
 public class GameUiManager : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField]
+    [Space]
     public GameObject[] popupWindows;
-    public GameObject[] pointWindows;
-    public Button[] toggleButtons;
-    public Button ShopButton;
+    public Button[] popupWindowButtons;
 
     [Header("Text UI")]
-    [SerializeField]
+    [Space]
+    public Text infoText;
+    public Text itemInfoText;
+
     public Text waveText;
     public Text timerText;
     public Text LifeText;
     public Text TotalLifeText;
     public Text goldText;
-    public Text probabilityText;  // 확률을 표시할 텍스트 UI
 
     [Header("Game Over UI")]
     public GameObject gameOverPanel;
@@ -36,35 +36,117 @@ public class GameUiManager : MonoBehaviour
 
     void Start()
     {
-        pointWindows[0].SetActive(false);
-        InitializeToggleButtons();
         UpdateGoldUI(GameManager.I.Gold);
         UpdateLifePointsText(GameManager.I.LifePoints, GameManager.I.TotalLifePoints);
         gameOverPanel.SetActive(false);
         StartCoroutine(UpdateGoldCoroutine());
 
-        AddEventTriggerToShopButton();
-        UpdateProbabilityText();  // 확률 텍스트 업데이트 함수 호출
-        StartCoroutine(RefreshProbabilityText());  // 확률 값을 주기적으로 업데이트
+        AddEventTriggerToPopupWindowButtons();
+        UpdateProbabilityText();
+        StartCoroutine(RefreshProbabilityText());
     }
 
-    private void AddEventTriggerToShopButton()
+    private void AddEventTriggerToPopupWindowButtons()
     {
-        EventTrigger eventTrigger = ShopButton.gameObject.AddComponent<EventTrigger>();
-
-        EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry
+        for (int i = 0; i < popupWindowButtons.Length; i++)
         {
-            eventID = EventTriggerType.PointerEnter
-        };
-        pointerEnterEntry.callback.AddListener((eventData) => OnPointerEnter());
-        eventTrigger.triggers.Add(pointerEnterEntry);
+            int index = i;
+            EventTrigger eventTrigger = popupWindowButtons[index].gameObject.AddComponent<EventTrigger>();
 
-        EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry
+            EventTrigger.Entry pointerEnterEntry = new EventTrigger.Entry
+            {
+                eventID = EventTriggerType.PointerEnter
+            };
+            pointerEnterEntry.callback.AddListener((eventData) => OnPointerEnter(index));
+            eventTrigger.triggers.Add(pointerEnterEntry);
+
+            EventTrigger.Entry pointerExitEntry = new EventTrigger.Entry
+            {
+                eventID = EventTriggerType.PointerExit
+            };
+            pointerExitEntry.callback.AddListener((eventData) => OnPointerExit(index));
+            eventTrigger.triggers.Add(pointerExitEntry);
+
+            popupWindowButtons[index].onClick.AddListener(() => TogglePopup(index));
+        }
+    }
+
+    // Pointer Enter event handler (마우스가 버튼 위로 올라왔을 때)
+    public void OnPointerEnter(int index)
+    {
+        if (index >= 0 && index <= 5) // 아이템 버튼만 처리 (슬롯 0~5)
         {
-            eventID = EventTriggerType.PointerExit
-        };
-        pointerExitEntry.callback.AddListener((eventData) => OnPointerExit());
-        eventTrigger.triggers.Add(pointerExitEntry);
+            popupWindows[0].SetActive(true);
+            string itemDescription = GetItemDescriptionFromEnhancementManager(index);
+            UpdateItemInfo(index, itemDescription);
+        }
+        else if (index == 6) // 팝업 윈도우 처리
+        {
+            popupWindows[1].SetActive(true);
+        }
+    }
+
+    public void OnPointerExit(int index)
+    {
+        if (index >= 0 && index <= 5)
+        {
+            popupWindows[0].SetActive(false);
+        }
+        else if (index == 6)
+        {
+            popupWindows[1].SetActive(false);
+        }
+
+        // 아이템 정보 초기화
+        itemInfoText.text = string.Empty;
+    }
+    private string GetItemDescriptionFromEnhancementManager(int slotIndex)
+    {
+        if (EnhancementManager.I.slotOccupied[slotIndex])
+        {
+            int itemGrade = EnhancementManager.I.itemGrades[slotIndex];
+            int itemLevel = EnhancementManager.I.currentLevels[slotIndex];
+            return EnhancementManager.I.GetItemDescription(itemGrade, itemLevel); // EnhancementManager의 GetItemDescription 사용
+        }
+        return "빈 슬롯"; // 슬롯이 비어 있으면 "빈 슬롯" 텍스트 표시
+    }
+
+    public void UpdateItemInfo(int slotIndex, string itemDescription)
+    {
+
+        // 슬롯에 따라 UI 업데이트
+        switch (slotIndex)
+        {
+            case 0:
+                itemInfoText.text = $"Slot 1: {itemDescription}";
+                break;
+            case 1:
+                itemInfoText.text = $"Slot 2: {itemDescription}";
+                break;
+            case 2:
+                itemInfoText.text = $"Slot 3: {itemDescription}";
+                break;
+            case 3:
+                itemInfoText.text = $"Slot 4: {itemDescription}";
+                break;
+            case 4:
+                itemInfoText.text = $"Slot 5: {itemDescription}";
+                break;
+            case 5:
+                itemInfoText.text = $"Slot 6: {itemDescription}";
+                break;
+            default:
+                itemInfoText.text = "Unknown slot.";
+                break;
+        }
+    }
+
+    private void TogglePopup(int index)
+    {
+        if (index >= 0 && index < popupWindows.Length)
+        {
+            popupWindows[index].SetActive(!popupWindows[index].activeSelf);
+        }
     }
 
     public void UpdateWaveText(int waveNumber)
@@ -105,70 +187,35 @@ public class GameUiManager : MonoBehaviour
         }
     }
 
-    private void InitializeToggleButtons()
-    {
-        for (int i = 0; i < toggleButtons.Length; i++)
-        {
-            int index = i;
-            toggleButtons[i].onClick.AddListener(() => TogglePopup(index));
-        }
-    }
-
-    private void TogglePopup(int index)
-    {
-        if (index >= 0 && index < popupWindows.Length)
-        {
-            popupWindows[index].SetActive(!popupWindows[index].activeSelf);
-        }
-        else
-        {
-            Debug.LogWarning("유효하지 않은 팝업창 인덱스");
-        }
-    }
-
-    public void OnPointerEnter()
-    {
-        pointWindows[0].SetActive(true);
-    }
-
-    public void OnPointerExit()
-    {
-        pointWindows[0].SetActive(false);
-    }
-
-    // 확률 텍스트 업데이트
     private void UpdateProbabilityText()
     {
-        // EnhancementManager에서 확률 배열 가져오기
         float[] probabilities = EnhancementManager.I.probabilities;
 
         if (probabilities == null || probabilities.Length == 0)
         {
-            Debug.LogWarning("확률 배열이 비어 있습니다!");
-            probabilityText.text = "확률 데이터가 없습니다.";
+            Debug.LogWarning("No probability data available");
+            infoText.text = "No probability data.";
             return;
         }
 
         string probabilityString = "";
         for (int i = 0; i < probabilities.Length; i++)
         {
-            // 색상 적용
-            Color gradeColor = EnhancementManager.I.gradeColors[i % EnhancementManager.I.gradeColors.Length];  // 색상 배열의 범위 내에서 색상 가져오기
-            string hexColor = ColorUtility.ToHtmlStringRGB(gradeColor); // 색상을 HTML 문자열로 변환
+            Color gradeColor = EnhancementManager.I.gradeColors[i % EnhancementManager.I.gradeColors.Length];
+            string hexColor = ColorUtility.ToHtmlStringRGB(gradeColor);
 
-            probabilityString += $"<color=#{hexColor}>Lv{i + 1}  -  {probabilities[i]:F3} % </color>\n";
+            probabilityString += $"<color=#{hexColor}>Lv. {i + 1}   -  {probabilities[i]:F3} % </color>\n";
         }
 
-        probabilityText.text = probabilityString;
+        infoText.text = probabilityString;
     }
 
-    // 확률을 주기적으로 업데이트하는 코루틴 추가
     private IEnumerator RefreshProbabilityText()
     {
         while (true)
         {
             UpdateProbabilityText();
-            yield return new WaitForSeconds(1f);  // 1초마다 업데이트
+            yield return new WaitForSeconds(1f);
         }
     }
 }

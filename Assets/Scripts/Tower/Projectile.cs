@@ -109,7 +109,7 @@ public class Projectile : MonoBehaviour
         if (isCriticalHit)
         {
             // 0.1 = 10%
-            Debug.Log($"[DealDamageToTarget] 크리티컬 히트 발생! (확률: {criticalChance * 100}%)");
+            //Debug.Log($"[DealDamageToTarget] 크리티컬 히트 발생! (확률: {criticalChance * 100}%)");
             damage *= criticalDamage;
         }
 

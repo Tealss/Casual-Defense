@@ -61,39 +61,46 @@ public class EnhancementManager : MonoBehaviour
         }
     }
 
-private void TryEnhancement(int index)
-{
-    if (!slotOccupied[index] || currentLevels[index] >= maxLevel) return;
-
-    int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index]));
-    float successRate = successRates[currentLevels[index]];
-
-    if (GameManager.I.Gold < enhancementCost)
+    private void TryEnhancement(int index)
     {
-        Debug.Log("골드가 부족하여 강화를 시도할 수 없습니다.");
-        return;
-    }
+        if (!slotOccupied[index] || currentLevels[index] >= maxLevel) return;
 
-    bool spent = GameManager.I.SpendGold(enhancementCost);
-    if (!spent)
-    {
-        Debug.Log("골드 차감 실패");
-        return;
-    }
+        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index]));
+        float successRate = successRates[currentLevels[index]];
 
-    if (Random.Range(0f, 100f) <= successRate)
-    {
-        currentLevels[index]++;
-        soundManager.PlaySoundEffect(3); // 강화 성공 사운드
-    }
-    else
-    {
-        soundManager.PlaySoundEffect(4); // 강화 실패 사운드
-    }
+        if (GameManager.I.Gold < enhancementCost)
+        {
+            Debug.Log("골드가 부족하여 강화를 시도할 수 없습니다.");
+            return;
+        }
 
-    levelTexts[index].text = $"$ {enhancementCost}";
-    UpdateUI(index);
-}
+        bool spent = GameManager.I.SpendGold(enhancementCost);
+        if (!spent)
+        {
+            Debug.Log("골드 차감 실패");
+            return;
+        }
+
+        if (Random.Range(0f, 100f) <= successRate)
+        {
+            currentLevels[index]++;
+            soundManager.PlaySoundEffect(3); // 강화 성공 사운드
+        }
+        else
+        {
+            soundManager.PlaySoundEffect(4); // 강화 실패 사운드
+        }
+
+        // 아이템 설명을 갱신하고, 팝업을 자동으로 닫거나 열지 않음
+        string itemDescription = GetItemDescription(itemGrades[index], currentLevels[index]);
+        GameUiManager.I.UpdateItemInfo(index, itemDescription);
+
+        // 레벨 텍스트 업데이트
+        levelTexts[index].text = $"$ {enhancementCost}";
+
+        // UI 갱신
+        UpdateUI(index);
+    }
 
     private void UpdateBuyButtonState() => buyButton.interactable = GameManager.I.Gold >= 300;
 
@@ -164,7 +171,6 @@ private void TryEnhancement(int index)
 
     private void CreateItem(int slotIndex, int itemGrade)
     {
-        // 기존 아이템 삭제
         Destroy(instantiatedItems[slotIndex]);
 
         Transform itemFolder = enhanceButtons[slotIndex].transform.Find("Item");
@@ -177,65 +183,14 @@ private void TryEnhancement(int index)
         currentLevels[slotIndex] = 1; // 초기 레벨 1
         slotOccupied[slotIndex] = true;
 
-
         enhanceButtons[slotIndex].image.color = gradeColors[itemGrade - 1];
         int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[slotIndex]));
         levelTexts[slotIndex].text = $"$ {enhancementCost}"; // 강화 비용 텍스트 업데이트
 
-        //ApplyItemEffect(itemGrade, currentLevels[slotIndex]);
+        GameUiManager.I.UpdateItemInfo(slotIndex, GetItemDescription(itemGrade, currentLevels[slotIndex]));
         UpdateUI(slotIndex);
     }
 
-    //private void ApplyItemEffect(int itemGrade, int level)
-    //{
-    //    if (towerStats == null)
-    //    {
-    //        Debug.LogError("타워 스탯이 할당되지 않았습니다.");
-    //        return;
-    //    }
-
-    //    switch (itemGrade)
-    //    {
-    //        case 1: // 공격력 증가
-    //            towerStats.attackDamage += 5 * level; // 레벨당 5 증가
-    //            Debug.Log($"공격력 증가: {towerStats.attackDamage}");
-    //            break;
-
-    //        case 2: // 공격 속도 증가
-    //            towerStats.attackSpeed += 0.1f * level; // 레벨당 0.1 증가
-    //            Debug.Log($"공격 속도 증가: {towerStats.attackSpeed}");
-    //            break;
-
-    //        case 3: // 공격 범위 증가
-    //            towerStats.attackRange += 1 * level; // 레벨당 1 증가
-    //            Debug.Log($"공격 범위 증가: {towerStats.attackRange}");
-    //            break;
-
-    //        case 4: // 크리티컬 확률 증가
-    //            towerStats.criticalChance += 0.05f * level; // 레벨당 5% 증가
-    //            Debug.Log($"크리티컬 확률 증가: {towerStats.criticalChance}");
-    //            break;
-
-    //        case 5: // 크리티컬 데미지 증가
-    //            towerStats.criticalDamage += 0.5f * level; // 레벨당 0.5 증가
-    //            Debug.Log($"크리티컬 데미지 증가: {towerStats.criticalDamage}");
-    //            break;
-
-    //        case 6: // 적의 이동 속도 감소
-    //            towerStats.enemySlowAmount += 0.1f * level; // 레벨당 10% 증가
-    //            Debug.Log($"적 이동 속도 감소: {towerStats.enemySlowAmount}");
-    //            break;
-
-    //        case 7: // 골드 획득 확률 증가
-    //            towerStats.goldEarnRate += 1f * level; // 레벨당 1 증가
-    //            Debug.Log($"골드 획득 확률 증가: {towerStats.goldEarnRate}");
-    //            break;
-
-    //        default:
-    //            Debug.LogWarning("알 수 없는 아이템 등급입니다.");
-    //            break;
-    //    }
-    //}
 
 
     private void AddRightClickEvent(Button button, int index)
@@ -285,6 +240,13 @@ private void TryEnhancement(int index)
             currentLevelTexts[index].text = "";
             enhanceButtons[index].interactable = false;
         }
+    }
+
+    public string GetItemDescription(int grade, int level)
+    {
+        // 아이템 옵션 정보 생성 (예: "Lv.3 레전더리 아이템 - 공격력 +50%")
+        string gradeName = new[] { "일반", "고급", "희귀", "영웅", "전설", "신화", "유니크" }[grade - 1];
+        return $"Lv.{level} {gradeName} 아이템 - 옵션: +{level * grade * 10}%"; // 예시 텍스트
     }
 
     private void SellItem(int index)

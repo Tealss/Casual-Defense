@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour
 {
-    public TowerStats towerStats; 
-    public int level = 1;  
-    public int towerIndex;  
+    public TowerStats towerStats;
+    public int level = 1;
+    public int towerIndex;
 
     private float attackTimer;
     private ObjectPool objectPool;
     public string towerType;
 
-    public List<ItemStats> itemStats = new List<ItemStats>(); 
+    public List<ItemStats> itemStats = new List<ItemStats>();
 
     public float attackDamage;
     public float attackSpeed;
@@ -19,7 +19,7 @@ public class Tower : MonoBehaviour
     public float criticalChance;
     public float criticalDamage;
     public float enemySlowAmount;
-    public float goldEarnRate;
+    public float goldEarnAmount;
 
     private void Start()
     {
@@ -41,11 +41,28 @@ public class Tower : MonoBehaviour
         InitializeStats();
     }
 
+    public void ApplyItemStats()
+    {
+        attackDamage = 0;
+        attackSpeed = 0;
+        attackRange = 0;
+        criticalChance = 0;
+        criticalDamage = 0;
+        enemySlowAmount = 0;
+        goldEarnAmount = 0;
+
+        // 아이템 효과를 누적
+        foreach (var item in itemStats)
+        {
+            item.ApplyItemStats(towerStats); 
+        }
+    }
+
     public void InitializeStats()
     {
         if (towerStats != null)
         {
-            //Debug.Log($"타워 {towerStats.towerName} 생성 - 공격력: {towerStats.attackDamage}, 범위: {towerStats.attackRange}, 공격속도: {towerStats.attackSpeed}");
+            // 타워 스탯 초기화
         }
         else
         {
