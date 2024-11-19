@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5132699, g: 0.70117366, b: 0.8392606, a: 1}
+  m_IndirectSpecularColor: {r: 0.51529545, g: 0.70161444, b: 0.8390825, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -19659,7 +19659,7 @@ GameObject:
   - component: {fileID: 1108190563}
   - component: {fileID: 1108190564}
   m_Layer: 0
-  m_Name: EnhancementManager
+  m_Name: ItemManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19695,13 +19695,6 @@ MonoBehaviour:
   maxLevel: 20
   buyButton: {fileID: 730910320}
   quantityText: {fileID: 560230818}
-  fadeOutTexts:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   levelTexts:
   - {fileID: 625850199}
   - {fileID: 1541417579}
@@ -19716,7 +19709,7 @@ MonoBehaviour:
   - {fileID: 84667841}
   - {fileID: 2113124494}
   - {fileID: 1619189312}
-  enhanceButtons:
+  itemSlotButtons:
   - {fileID: 1712406723}
   - {fileID: 62436230}
   - {fileID: 1503366547}

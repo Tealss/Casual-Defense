@@ -75,7 +75,7 @@ public class GameUiManager : MonoBehaviour
         if (index >= 0 && index <= 5)
         {
             popupWindows[0].SetActive(true);
-            string itemDescription = GetItemDescriptionFromEnhancementManager(index);
+            string itemDescription = GetItemDescriptionFromItemManager(index);
             UpdateItemInfo(index, itemDescription);
         }
         else if (index == 6)
@@ -98,13 +98,13 @@ public class GameUiManager : MonoBehaviour
         itemInfoText.text = string.Empty;
     }
 
-    private string GetItemDescriptionFromEnhancementManager(int slotIndex)
+    private string GetItemDescriptionFromItemManager(int slotIndex)
     {
-        if (EnhancementManager.I.slotOccupied[slotIndex])
+        if (ItemManager.I.slotOccupied[slotIndex])
         {
-            int itemGrade = EnhancementManager.I.itemGrades[slotIndex];
-            int itemLevel = EnhancementManager.I.currentLevels[slotIndex];
-            return EnhancementManager.I.GetItemDescription(itemGrade, itemLevel);
+            int itemGrade = ItemManager.I.itemGrades[slotIndex];
+            int itemLevel = ItemManager.I.currentLevels[slotIndex];
+            return ItemManager.I.GetItemDescription(itemGrade, itemLevel);
         }
         return "ºó ½½·Ô";
     }
@@ -179,7 +179,7 @@ public class GameUiManager : MonoBehaviour
 
     private void UpdateProbabilityText()
     {
-        float[] probabilities = EnhancementManager.I.probabilities;
+        float[] probabilities = ItemManager.I.probabilities;
 
         if (probabilities == null || probabilities.Length == 0)
         {
@@ -191,7 +191,7 @@ public class GameUiManager : MonoBehaviour
         string probabilityString = "";
         for (int i = 0; i < probabilities.Length; i++)
         {
-            Color gradeColor = EnhancementManager.I.gradeColors[i % EnhancementManager.I.gradeColors.Length];
+            Color gradeColor = ItemManager.I.gradeColors[i % ItemManager.I.gradeColors.Length];
             string hexColor = ColorUtility.ToHtmlStringRGB(gradeColor);
 
             probabilityString += $"<color=#{hexColor}>Lv. {i + 1}   -  {probabilities[i]:F3} % </color>\n";

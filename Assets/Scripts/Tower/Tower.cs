@@ -11,8 +11,6 @@ public class Tower : MonoBehaviour
     private ObjectPool objectPool;
     public string towerType;
 
-    public List<ItemStats> itemStats = new List<ItemStats>();
-
     public float attackDamage;
     public float attackSpeed;
     public float attackRange;
@@ -51,11 +49,6 @@ public class Tower : MonoBehaviour
         enemySlowAmount = 0;
         goldEarnAmount = 0;
 
-        // 아이템 효과를 누적
-        foreach (var item in itemStats)
-        {
-            item.ApplyItemStats(towerStats); 
-        }
     }
 
     public void InitializeStats()

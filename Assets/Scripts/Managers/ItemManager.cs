@@ -2,17 +2,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class EnhancementManager : MonoBehaviour
+public class ItemManager : MonoBehaviour
 {
-
     [Header("강화")]
+    [Space]
     [SerializeField] private int maxLevel = 20;
     [SerializeField] private Button buyButton;
     [SerializeField] private Text quantityText;
-    [SerializeField] private Text[] fadeOutTexts;
+
     [SerializeField] private Text[] levelTexts = new Text[6];
     [SerializeField] private Text[] currentLevelTexts = new Text[6];
-    [SerializeField] private Button[] enhanceButtons = new Button[6];
+    [SerializeField] private Button[] itemSlotButtons = new Button[6];  // enhanceButtons -> itemSlotButtons
     [SerializeField] private Toggle[] gradeToggles = new Toggle[6];
     [SerializeField] private GameObject[] itemPrefabs = new GameObject[6];
 
@@ -24,7 +24,7 @@ public class EnhancementManager : MonoBehaviour
     public bool[] slotOccupied = new bool[6];
     private int buyQuantity = 1;
 
-    public static EnhancementManager I { get; private set; }
+    public static ItemManager I { get; private set; }
 
     public readonly float[] successRates = { 95f, 90f, 85f, 80f, 75f, 70f, 65f, 60f, 55f, 50f, 45f, 40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f, 3f };
     public readonly float[] probabilities = { 83.894f, 10f, 3f, 1.2f, 0.7f, 0.2f, 0.007f };
@@ -33,99 +33,79 @@ public class EnhancementManager : MonoBehaviour
 
     private void Awake()
     {
-        if (I == null) I = this;
-        else Destroy(gameObject);
+        if (I == null)
+            I = this;
+        else
+            Destroy(gameObject);
 
-        // TowerStats 객체가 null인지 확인
-        towerStats = FindObjectOfType<TowerStats>();  // 타워의 능력치 참조
-
+        towerStats = FindObjectOfType<TowerStats>();
     }
 
     private void Start()
     {
-        InitializeEnhanceButtons();
-        ShopRightClickEvent(buyButton);
+        InitializeItemSlotButtons();  // 함수명 수정
+        SetupRightClickEventForBuyButton();
         soundManager = FindObjectOfType<SoundManager>();
         InvokeRepeating(nameof(UpdateBuyButtonState), 0f, 0.1f);
-        buyButton.onClick.AddListener(BuyItem);
+        buyButton.onClick.AddListener(PurchaseItem);
     }
 
-    private void InitializeEnhanceButtons()
+    private void InitializeItemSlotButtons()  // 함수명 수정
     {
-        for (int i = 0; i < enhanceButtons.Length; i++)
+        for (int i = 0; i < itemSlotButtons.Length; i++)
         {
             int index = i;
-            enhanceButtons[index].onClick.AddListener(() => TryEnhancement(index));
-            AddRightClickEvent(enhanceButtons[index], index);
-            UpdateUI(index);
+            itemSlotButtons[index].onClick.AddListener(() => AttemptEnhancement(index));  // 강화 시도 함수 호출
+            AddRightClickEventForItemSlotButton(itemSlotButtons[index], index);  // 우클릭 이벤트 처리
+            UpdateUIForSlot(index);
         }
     }
 
-    private void TryEnhancement(int index)
+    private void AttemptEnhancement(int index)
     {
         if (!slotOccupied[index] || currentLevels[index] >= maxLevel) return;
 
         int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index]));
         float successRate = successRates[currentLevels[index]];
 
-        if (GameManager.I.Gold < enhancementCost)
-        {
-            Debug.Log("골드가 부족하여 강화를 시도할 수 없습니다.");
-            return;
-        }
+        if (GameManager.I.Gold < enhancementCost) return;
 
         bool spent = GameManager.I.SpendGold(enhancementCost);
-        if (!spent)
-        {
-            Debug.Log("골드 차감 실패");
-            return;
-        }
+        if (!spent) return;
 
         if (Random.Range(0f, 100f) <= successRate)
         {
             currentLevels[index]++;
-            soundManager.PlaySoundEffect(3); // 강화 성공 사운드
+            soundManager.PlaySoundEffect(3); // 강화 성공
         }
         else
         {
-            soundManager.PlaySoundEffect(4); // 강화 실패 사운드
+            soundManager.PlaySoundEffect(4); // 강화 실패
         }
 
-        // 아이템 설명을 갱신하고, 팝업을 자동으로 닫거나 열지 않음
         string itemDescription = GetItemDescription(itemGrades[index], currentLevels[index]);
         GameUiManager.I.UpdateItemInfo(index, itemDescription);
 
-        // 레벨 텍스트 업데이트
         levelTexts[index].text = $"$ {enhancementCost}";
 
-        UpdateUI(index);
+        UpdateUIForSlot(index);
     }
 
     private void UpdateBuyButtonState() => buyButton.interactable = GameManager.I.Gold >= 300;
 
-    private void BuyItem()
+    private void PurchaseItem()
     {
         const int itemCost = 300;
-        int purchasedQuantity = 0; 
-
-
+        int purchasedQuantity = 0;
         int totalCost = itemCost * buyQuantity;
-        if (GameManager.I.Gold < totalCost)
-        {
-            Debug.Log("골드가 부족합니다!");
-            return;
-        }
+
+        if (GameManager.I.Gold < totalCost) return;
 
         for (int i = 0; i < buyQuantity; i++)
         {
             int emptySlot = FindEmptySlot();
 
-
-            if (emptySlot == -1)
-            {
-                Debug.Log("모든 슬롯이 가득 찼습니다! 추가 구매 중단");
-                break;
-            }
+            if (emptySlot == -1) break;
 
             if (!GameManager.I.SpendGold(itemCost)) break;
 
@@ -134,25 +114,21 @@ public class EnhancementManager : MonoBehaviour
 
             if (gradeToggles[itemGrade - 1].isOn)
             {
-                int sellPrice = sellPrices[itemGrade - 1]; 
-                GameManager.I.AddGold(sellPrice); 
-                Debug.Log($"아이템 등급 {itemGrade}가 즉시 판매되었습니다. {sellPrice} 골드 반환");
-                continue; // 판매 후 다음 아이템으로
+                int sellPrice = sellPrices[itemGrade - 1];
+                GameManager.I.AddGold(sellPrice);
+                continue; // 판매 후 다음 아이템
             }
 
-        
-            CreateItem(emptySlot, itemGrade);
+            CreateItemInSlot(emptySlot, itemGrade);
         }
-
-        // 페이드아웃 용
-        //Debug.Log($"{purchasedQuantity}개의 아이템을 성공적으로 구매했습니다. 총 비용: {purchasedQuantity * itemCost} 골드");
     }
-
 
     private int FindEmptySlot()
     {
         for (int i = 0; i < slotOccupied.Length; i++)
+        {
             if (!slotOccupied[i]) return i;
+        }
         return -1;
     }
 
@@ -168,31 +144,29 @@ public class EnhancementManager : MonoBehaviour
         return 1;
     }
 
-    private void CreateItem(int slotIndex, int itemGrade)
+    private void CreateItemInSlot(int slotIndex, int itemGrade)
     {
         Destroy(instantiatedItems[slotIndex]);
 
-        Transform itemFolder = enhanceButtons[slotIndex].transform.Find("Item");
+        Transform itemFolder = itemSlotButtons[slotIndex].transform.Find("Item");
         instantiatedItems[slotIndex] = Instantiate(itemPrefabs[Random.Range(0, itemPrefabs.Length)], itemFolder);
         RectTransform itemRect = instantiatedItems[slotIndex].GetComponent<RectTransform>();
         itemRect.anchoredPosition = Vector2.zero;
         itemRect.localScale = Vector3.one;
 
         itemGrades[slotIndex] = itemGrade;
-        currentLevels[slotIndex] = 1; // 초기 레벨 1
+        currentLevels[slotIndex] = 1;
         slotOccupied[slotIndex] = true;
 
-        enhanceButtons[slotIndex].image.color = gradeColors[itemGrade - 1];
+        itemSlotButtons[slotIndex].image.color = gradeColors[itemGrade - 1];
         int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[slotIndex]));
-        levelTexts[slotIndex].text = $"$ {enhancementCost}"; // 강화 비용 텍스트 업데이트
+        levelTexts[slotIndex].text = $"$ {enhancementCost}";
 
         GameUiManager.I.UpdateItemInfo(slotIndex, GetItemDescription(itemGrade, currentLevels[slotIndex]));
-        UpdateUI(slotIndex);
+        UpdateUIForSlot(slotIndex);
     }
 
-
-
-    private void AddRightClickEvent(Button button, int index)
+    private void AddRightClickEventForItemSlotButton(Button button, int index)
     {
         EventTrigger trigger = button.gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
@@ -204,9 +178,9 @@ public class EnhancementManager : MonoBehaviour
         trigger.triggers.Add(entry);
     }
 
-    private void ShopRightClickEvent(Button button)
+    private void SetupRightClickEventForBuyButton()
     {
-        EventTrigger trigger = button.gameObject.GetComponent<EventTrigger>() ?? button.gameObject.AddComponent<EventTrigger>();
+        EventTrigger trigger = buyButton.gameObject.GetComponent<EventTrigger>() ?? buyButton.gameObject.AddComponent<EventTrigger>();
         trigger.triggers.Clear();
 
         EventTrigger.Entry entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
@@ -217,7 +191,6 @@ public class EnhancementManager : MonoBehaviour
                 int[] quantities = { 1, 10, 30, 50 };
                 int currentIndex = System.Array.IndexOf(quantities, buyQuantity);
                 buyQuantity = quantities[(currentIndex + 1) % quantities.Length];
-
                 UpdateQuantityText();
             }
         });
@@ -226,26 +199,24 @@ public class EnhancementManager : MonoBehaviour
 
     private void UpdateQuantityText() => quantityText.text = $"x{buyQuantity}";
 
-
-    private void UpdateUI(int index)
+    private void UpdateUIForSlot(int index)
     {
         if (slotOccupied[index])
         {
             currentLevelTexts[index].text = $"Lv. {currentLevels[index]}";
-            enhanceButtons[index].interactable = currentLevels[index] < maxLevel;
+            itemSlotButtons[index].interactable = currentLevels[index] < maxLevel;
         }
         else
         {
             currentLevelTexts[index].text = "";
-            enhanceButtons[index].interactable = false;
+            itemSlotButtons[index].interactable = false;
         }
     }
 
     public string GetItemDescription(int grade, int level)
     {
-        // 아이템 옵션 정보 생성 (예: "Lv.3 레전더리 아이템 - 공격력 +50%")
         string gradeName = new[] { "일반", "고급", "희귀", "영웅", "전설", "신화", "유니크" }[grade - 1];
-        return $"Lv.{level} {gradeName} 아이템 - 옵션: +{level * grade * 10}%"; // 예시 텍스트
+        return $"Lv.{level} {gradeName} 아이템 - 옵션: +{level * grade * 10}%";
     }
 
     private void SellItem(int index)
@@ -256,10 +227,6 @@ public class EnhancementManager : MonoBehaviour
         int sellPrice = sellPrices[itemGrade - 1];
         GameManager.I.AddGold(sellPrice);
 
-        //Debug.Log($"아이템 등급 {itemGrade}를 판매하여 {sellPrice} 골드를 획득했습니다.");
-
-        // 아이템 삭제
-
         Destroy(instantiatedItems[index]);
         soundManager.PlaySoundEffect(2);
         slotOccupied[index] = false;
@@ -267,9 +234,7 @@ public class EnhancementManager : MonoBehaviour
         itemGrades[index] = 0;
 
         levelTexts[index].text = "Empty";
-        enhanceButtons[index].image.color = Color.gray;
-        UpdateUI(index);
+        itemSlotButtons[index].image.color = Color.gray;
+        UpdateUIForSlot(index);
     }
-
-
 }

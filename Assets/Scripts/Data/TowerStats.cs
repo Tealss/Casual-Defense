@@ -13,9 +13,4 @@ public class TowerStats : ScriptableObject
     public float enemySlowAmount;
     public float goldEarnAmount;
 
-    // 타워 능력치를 초기화하거나 갱신할 수 있는 메서드
-    public void ApplyItemStats(ItemStats itemStats)
-    {
-        itemStats.ApplyItemStats(this);
-    }
 }
