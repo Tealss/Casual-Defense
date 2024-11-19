@@ -67,20 +67,18 @@ public class GameUiManager : MonoBehaviour
             pointerExitEntry.callback.AddListener((eventData) => OnPointerExit(index));
             eventTrigger.triggers.Add(pointerExitEntry);
 
-            popupWindowButtons[index].onClick.AddListener(() => TogglePopup(index));
         }
     }
 
-    // Pointer Enter event handler (마우스가 버튼 위로 올라왔을 때)
     public void OnPointerEnter(int index)
     {
-        if (index >= 0 && index <= 5) // 아이템 버튼만 처리 (슬롯 0~5)
+        if (index >= 0 && index <= 5)
         {
             popupWindows[0].SetActive(true);
             string itemDescription = GetItemDescriptionFromEnhancementManager(index);
             UpdateItemInfo(index, itemDescription);
         }
-        else if (index == 6) // 팝업 윈도우 처리
+        else if (index == 6)
         {
             popupWindows[1].SetActive(true);
         }
@@ -97,24 +95,22 @@ public class GameUiManager : MonoBehaviour
             popupWindows[1].SetActive(false);
         }
 
-        // 아이템 정보 초기화
         itemInfoText.text = string.Empty;
     }
+
     private string GetItemDescriptionFromEnhancementManager(int slotIndex)
     {
         if (EnhancementManager.I.slotOccupied[slotIndex])
         {
             int itemGrade = EnhancementManager.I.itemGrades[slotIndex];
             int itemLevel = EnhancementManager.I.currentLevels[slotIndex];
-            return EnhancementManager.I.GetItemDescription(itemGrade, itemLevel); // EnhancementManager의 GetItemDescription 사용
+            return EnhancementManager.I.GetItemDescription(itemGrade, itemLevel);
         }
-        return "빈 슬롯"; // 슬롯이 비어 있으면 "빈 슬롯" 텍스트 표시
+        return "빈 슬롯";
     }
 
     public void UpdateItemInfo(int slotIndex, string itemDescription)
     {
-
-        // 슬롯에 따라 UI 업데이트
         switch (slotIndex)
         {
             case 0:
@@ -141,13 +137,7 @@ public class GameUiManager : MonoBehaviour
         }
     }
 
-    private void TogglePopup(int index)
-    {
-        if (index >= 0 && index < popupWindows.Length)
-        {
-            popupWindows[index].SetActive(!popupWindows[index].activeSelf);
-        }
-    }
+
 
     public void UpdateWaveText(int waveNumber)
     {

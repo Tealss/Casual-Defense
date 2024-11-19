@@ -98,7 +98,6 @@ public class EnhancementManager : MonoBehaviour
         // 레벨 텍스트 업데이트
         levelTexts[index].text = $"$ {enhancementCost}";
 
-        // UI 갱신
         UpdateUI(index);
     }
 
