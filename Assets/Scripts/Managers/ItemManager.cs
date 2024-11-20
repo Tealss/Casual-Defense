@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System;
 
 public class ItemManager : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class ItemManager : MonoBehaviour
     public int[] itemGrades = new int[6];
     public bool[] slotOccupied = new bool[6];
     private int buyQuantity = 1;
+    public event Action OnItemStatsChanged;
 
     public static ItemManager I { get; private set; }
 
@@ -62,8 +64,7 @@ public class ItemManager : MonoBehaviour
     private void CreateItemInSlot(int slotIndex, int itemGrade)
     {
         //Destroy(instantiatedItems[slotIndex]);
-
-        int itemTypeIndex = Random.Range(0, itemPrefabs.Length);
+        int itemTypeIndex = UnityEngine.Random.Range(0, itemPrefabs.Length);
         GameObject selectedItemPrefab = itemPrefabs[itemTypeIndex];
 
         Transform itemFolder = itemSlotButtons[slotIndex].transform.Find("Item");
@@ -89,7 +90,7 @@ public class ItemManager : MonoBehaviour
 
         itemTypesInSlots[slotIndex] = itemTypeIndex;
         Debug.Log($"아이템이 슬롯 {slotIndex + 1}에 생성되었습니다. 아이템 타입: {itemTypeIndex} ({selectedItemPrefab.name})");
-
+        NotifyItemStatsChanged();
         UpdateUIForSlot(slotIndex);
     }
     private void AttemptEnhancement(int index)
@@ -104,7 +105,7 @@ public class ItemManager : MonoBehaviour
         bool spent = GameManager.I.SpendGold(enhancementCost);
         if (!spent) return;
 
-        if (Random.Range(0f, 100f) <= successRate)
+        if (UnityEngine.Random.Range(0, 100) <= successRate)
         {
             currentLevels[index]++;
             SoundManager.I.PlaySoundEffect(3);
@@ -118,6 +119,7 @@ public class ItemManager : MonoBehaviour
         GameUiManager.I.UpdateItemInfo(index, itemDescription);
 
         levelTexts[index].text = $"$ {enhancementCost}";
+        NotifyItemStatsChanged();
         UpdateUIForSlot(index);
     }
 
@@ -164,7 +166,7 @@ public class ItemManager : MonoBehaviour
 
     private int DetermineItemGrade()
     {
-        float randomValue = Random.Range(0f, 100f);
+        float randomValue = UnityEngine.Random.Range(0, 100);
         float cumulativeProbability = 0f;
         for (int i = 0; i < probabilities.Length; i++)
         {
@@ -232,11 +234,12 @@ public class ItemManager : MonoBehaviour
 
         float successRate = successRates[level - 1];  // 성공 확률 (현재 레벨에 따른)
         Color gradeColor = gradeColors[grade - 1];
+        int sellPrice = sellPrices[grade - 1];
         string coloredGradeName = $"<color=#{ColorUtility.ToHtmlStringRGBA(gradeColor)}>{gradeName}</color>";
         string coloredTypeDescription = $"<color=#{ColorUtility.ToHtmlStringRGBA(gradeColor)}>{typeDescription}</color>";
         string coloredoptionDescription = $"<color=#{ColorUtility.ToHtmlStringRGBA(gradeColor)}>{optionDescription}</color>";
 
-        return $"Current Lv . {level} \nGrade : {coloredGradeName} \n* {coloredTypeDescription} \nOption : {coloredoptionDescription} \n\nUpgrade% : {successRate}";
+        return $" Grade : {coloredGradeName} \n * {coloredTypeDescription} \n Option : {coloredoptionDescription} \n\n Upgrade% : {successRate}\n Sell Price - $ {sellPrice}";
     }
 
 
@@ -268,21 +271,36 @@ public class ItemManager : MonoBehaviour
         switch (itemType)
         {
             case 0:
-                return $"+ {level * grade * 5}% -"; // 예시로 공격력 증가 옵션
+                return $" + {level * grade * 5}"; // 공격력
             case 1:
-                return $"+ {level * grade * 3}% -"; // 예시로 공격속도 증가 옵션
+                return $" + {level * grade * 0.1}"; // 스피드
             case 2:
-                return $"+ {level * grade * 2}% -"; // 예시로 공격범위 증가 옵션
+                return $" + {level * grade * 0.1}"; // 범위
             case 3:
-                return $"+ {level * grade * 1}% -"; // 예시로 크리티컬 확률 증가 옵션
+                return $" + {level * grade * 2}%"; // 크확
             case 4:
-                return $"+ {level * grade * 10}% -"; // 예시로 크리티컬 데미지 증가 옵션
+                return $" + {level * grade * 1}%"; // 크뎀
             case 5:
-                return $"- {level * grade * 2}% -"; // 예시로 적 이동속도 감소 옵션
+                return $" + {level * grade * 2}%"; // 골드
             case 6:
-                return $"+ {level * grade * 5}% -"; // 예시로 골드 획득 증가 옵션
+                return $" + {level * grade * 5}%"; // 임시
             default:
                 return "None";
+        }
+    }
+
+    public float GetItemTypeEffect(int itemType, int level, int grade)
+    {
+        switch (itemType)
+        {
+            case 0: return level * grade * 5f;
+            case 1: return level * grade * 0.1f;
+            case 2: return level * grade * 0.1f;
+            case 3: return level * grade * 2f;
+            case 4: return level * grade * 2f;
+            case 5: return level * grade * 2f;
+            case 6: return level * grade * 5f;
+            default: return 0f;
         }
     }
 
@@ -290,7 +308,23 @@ public class ItemManager : MonoBehaviour
     {
         if (!slotOccupied[index]) return;
 
+        int itemType = itemTypesInSlots[index];
         int itemGrade = itemGrades[index];
+        int itemLevel = currentLevels[index];
+
+        float effect = GetItemTypeEffect(itemType, itemLevel, itemGrade);
+
+        switch (itemType)
+        {
+            case 0: towerStats.attackDamage -= effect; break;
+            case 1: towerStats.attackSpeed -= effect; break;
+            case 2: towerStats.attackRange -= effect; break;
+            case 3: towerStats.criticalChance -= effect; break;
+            case 4: towerStats.criticalDamage -= effect; break;
+            case 5: towerStats.goldEarnAmount -= effect; break;
+            case 6: towerStats.enemySlowAmount -= effect; break;
+        }
+
         int sellPrice = sellPrices[itemGrade - 1];
         GameManager.I.AddGold(sellPrice);
 
@@ -302,6 +336,14 @@ public class ItemManager : MonoBehaviour
 
         levelTexts[index].text = "Empty";
         itemSlotButtons[index].image.color = Color.gray;
+        NotifyItemStatsChanged();
         UpdateUIForSlot(index);
+
+        Debug.Log($"아이템 판매 완료: 슬롯 {index + 1}, {effect}만큼 스탯 감소");
+    }
+
+    private void NotifyItemStatsChanged()
+    {
+        OnItemStatsChanged?.Invoke();
     }
 }

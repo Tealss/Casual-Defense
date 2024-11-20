@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public Tower[] towers;
     public static GameManager I { get; private set; }
     public int Gold { get; private set; } = 100000;
     public int LifePoints { get; private set; } = 30;
@@ -13,6 +14,21 @@ public class GameManager : MonoBehaviour
     {
         if (I == null) I = this;
         else Destroy(gameObject);
+    }
+
+    private void Start()
+    {
+        InitializeAllTowers();
+    }
+    private void InitializeAllTowers()
+    {
+        foreach (Tower tower in towers)
+        {
+            if (tower != null)
+            {
+                tower.InitializeStats();
+            }
+        }
     }
 
     public bool SpendGold(int amount)

@@ -12,11 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbdc8b2587741694fac39dfc3d0de68d, type: 3}
   m_Name: Tower T5
   m_EditorClassIdentifier: 
-  towerName: Tower T5
-  attackDamage: 10
-  attackRange: 2000
-  attackSpeed: 1
+  baseAttackDamage: 1
+  baseAttackSpeed: 1
+  baseAttackRange: 1.5
+  baseCriticalChance: 0
+  baseCriticalDamage: 0
+  baseGoldEarnAmount: 0
+  baseEnemySlowAmount: 0
   projectileSpeed: 3
-  criticalChance: 0.1
-  criticalDamage: 2
-  defense: 0
+  attackDamage: 1
+  attackSpeed: 1
+  attackRange: 2
+  criticalChance: 0
+  criticalDamage: 0
+  goldEarnAmount: 0
+  enemySlowAmount: 0

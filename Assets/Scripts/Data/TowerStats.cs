@@ -1,44 +1,37 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Tower Stats", menuName = "Tower Defense/Tower Stats", order = 1)]
+[CreateAssetMenu(fileName = "TowerStats", menuName = "Tower/TowerStats")]
 public class TowerStats : ScriptableObject
 {
-    public string towerName;
-    public float attackDamage;
-    public float attackRange;
-    public float attackSpeed;
+    [Header("Base Stats")]
+    public float baseAttackDamage;
+    public float baseAttackSpeed;
+    public float baseAttackRange;
+    public float baseCriticalChance;
+    public float baseCriticalDamage;
+    public float baseGoldEarnAmount;
+    public float baseEnemySlowAmount;
+
+    [Header("Projectile")]
     public float projectileSpeed;
-    public float criticalChance;
-    public float criticalDamage;
-    public float enemySlowAmount;
-    public float goldEarnAmount;
 
-    //public void ModifyStat(ItemManager.ItemStatType statType, float value)
-    //{
-    //    switch (statType)
-    //    {
-    //        case ItemManager.ItemStatType.attackDamageIncrease:
-    //            attackDamage += value;
-    //            break;
-    //        case ItemManager.ItemStatType.attackSpeedIncrease:
-    //            attackSpeed += value;
-    //            break;
-    //        case ItemManager.ItemStatType.attackRangeIncrease:
-    //            attackRange += value;
-    //            break;
-    //        case ItemManager.ItemStatType.criticalChanceIncrease:
-    //            criticalChance += value;
-    //            break;
-    //        case ItemManager.ItemStatType.criticalDamageIncrease:
-    //            criticalDamage += value;
-    //            break;
-    //        case ItemManager.ItemStatType.enemySlowAmountIncrease:
-    //            enemySlowAmount += value;
-    //            break;
-    //        case ItemManager.ItemStatType.goldEarnAmountIncrease:
-    //            goldEarnAmount += value;
-    //            break;
-    //    }
-    //}
+    // 실제 게임 내에서 사용할 현재 스탯
+    [HideInInspector] public float attackDamage;
+    [HideInInspector] public float attackSpeed;
+    [HideInInspector] public float attackRange;
+    [HideInInspector] public float criticalChance;
+    [HideInInspector] public float criticalDamage;
+    [HideInInspector] public float goldEarnAmount;
+    [HideInInspector] public float enemySlowAmount;
 
+    public void ResetStats()
+    {
+        attackDamage = baseAttackDamage;
+        attackSpeed = baseAttackSpeed;
+        attackRange = baseAttackRange;
+        criticalChance = baseCriticalChance;
+        criticalDamage = baseCriticalDamage;
+        goldEarnAmount = baseGoldEarnAmount;
+        enemySlowAmount = baseEnemySlowAmount;
+    }
 }

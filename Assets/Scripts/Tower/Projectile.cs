@@ -8,7 +8,7 @@ public class Projectile : MonoBehaviour
     private bool isActive = false;
 
     private float criticalChance = 0f;
-    private float criticalDamage = 2f;
+    private float criticalDamage = 0f;
 
     private Transform towerTransform;
     private Vector3 startPosition;
@@ -103,12 +103,11 @@ public class Projectile : MonoBehaviour
 
     private void DealDamageToTarget()
     {
-        float randomChance = Random.Range(0f, 1f);
+        float randomChance = Random.Range(0f, 100f);
         bool isCriticalHit = randomChance <= criticalChance;
 
         if (isCriticalHit)
         {
-            // 0.1 = 10%
             //Debug.Log($"[DealDamageToTarget] 크리티컬 히트 발생! (확률: {criticalChance * 100}%)");
             damage *= criticalDamage;
         }
