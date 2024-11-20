@@ -18,6 +18,7 @@ public class ItemManager : MonoBehaviour
 
     private TowerStats towerStats;
     private GameObject[] instantiatedItems = new GameObject[6];
+    public int[] itemTypesInSlots = new int[6];
     public int[] currentLevels = new int[6];
     public int[] itemGrades = new int[6];
     public bool[] slotOccupied = new bool[6];
@@ -58,7 +59,39 @@ public class ItemManager : MonoBehaviour
             UpdateUIForSlot(index);
         }
     }
+    private void CreateItemInSlot(int slotIndex, int itemGrade)
+    {
+        //Destroy(instantiatedItems[slotIndex]);
 
+        int itemTypeIndex = Random.Range(0, itemPrefabs.Length);
+        GameObject selectedItemPrefab = itemPrefabs[itemTypeIndex];
+
+        Transform itemFolder = itemSlotButtons[slotIndex].transform.Find("Item");
+
+        instantiatedItems[slotIndex] = Instantiate(selectedItemPrefab, itemFolder);
+        RectTransform itemRect = instantiatedItems[slotIndex].GetComponent<RectTransform>();
+        itemRect.anchoredPosition = Vector2.zero;
+        itemRect.localScale = Vector3.one;
+
+
+        itemGrades[slotIndex] = itemGrade;
+        currentLevels[slotIndex] = 1;
+        slotOccupied[slotIndex] = true;
+
+
+        itemSlotButtons[slotIndex].image.color = gradeColors[itemGrade - 1];
+
+        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[slotIndex]));
+        levelTexts[slotIndex].text = $"$ {enhancementCost}";
+
+        GameUiManager.I.UpdateItemInfo(slotIndex, GetItemDescription(slotIndex, itemGrade, currentLevels[slotIndex]));
+
+
+        itemTypesInSlots[slotIndex] = itemTypeIndex;
+        Debug.Log($"아이템이 슬롯 {slotIndex + 1}에 생성되었습니다. 아이템 타입: {itemTypeIndex} ({selectedItemPrefab.name})");
+
+        UpdateUIForSlot(slotIndex);
+    }
     private void AttemptEnhancement(int index)
     {
         if (!slotOccupied[index] || currentLevels[index] >= maxLevel) return;
@@ -81,11 +114,10 @@ public class ItemManager : MonoBehaviour
             SoundManager.I.PlaySoundEffect(4);
         }
 
-        string itemDescription = GetItemDescription(itemGrades[index], currentLevels[index]);
+        string itemDescription = GetItemDescription(index, itemGrades[index], currentLevels[index]);
         GameUiManager.I.UpdateItemInfo(index, itemDescription);
 
         levelTexts[index].text = $"$ {enhancementCost}";
-
         UpdateUIForSlot(index);
     }
 
@@ -142,28 +174,6 @@ public class ItemManager : MonoBehaviour
         return 1;
     }
 
-    private void CreateItemInSlot(int slotIndex, int itemGrade)
-    {
-        Destroy(instantiatedItems[slotIndex]);
-
-        Transform itemFolder = itemSlotButtons[slotIndex].transform.Find("Item");
-        instantiatedItems[slotIndex] = Instantiate(itemPrefabs[Random.Range(0, itemPrefabs.Length)], itemFolder);
-        RectTransform itemRect = instantiatedItems[slotIndex].GetComponent<RectTransform>();
-        itemRect.anchoredPosition = Vector2.zero;
-        itemRect.localScale = Vector3.one;
-
-        itemGrades[slotIndex] = itemGrade;
-        currentLevels[slotIndex] = 1;
-        slotOccupied[slotIndex] = true;
-
-        itemSlotButtons[slotIndex].image.color = gradeColors[itemGrade - 1];
-        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[slotIndex]));
-        levelTexts[slotIndex].text = $"$ {enhancementCost}";
-
-        GameUiManager.I.UpdateItemInfo(slotIndex, GetItemDescription(itemGrade, currentLevels[slotIndex]));
-        UpdateUIForSlot(slotIndex);
-    }
-
     private void AddRightClickEventForItemSlotButton(Button button, int index)
     {
         EventTrigger trigger = button.gameObject.AddComponent<EventTrigger>();
@@ -211,10 +221,69 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    public string GetItemDescription(int grade, int level)
+    public string GetItemDescription(int slotIndex, int grade, int level)
     {
-        string gradeName = new[] { "일반", "고급", "희귀", "영웅", "전설", "신화", "유니크" }[grade - 1];
-        return $"Lv.{level} {gradeName} 아이템 - 옵션: +{level * grade * 10}%";
+        int itemType = itemTypesInSlots[slotIndex];
+
+        string gradeName = new[] { "Common", "Uncommon", "Rare", "Unique", "Epic", "Legendary", "Mythic" }[grade - 1];
+
+        string typeDescription = GetItemTypeDescription(itemType);
+        string optionDescription = GetItemTypeOption(itemType, level, grade);
+
+        float successRate = successRates[level - 1];  // 성공 확률 (현재 레벨에 따른)
+        Color gradeColor = gradeColors[grade - 1];
+        string coloredGradeName = $"<color=#{ColorUtility.ToHtmlStringRGBA(gradeColor)}>{gradeName}</color>";
+        string coloredTypeDescription = $"<color=#{ColorUtility.ToHtmlStringRGBA(gradeColor)}>{typeDescription}</color>";
+        string coloredoptionDescription = $"<color=#{ColorUtility.ToHtmlStringRGBA(gradeColor)}>{optionDescription}</color>";
+
+        return $"Current Lv . {level} \nGrade : {coloredGradeName} \n* {coloredTypeDescription} \nOption : {coloredoptionDescription} \n\nUpgrade% : {successRate}";
+    }
+
+
+    private string GetItemTypeDescription(int itemType)
+    {
+        switch (itemType)
+        {
+            case 0:
+                return "Attack Damage";
+            case 1:
+                return "Attack Speed";
+            case 2:
+                return "Attack Range";
+            case 3:
+                return "Critical Chance";
+            case 4:
+                return "Critical Damage";
+            case 5:
+                return "Add Gold";
+            case 6:
+                return "7";
+            default:
+                return "Unknown";
+        }
+    }
+
+    private string GetItemTypeOption(int itemType, int level, int grade)
+    {
+        switch (itemType)
+        {
+            case 0:
+                return $"+ {level * grade * 5}% -"; // 예시로 공격력 증가 옵션
+            case 1:
+                return $"+ {level * grade * 3}% -"; // 예시로 공격속도 증가 옵션
+            case 2:
+                return $"+ {level * grade * 2}% -"; // 예시로 공격범위 증가 옵션
+            case 3:
+                return $"+ {level * grade * 1}% -"; // 예시로 크리티컬 확률 증가 옵션
+            case 4:
+                return $"+ {level * grade * 10}% -"; // 예시로 크리티컬 데미지 증가 옵션
+            case 5:
+                return $"- {level * grade * 2}% -"; // 예시로 적 이동속도 감소 옵션
+            case 6:
+                return $"+ {level * grade * 5}% -"; // 예시로 골드 획득 증가 옵션
+            default:
+                return "None";
+        }
     }
 
     private void SellItem(int index)

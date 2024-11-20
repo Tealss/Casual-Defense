@@ -1,46 +1,49 @@
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
+//using UnityEngine;
+//using UnityEngine.UI;
+//using System.Collections;
 
-public class FadeOutText : MonoBehaviour
-{
-    [Header("셋팅")]
-    public float fadeDuration = 2f; // 페이드 아웃에 걸리는 시간 (초)
-    public float moveSpeed = 50f; // 텍스트가 이동할 속도 (위로 이동하는 속도)
+//public class TextFadeOut : MonoBehaviour
+//{
+//    public Text characterNameText;
+//    public float fadeDuration = 3f;
 
-    private Text textComponent;
-    private Vector3 initialPosition;
-    private Color initialColor;
+//    private IEnumerator fadeOutCoroutine;
 
-    void Start()
-    {
-        textComponent = GetComponent<Text>();
-        initialPosition = transform.position;
-        initialColor = textComponent.color;
+//    void Start()
+//    {
+//        characterNameText.enabled = false;
+//    }
 
-        // 페이드 아웃 코루틴 시작
-        StartCoroutine(FadeOutRoutine());
-    }
+//    public void DisplayErrorMessage(string message, Vector2 position, int fontSize, Color fontColor)
+//    {
+//        characterNameText.text = message;
+//        characterNameText.fontSize = fontSize;
+//        characterNameText.rectTransform.anchoredPosition = position;
+//        characterNameText.color = fontColor;
+//        characterNameText.enabled = true;
 
-    private IEnumerator FadeOutRoutine()
-    {
-        float elapsedTime = 0f;
+//        if (fadeOutCoroutine != null)
+//        {
+//            StopCoroutine(fadeOutCoroutine);
+//        }
+//        fadeOutCoroutine = FadeOutText();
+//        StartCoroutine(fadeOutCoroutine);
+//    }
 
-        while (elapsedTime < fadeDuration)
-        {
-            // 텍스트의 alpha 값을 점차 감소시키며 이동
-            float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
-            textComponent.color = new Color(initialColor.r, initialColor.g, initialColor.b, alpha);
+//    private IEnumerator FadeOutText()
+//    {
+//        float elapsedTime = 0f;
+//        Color textColor = characterNameText.color;
 
-            // 텍스트를 위로 이동
-            transform.position = initialPosition + Vector3.up * moveSpeed * (elapsedTime / fadeDuration);
+//        while (elapsedTime < fadeDuration)
+//        {
+//            elapsedTime += Time.deltaTime;
+//            float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
+//            textColor.a = alpha;
+//            characterNameText.color = textColor;
+//            yield return null;
+//        }
 
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        // 마지막에는 완전히 사라지게 하고 텍스트를 비활성화
-        textComponent.color = new Color(initialColor.r, initialColor.g, initialColor.b, 0f);
-        gameObject.SetActive(false); // 텍스트를 비활성화
-    }
-}
+//        characterNameText.enabled = false;
+//    }
+//}

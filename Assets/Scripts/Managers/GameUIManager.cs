@@ -15,6 +15,9 @@ public class GameUiManager : MonoBehaviour
     public Text infoText;
     public Text itemInfoText;
 
+    public GameObject fadeOutTextPrefab; 
+    public Canvas parentCanvas; 
+
     public Text waveText;
     public Text timerText;
     public Text LifeText;
@@ -104,9 +107,9 @@ public class GameUiManager : MonoBehaviour
         {
             int itemGrade = ItemManager.I.itemGrades[slotIndex];
             int itemLevel = ItemManager.I.currentLevels[slotIndex];
-            return ItemManager.I.GetItemDescription(itemGrade, itemLevel);
+            return ItemManager.I.GetItemDescription(slotIndex, itemGrade, itemLevel);
         }
-        return "ºó ½½·Ô";
+        return "Empty Slot";
     }
 
     public void UpdateItemInfo(int slotIndex, string itemDescription)
@@ -114,30 +117,28 @@ public class GameUiManager : MonoBehaviour
         switch (slotIndex)
         {
             case 0:
-                itemInfoText.text = $"Slot 1: {itemDescription}";
+                itemInfoText.text = $"{itemDescription}";
                 break;
             case 1:
-                itemInfoText.text = $"Slot 2: {itemDescription}";
+                itemInfoText.text = $"{itemDescription}";
                 break;
             case 2:
-                itemInfoText.text = $"Slot 3: {itemDescription}";
+                itemInfoText.text = $"{itemDescription}";
                 break;
             case 3:
-                itemInfoText.text = $"Slot 4: {itemDescription}";
+                itemInfoText.text = $"{itemDescription}";
                 break;
             case 4:
-                itemInfoText.text = $"Slot 5: {itemDescription}";
+                itemInfoText.text = $"{itemDescription}";
                 break;
             case 5:
-                itemInfoText.text = $"Slot 6: {itemDescription}";
+                itemInfoText.text = $"{itemDescription}";
                 break;
             default:
                 itemInfoText.text = "Unknown slot.";
                 break;
         }
     }
-
-
 
     public void UpdateWaveText(int waveNumber)
     {

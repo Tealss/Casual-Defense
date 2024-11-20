@@ -15,7 +15,7 @@
 //    public int level; // 아이템 레벨
 //    public ItemType itemType; // 아이템 능력치 타입
 
-//    // 능력치 적용
+//    능력치 적용
 //    public void ApplyEffect(TowerStats towerStats)
 //    {
 //        float bonus = GetBonusForItemType(itemType);
@@ -47,7 +47,7 @@
 //        }
 //    }
 
-//    // 아이템 타입에 따른 보너스 값 반환
+//    아이템 타입에 따른 보너스 값 반환
 //    private float GetBonusForItemType(ItemType itemType)
 //    {
 //        switch (itemType)
