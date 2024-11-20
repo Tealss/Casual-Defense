@@ -12,11 +12,11 @@ public class Tower : MonoBehaviour
     private ObjectPool objectPool;
     public string towerType;
 
-    public List<Item> items; // 아이템 리스트 (타워가 가진 아이템들)
+    public List<Item> items;
 
-    private LineRenderer rangeIndicator; // 공격 범위를 표시할 LineRenderer
-    private bool isRangeVisible = false; // 범위 표시 여부
-    private static Tower currentSelectedTower = null; // 현재 선택된 타워
+    private LineRenderer rangeIndicator;
+    private bool isRangeVisible = false;
+    private static Tower currentSelectedTower = null;
 
     private void Start()
     {
@@ -34,9 +34,8 @@ public class Tower : MonoBehaviour
         if (ItemManager.I != null)
             ItemManager.I.OnItemStatsChanged += UpdateTowerStats;
 
-        // LineRenderer 설정
         rangeIndicator = gameObject.AddComponent<LineRenderer>();
-        rangeIndicator.positionCount = 0; // 처음에는 표시하지 않음
+        rangeIndicator.positionCount = 0;
         rangeIndicator.startWidth = 0.1f;
         rangeIndicator.endWidth = 0.1f;
         rangeIndicator.material = new Material(Shader.Find("Sprites/Default"));
@@ -48,8 +47,8 @@ public class Tower : MonoBehaviour
     {
         if (towerStats != null)
         {
-            towerStats.ResetStats(); // 기본값으로 초기화
-            ApplyItemStats();       // 아이템 효과 적용
+            towerStats.ResetStats();
+            ApplyItemStats();
         }
         else
         {
@@ -83,7 +82,6 @@ public class Tower : MonoBehaviour
 
             float effect = ItemManager.I.GetItemTypeEffect(itemType, level, grade);
 
-            // 아이템 타입에 따라 적절한 타워 스탯에 적용
             switch (itemType)
             {
                 case 0: towerStats.attackDamage += effect; break;
@@ -124,8 +122,7 @@ public class Tower : MonoBehaviour
             Attack();
         }
 
-        // 마우스 좌클릭 시 타워를 클릭했는지 확인
-        if (Input.GetMouseButtonDown(0)) // 좌클릭 (0은 왼쪽 클릭)
+        if (Input.GetMouseButtonDown(0)) 
         {
             HandleTowerSelection();
         }
@@ -133,28 +130,33 @@ public class Tower : MonoBehaviour
 
     private void HandleTowerSelection()
     {
-        // 마우스 위치를 기준으로 레이를 쏘고, 타워가 클릭된 경우에만 범위를 표시
+
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit))
         {
-            // 클릭된 오브젝트가 타워라면
             if (hit.collider != null && hit.collider.GetComponent<Tower>() != null)
             {
                 Tower clickedTower = hit.collider.GetComponent<Tower>();
 
-                // 현재 선택된 타워가 있고, 그 타워가 현재 클릭된 타워와 다르면 범위 숨기기
                 if (currentSelectedTower != null && currentSelectedTower != clickedTower)
                 {
                     currentSelectedTower.HideAttackRange();
                 }
 
-                // 타워 범위 보여주기
-                clickedTower.ShowAttackRangeFor2Seconds();
 
-                // 현재 선택된 타워로 설정
+                clickedTower.ShowAttackRangeFor2Seconds();
                 currentSelectedTower = clickedTower;
+
+                Debug.Log($"Selected Tower Stats - {clickedTower.name}:");
+                Debug.Log($"Attack Damage: {clickedTower.towerStats.attackDamage}");
+                Debug.Log($"Attack Speed: {clickedTower.towerStats.attackSpeed}");
+                Debug.Log($"Attack Range: {clickedTower.towerStats.attackRange}");
+                Debug.Log($"Critical Chance: {clickedTower.towerStats.criticalChance}");
+                Debug.Log($"Critical Damage: {clickedTower.towerStats.criticalDamage}");
+                Debug.Log($"Gold Earn Amount: {clickedTower.towerStats.goldEarnAmount}");
+                Debug.Log($"Enemy Slow Amount: {clickedTower.towerStats.enemySlowAmount}");
             }
         }
     }
@@ -164,10 +166,9 @@ public class Tower : MonoBehaviour
         if (!isRangeVisible)
         {
             isRangeVisible = true;
-            rangeIndicator.positionCount = 100; // 범위 그리기 위한 포인트 수
+            rangeIndicator.positionCount = 100;
             float radius = towerStats.attackRange;
 
-            // 원 모양으로 범위를 그린다
             for (int i = 0; i < rangeIndicator.positionCount; i++)
             {
                 float angle = i * Mathf.PI * 2f / rangeIndicator.positionCount;
@@ -176,8 +177,7 @@ public class Tower : MonoBehaviour
                 rangeIndicator.SetPosition(i, new Vector3(transform.position.x + x, transform.position.y, transform.position.z + y));
             }
 
-            // 2초 후에 범위를 숨김
-            Invoke("HideAttackRange", 2f);
+            Invoke("HideAttackRange", 1f);
         }
     }
 

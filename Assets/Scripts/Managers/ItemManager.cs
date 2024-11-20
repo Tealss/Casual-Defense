@@ -301,7 +301,7 @@ public class ItemManager : MonoBehaviour
             case 1: return level * grade * 0.1f;
             case 2: return level * grade * 0.1f;
             case 3: return level * grade * 2f;
-            case 4: return level * grade * 2f;
+            case 4: return level * grade * 1f;
             case 5: return level * grade * 2f;
             case 6: return level * grade * 5f;
             default: return 0f;

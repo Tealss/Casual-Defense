@@ -80,6 +80,11 @@ public class TowerManager : MonoBehaviour
 
     private void ShowBuildButton(Vector3 screenPosition)
     {
+        if (GameManager.I.Gold < 300) 
+        {
+            Debug.Log("No Money");
+        }
+
         if (currentBuildButton == null)
         {
             currentBuildButton = objectPool.GetFromPool(
@@ -132,6 +137,14 @@ public class TowerManager : MonoBehaviour
     private void PlaceTower(Tiles clickedTile)
     {
         if (clickedTile == null || clickedTile.HasTower) return;
+
+        if (GameManager.I.Gold < 300)
+        {
+            //fadeout 텍스트용 자리
+        }
+
+        GameManager.I.SpendGold(300);
+
         int randomTowerIndex = Random.Range(0, objectPool.towerPools.Length);
         GameObject selectedTowerGO = objectPool.GetTowerFromPool(randomTowerIndex);
 

@@ -15,15 +15,15 @@ MonoBehaviour:
   baseAttackDamage: 1
   baseAttackSpeed: 1
   baseAttackRange: 1.5
-  baseCriticalChance: 0
-  baseCriticalDamage: 0
+  baseCriticalChance: 1
+  baseCriticalDamage: 0.1
   baseGoldEarnAmount: 0
   baseEnemySlowAmount: 0
   projectileSpeed: 3
   attackDamage: 1
   attackSpeed: 1
-  attackRange: 2
-  criticalChance: 0
+  attackRange: 1.7
+  criticalChance: 2
   criticalDamage: 0
-  goldEarnAmount: 0
+  goldEarnAmount: 4
   enemySlowAmount: 0
