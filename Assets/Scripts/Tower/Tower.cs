@@ -97,6 +97,22 @@ public class Tower : MonoBehaviour
         }
     }
 
+    public void RemoveItemStats(int itemType, int itemLevel, int itemGrade)
+    {
+        float effect = ItemManager.I.GetItemTypeEffect(itemType, itemLevel, itemGrade);
+
+        switch (itemType)
+        {
+            case 0: towerStats.attackDamage -= effect; break;
+            case 1: towerStats.attackSpeed -= effect; break;
+            case 2: towerStats.attackRange -= effect; break;
+            case 3: towerStats.criticalChance -= effect; break;
+            case 4: towerStats.criticalDamage -= effect; break;
+            case 5: towerStats.goldEarnAmount -= effect; break;
+            case 6: towerStats.enemySlowAmount -= effect; break;
+        }
+    }
+
     private void Update()
     {
         if (towerStats == null || objectPool == null) return;

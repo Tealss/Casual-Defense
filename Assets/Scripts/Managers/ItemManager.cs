@@ -17,12 +17,12 @@ public class ItemManager : MonoBehaviour
     [SerializeField] private Toggle[] gradeToggles = new Toggle[6];
     [SerializeField] private GameObject[] itemPrefabs = new GameObject[6];
 
-    private TowerStats towerStats;
-    private GameObject[] instantiatedItems = new GameObject[6];
+    public TowerStats towerStats;
     public int[] itemTypesInSlots = new int[6];
     public int[] currentLevels = new int[6];
     public int[] itemGrades = new int[6];
     public bool[] slotOccupied = new bool[6];
+    private GameObject[] instantiatedItems = new GameObject[6];
     private int buyQuantity = 1;
     public event Action OnItemStatsChanged;
 
@@ -41,6 +41,10 @@ public class ItemManager : MonoBehaviour
             Destroy(gameObject);
 
         towerStats = FindObjectOfType<TowerStats>();
+            if (towerStats == null)
+    {
+        Debug.LogError("TowerStats가 씬에 없습니다. 아이템 효과 감소를 적용할 수 없습니다.");
+    }
     }
 
     private void Start()
@@ -312,35 +316,35 @@ public class ItemManager : MonoBehaviour
         int itemGrade = itemGrades[index];
         int itemLevel = currentLevels[index];
 
-        float effect = GetItemTypeEffect(itemType, itemLevel, itemGrade);
-
-        switch (itemType)
-        {
-            case 0: towerStats.attackDamage -= effect; break;
-            case 1: towerStats.attackSpeed -= effect; break;
-            case 2: towerStats.attackRange -= effect; break;
-            case 3: towerStats.criticalChance -= effect; break;
-            case 4: towerStats.criticalDamage -= effect; break;
-            case 5: towerStats.goldEarnAmount -= effect; break;
-            case 6: towerStats.enemySlowAmount -= effect; break;
-        }
-
         int sellPrice = sellPrices[itemGrade - 1];
         GameManager.I.AddGold(sellPrice);
 
-        Destroy(instantiatedItems[index]);
+        Tower tower = FindObjectOfType<Tower>();
+        if (tower != null)
+        {
+            tower.RemoveItemStats(itemType, itemLevel, itemGrade);
+        }
+
+        if (instantiatedItems[index] != null)
+        {
+            Destroy(instantiatedItems[index]);  // 인스턴스화된 아이템 제거
+        }
+
         SoundManager.I.PlaySoundEffect(2);
+
         slotOccupied[index] = false;
         currentLevels[index] = 0;
         itemGrades[index] = 0;
 
         levelTexts[index].text = "Empty";
         itemSlotButtons[index].image.color = Color.gray;
-        NotifyItemStatsChanged();
-        UpdateUIForSlot(index);
 
-        Debug.Log($"아이템 판매 완료: 슬롯 {index + 1}, {effect}만큼 스탯 감소");
+        NotifyItemStatsChanged();  // 아이템 스탯 변화 알림
+        UpdateUIForSlot(index);  // UI 업데이트
     }
+
+
+
 
     private void NotifyItemStatsChanged()
     {
