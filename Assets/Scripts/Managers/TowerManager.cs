@@ -173,6 +173,7 @@ public class TowerManager : MonoBehaviour
                 }
             }
 
+            SoundManager.I.PlaySoundEffect(6);
             selectedTowerGO.transform.position = towerPosition;
             selectedTowerGO.transform.SetParent(clickedTile.transform);
             clickedTile.HasTower = true;

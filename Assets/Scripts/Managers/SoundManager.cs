@@ -186,7 +186,7 @@ public class SoundManager : MonoBehaviour
     {
         if (index >= 0 && index < soundEffects.Count)
         {
-            float volumeMultiplier = (index == 3 || index == 4 || index == 5) ? 0.1f : 1.0f;
+            float volumeMultiplier = (index == 3 || index == 4 || index == 5) ? 0.25f : 1.0f;
             effectsAudioSource.PlayOneShot(soundEffects[index], effectsAudioSource.volume * volumeMultiplier);
         }
         else

@@ -38,13 +38,7 @@ public class ItemManager : MonoBehaviour
         if (I == null)
             I = this;
         else
-            Destroy(gameObject);
-
-        towerStats = FindObjectOfType<TowerStats>();
-            if (towerStats == null)
-    {
-        Debug.LogError("TowerStats가 씬에 없습니다. 아이템 효과 감소를 적용할 수 없습니다.");
-    }
+            Destroy(gameObject);   
     }
 
     private void Start()
