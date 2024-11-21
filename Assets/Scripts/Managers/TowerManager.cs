@@ -219,8 +219,18 @@ public class TowerManager : MonoBehaviour
 
     private GameObject ShowMergeEffect(int effectIndex, Vector3 position)
     {
+
+        GameObject mergeEffectFolder = GameObject.Find("ObjectPool");
+        if (mergeEffectFolder == null)
+        {
+            mergeEffectFolder = new GameObject("ObjectPool");
+        }
+
         GameObject effect = objectPool.GetMergeEffectFromPool(effectIndex);
+        effect.transform.SetParent(mergeEffectFolder.transform, false);
         effect.transform.position = position;
+
+
         return effect;
     }
     private void RemoveMergeEffect(Tower tower)
@@ -244,7 +254,6 @@ public class TowerManager : MonoBehaviour
 
             tower.level++;
 
-            // 머지된 타워를 제거
             Tiles tileOfOtherTower = mergingTower.GetComponentInParent<Tiles>();
             if (tileOfOtherTower != null)
             {

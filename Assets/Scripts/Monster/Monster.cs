@@ -7,7 +7,7 @@ public class Monster : MonoBehaviour
     public float CurrentHealth;
 
     private GameObject hpSlider;
-    private bool isAlive = true;  // 몬스터가 살아있는지 여부
+    private bool isAlive = true; 
 
     void Start()
     {
@@ -44,6 +44,10 @@ public class Monster : MonoBehaviour
 
     private void Die()
     {
+        if (hpSlider != null)
+        {
+            hpSlider.SetActive(false);
+        }
         gameObject.SetActive(false);
     }
 }

@@ -180,13 +180,6 @@ public class Tower : MonoBehaviour
             Invoke("HideAttackRange", 1f);
         }
     }
-
-    private void HideAttackRange()
-    {
-        isRangeVisible = false;
-        rangeIndicator.positionCount = 0;
-    }
-
     private void Attack()
     {
         GameObject target = FindNearestMonster();
@@ -198,10 +191,16 @@ public class Tower : MonoBehaviour
                 Debug.LogError("Projectile 풀을 확인요망");
                 return;
             }
+            GameObject projectilesFolder = GameObject.Find("ObjectPool");
+            if (projectilesFolder == null)
+            {
+                projectilesFolder = new GameObject("ObjectPool");
+            }
+            projectile.transform.SetParent(projectilesFolder.transform);
 
             projectile.transform.position = transform.position;
-            Projectile projectileScript = projectile.GetComponent<Projectile>();
 
+            Projectile projectileScript = projectile.GetComponent<Projectile>();
             if (projectileScript != null)
             {
                 SoundManager.I.PlaySoundEffect(5);
@@ -214,6 +213,13 @@ public class Tower : MonoBehaviour
                 Debug.LogError("Projectile 스크립트가 할당되지 않음");
             }
         }
+    }
+
+
+    private void HideAttackRange()
+    {
+        isRangeVisible = false;
+        rangeIndicator.positionCount = 0;
     }
 
     private GameObject FindNearestMonster()

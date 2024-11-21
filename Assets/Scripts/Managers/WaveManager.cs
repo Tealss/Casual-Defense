@@ -72,9 +72,16 @@ public class WaveManager : MonoBehaviour
         int unitsSpawned = 0;
         float spawnEndTime = Time.time + spawnDuration;
 
+        GameObject unitsFolder = GameObject.Find("ObjectPool");
+        if (unitsFolder == null)
+        {
+            unitsFolder = new GameObject("ObjectPool"); // 유닛 폴더가 없으면 생성
+        }
+
         while (unitsSpawned < unitCountPerWave && Time.time < spawnEndTime)
         {
             GameObject unit = objectPool.GetFromPool(objectPool.unitPool, objectPool.unitPrefab);
+            unit.transform.SetParent(unitsFolder.transform, false);
             unit.transform.position = waypoints[0].position;
 
             GameObject hpSlider = objectPool.GetFromPool(objectPool.hpSliderPool, objectPool.hpSliderPrefab);
