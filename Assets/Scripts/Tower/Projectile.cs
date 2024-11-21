@@ -108,8 +108,8 @@ public class Projectile : MonoBehaviour
 
         if (isCriticalHit)
         {
-            //Debug.Log($"[DealDamageToTarget] 크리티컬 히트 발생! (확률: {criticalChance * 100}%)");
             damage *= criticalDamage;
+            //Debug.Log($"[DealDamageToTarget] 크리티컬 히트 발생! (확률: {criticalChance * 100}%)");
         }
 
         if (target != null && target.CompareTag("Monster"))
@@ -118,7 +118,7 @@ public class Projectile : MonoBehaviour
             if (monster != null)
             {
                 monster.TakeDamage(damage);
-                Debug.Log($"[DealDamageToTarget] {target.name}에게 {damage} 데미지 적용");
+                //Debug.Log($"[DealDamageToTarget] {target.name}에게 {damage} 데미지 적용");
             }
         }
     }

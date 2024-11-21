@@ -81,15 +81,15 @@ public class MonsterHPSlider : MonoBehaviour
 
         if (healthPercentage > 0.5f)
         {
-            sliderFillImage.color = Color.Lerp(Color.yellow, Color.green, (healthPercentage - 0.5f) * 2); // 초록색으로 변환
+            sliderFillImage.color = Color.Lerp(Color.yellow, Color.green, (healthPercentage - 0.5f) * 2);
         }
         else if (healthPercentage > 0.2f)
         {
-            sliderFillImage.color = Color.Lerp(Color.red, Color.yellow, (healthPercentage - 0.2f) * 5); // 노란색으로 변환
+            sliderFillImage.color = Color.Lerp(Color.red, Color.yellow, (healthPercentage - 0.2f) * 5);
         }
         else
         {
-            sliderFillImage.color = Color.red; // 빨간색
+            sliderFillImage.color = Color.red;
         }
     }
 }

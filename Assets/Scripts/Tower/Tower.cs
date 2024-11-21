@@ -149,14 +149,14 @@ public class Tower : MonoBehaviour
                 clickedTower.ShowAttackRangeFor2Seconds();
                 currentSelectedTower = clickedTower;
 
-                Debug.Log($"Selected Tower Stats - {clickedTower.name}:");
-                Debug.Log($"Attack Damage: {clickedTower.towerStats.attackDamage}");
-                Debug.Log($"Attack Speed: {clickedTower.towerStats.attackSpeed}");
-                Debug.Log($"Attack Range: {clickedTower.towerStats.attackRange}");
-                Debug.Log($"Critical Chance: {clickedTower.towerStats.criticalChance}");
-                Debug.Log($"Critical Damage: {clickedTower.towerStats.criticalDamage}");
-                Debug.Log($"Gold Earn Amount: {clickedTower.towerStats.goldEarnAmount}");
-                Debug.Log($"Enemy Slow Amount: {clickedTower.towerStats.enemySlowAmount}");
+                //Debug.Log($"Selected Tower Stats - {clickedTower.name}:");
+                //Debug.Log($"Attack Damage: {clickedTower.towerStats.attackDamage}");
+                //Debug.Log($"Attack Speed: {clickedTower.towerStats.attackSpeed}");
+                //Debug.Log($"Attack Range: {clickedTower.towerStats.attackRange}");
+                //Debug.Log($"Critical Chance: {clickedTower.towerStats.criticalChance}");
+                //Debug.Log($"Critical Damage: {clickedTower.towerStats.criticalDamage}");
+                //Debug.Log($"Gold Earn Amount: {clickedTower.towerStats.goldEarnAmount}");
+                //Debug.Log($"Enemy Slow Amount: {clickedTower.towerStats.enemySlowAmount}");
             }
         }
     }

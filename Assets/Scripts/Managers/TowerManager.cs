@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Linq;
+using System.Collections.Generic;
+using System.Collections;
 
 public class TowerManager : MonoBehaviour
 {
@@ -10,8 +12,11 @@ public class TowerManager : MonoBehaviour
     private Tiles selectedTile;
     private Tower selectedTower;
 
+    private Dictionary<Tower, GameObject> activeEffects = new Dictionary<Tower, GameObject>();
+
     void Start()
     {
+        StartCoroutine(PeriodicEffectUpdate());
         canvas = GameObject.Find("Canvas").GetComponent<Canvas>();
         objectPool = FindObjectOfType<ObjectPool>();
     }
@@ -145,7 +150,7 @@ public class TowerManager : MonoBehaviour
 
         GameManager.I.SpendGold(300);
 
-        int randomTowerIndex = Random.Range(0, objectPool.towerPools.Length);
+        int randomTowerIndex = Random.Range(0, objectPool.towerPrefabs.Length);
         GameObject selectedTowerGO = objectPool.GetTowerFromPool(randomTowerIndex);
 
         if (selectedTowerGO != null)
@@ -181,6 +186,52 @@ public class TowerManager : MonoBehaviour
         }
     }
 
+    private void UpdateMergeEffects()
+    {
+        var groupedTowers = FindObjectsOfType<Tower>()
+            .GroupBy(t => new { t.towerType, t.level })
+            .Where(g => g.Count() > 1);
+
+        var activeEffectTowers = activeEffects.Keys.ToList();
+
+        foreach (var tower in activeEffectTowers)
+        {
+            bool stillValid = groupedTowers.Any(g => g.Contains(tower));
+            if (!stillValid)
+            {
+                RemoveMergeEffect(tower);
+            }
+        }
+
+        foreach (var group in groupedTowers)
+        {
+            foreach (var tower in group)
+            {
+                if (!activeEffects.ContainsKey(tower))
+                {
+                    int effectIndex = tower.level - 1;
+                    GameObject effect = ShowMergeEffect(effectIndex, tower.transform.position);
+                    activeEffects[tower] = effect;
+                }
+            }
+        }
+    }
+
+    private GameObject ShowMergeEffect(int effectIndex, Vector3 position)
+    {
+        GameObject effect = objectPool.GetMergeEffectFromPool(effectIndex);
+        effect.transform.position = position;
+        return effect;
+    }
+    private void RemoveMergeEffect(Tower tower)
+    {
+        if (activeEffects.ContainsKey(tower))
+        {
+            objectPool.ReturnMergeEffectToPool(activeEffects[tower], tower.level - 1);
+            activeEffects.Remove(tower);
+        }
+    }
+
     private void MergeTower(Tower tower)
     {
         var sameTypeAndLevelTowers = FindObjectsOfType<Tower>()
@@ -188,24 +239,37 @@ public class TowerManager : MonoBehaviour
 
         if (sameTypeAndLevelTowers.Count > 0)
         {
+            Tower mergingTower = sameTypeAndLevelTowers[0];
+            RemoveMergeEffect(mergingTower);
+
             tower.level++;
 
-            Tiles tileOfOtherTower = sameTypeAndLevelTowers[0].GetComponentInParent<Tiles>();
-
+            // 머지된 타워를 제거
+            Tiles tileOfOtherTower = mergingTower.GetComponentInParent<Tiles>();
             if (tileOfOtherTower != null)
             {
                 tileOfOtherTower.HasTower = false;
             }
 
-            Destroy(sameTypeAndLevelTowers[0].gameObject);
+            Destroy(mergingTower.gameObject);
 
             if (tower.transform.parent.TryGetComponent<Tiles>(out Tiles currentTile))
             {
                 currentTile.HasTower = true;
             }
+
+            RemoveMergeEffect(tower);
         }
 
         HideMergeButton();
+    }
+    private IEnumerator PeriodicEffectUpdate()
+    {
+        while (true)
+        {
+            UpdateMergeEffects();
+            yield return new WaitForSeconds(0.5f);
+        }
     }
 
     private bool CanMergeByTypeAndLevel(Tower tower)
