@@ -5,7 +5,7 @@ using static UnityEditor.Progress;
 public class Tower : MonoBehaviour
 {
     public TowerStats towerStats;
-    public int level = 1;
+    public int level;
     public int towerIndex;
 
     private float attackTimer;
@@ -107,8 +107,19 @@ public class Tower : MonoBehaviour
             case 3: towerStats.criticalChance -= effect; break;
             case 4: towerStats.criticalDamage -= effect; break;
             case 5: towerStats.goldEarnAmount -= effect; break;
-            case 6: towerStats.enemySlowAmount -= effect; break;
+            //case 6: towerStats.enemySlowAmount -= effect; break;
         }
+    }
+
+    public void ApplyMergeBonus()
+    {
+        towerStats.attackDamage *= 2.1f;
+        //towerStats.attackSpeed *= 2.1f;
+        //towerStats.attackRange *= 2.1f;
+        //towerStats.criticalChance *= 2.1f;
+        //towerStats.criticalDamage *= 2.1f;
+        //towerStats.goldEarnAmount *= 2.1f;
+        //towerStats.enemySlowAmount *= 2.1f;
     }
 
     private void Update()
@@ -214,7 +225,6 @@ public class Tower : MonoBehaviour
             }
         }
     }
-
 
     private void HideAttackRange()
     {

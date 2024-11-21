@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5143835, g: 0.7012236, b: 0.8391523, a: 1}
+  m_IndirectSpecularColor: {r: 0.5142564, g: 0.7013964, b: 0.83930665, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4158,7 +4158,7 @@ Transform:
   m_GameObject: {fileID: 230161349}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.5, y: 3.6, z: -6.5}
+  m_LocalPosition: {x: 5.5, y: 3.6, z: -6.55}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4949,7 +4949,7 @@ Transform:
   m_GameObject: {fileID: 257345762}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.5, y: 3.6, z: -12.5}
+  m_LocalPosition: {x: 2.5, y: 3.6, z: -12.55}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9396,7 +9396,7 @@ Transform:
   m_GameObject: {fileID: 502800060}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.5, y: 3.6, z: -12.5}
+  m_LocalPosition: {x: -0.5, y: 3.6, z: -12.55}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11664,7 +11664,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 036d7f8aa3fbb4c4caf26c47cdd5a56e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitPrefab: {fileID: 6219210345957537360, guid: 56fd69e7b762ff54fac20581f3224592, type: 3}
+  unitPrefab: {fileID: 6285209290496832306, guid: a604ffbac01747d6b33aff45d9e3dd8a, type: 3}
   hpSliderPrefab: {fileID: 1292146651817448466, guid: fa97addece4b0314a87a7ab4d893085a, type: 3}
   towerBuildButtonPrefab: {fileID: 6010510747048211428, guid: 5702c37976668514dbb0663126ba39fb, type: 3}
   towerMergeButtonPrefab: {fileID: 3299047786225081237, guid: 9e812cf6aec6ac54e8529cc79e3fca3b, type: 3}
@@ -15815,7 +15815,7 @@ Transform:
   m_GameObject: {fileID: 882848585}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.5, y: 3.6, z: -6.5}
+  m_LocalPosition: {x: -3.5, y: 3.6, z: -6.55}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -28603,7 +28603,7 @@ Transform:
   m_GameObject: {fileID: 1637816725}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.5, y: 3.6, z: -12.5}
+  m_LocalPosition: {x: 5.5, y: 3.6, z: -12.55}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -36987,7 +36987,7 @@ Transform:
   m_GameObject: {fileID: 2121403070}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.5, y: 3.6, z: -12.5}
+  m_LocalPosition: {x: -3.5, y: 3.6, z: -12.55}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []

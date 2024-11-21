@@ -265,25 +265,21 @@ public class TowerManager : MonoBehaviour
             RemoveMergeEffect(mergingTower);
 
             tower.level++;
+            tower.ApplyMergeBonus();
 
             Tiles tileOfOtherTower = mergingTower.GetComponentInParent<Tiles>();
             if (tileOfOtherTower != null)
             {
                 tileOfOtherTower.HasTower = false;
             }
-
             Destroy(mergingTower.gameObject);
-
-            if (tower.transform.parent.TryGetComponent<Tiles>(out Tiles currentTile))
-            {
-                currentTile.HasTower = true;
-            }
 
             RemoveMergeEffect(tower);
         }
 
         HideMergeButton();
     }
+
     private IEnumerator PeriodicEffectUpdate()
     {
         while (true)

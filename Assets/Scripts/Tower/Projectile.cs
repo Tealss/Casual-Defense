@@ -120,8 +120,8 @@ public class Projectile : MonoBehaviour
             {
                 monster.TakeDamage(finalDamage);
 
-                Vector3 spawnPosition = target.transform.position + new Vector3(0.5f, 1f, 0); // 몬스터 머리 위
-                string damageText = isCriticalHit ? $"-{finalDamage}!" : $"-{finalDamage}";
+                Vector3 spawnPosition = target.transform.position + new Vector3(0.5f, 1f, 0);
+                string damageText = isCriticalHit ? $"-{(int)finalDamage}!" : $"-{(int)finalDamage}";
                 Color textColor = isCriticalHit ? Color.red : Color.white;
 
                 FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
@@ -134,7 +134,7 @@ public class Projectile : MonoBehaviour
                     Debug.LogWarning("FadeOutTextSpawner를 찾을 수 없습니다!");
                 }
 
-                // Debug.Log($"[DealDamageToTarget] {target.name}에게 {finalDamage} 데미지 적용");
+                Debug.Log($"[DealDamageToTarget] {target.name}에게 {finalDamage} 데미지 적용");
             }
         }
     }

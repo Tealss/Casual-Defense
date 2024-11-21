@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 public class Monster : MonoBehaviour
 {
@@ -46,6 +47,15 @@ public class Monster : MonoBehaviour
 
         Transform targetWaypoint = waypoints[currentWaypointIndex];
         float step = speed * Time.deltaTime;
+
+        Vector3 moveDirection = targetWaypoint.position - transform.position;
+
+        if (moveDirection != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * speed);
+        }
+
         transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.position, step);
 
         if (Vector3.Distance(transform.position, targetWaypoint.position) < 0.1f)
@@ -73,6 +83,17 @@ public class Monster : MonoBehaviour
             currentHealth = 0;
             isAlive = false;
             ReturnToPool();
+
+            Vector3 spawnPosition = transform.position + new Vector3(1f, 1.5f, 0);
+            string addGoldText =  $"+100";
+            Color textColor = Color.yellow;
+
+            FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
+            if (fadeOutTextSpawner != null)
+            {
+                fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, addGoldText, textColor);
+            }
+            GameManager.I.AddGold(100);
         }
 
         UpdateHpUI();
@@ -87,7 +108,7 @@ public class Monster : MonoBehaviour
 
         if (hpText != null)
         {
-            hpText.text = $"{currentHealth}";
+            hpText.text = $"{(int)currentHealth}";
         }
     }
 
@@ -119,7 +140,7 @@ public class Monster : MonoBehaviour
         hpText = hpSlider.GetComponentInChildren<Text>();
         if (hpText != null)
         {
-            hpText.text = $"{currentHealth}";
+            hpText.text = $"{(int)currentHealth}";
         }
     }
 }

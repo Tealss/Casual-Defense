@@ -109,8 +109,32 @@ public class ItemManager : MonoBehaviour
             currentLevels[index]++;
             SoundManager.I.PlaySoundEffect(3);
         }
-        else
+        else 
         {
+            if (currentLevels[index] >= 5 && currentLevels[index] <= 14)
+            {
+
+                if (UnityEngine.Random.Range(0, 100) < 30)
+                {
+                    currentLevels[index]--;
+                    SoundManager.I.PlaySoundEffect(4);
+                }
+            }
+            else if (currentLevels[index] >= 15 && currentLevels[index] <= 19)
+            {
+ 
+                if (UnityEngine.Random.Range(0, 100) < 30)
+                {
+                    slotOccupied[index] = false; 
+                    itemGrades[index] = 0; 
+                    currentLevels[index] = 0; 
+                    NotifyItemStatsChanged();
+                    UpdateUIForSlot(index);
+                    SoundManager.I.PlaySoundEffect(5);
+                    return; 
+                }
+            }
+
             SoundManager.I.PlaySoundEffect(4);
         }
 
@@ -121,6 +145,7 @@ public class ItemManager : MonoBehaviour
         NotifyItemStatsChanged();
         UpdateUIForSlot(index);
     }
+
 
     private void UpdateBuyButtonState() => buyButton.interactable = GameManager.I.gold >= 300;
 
@@ -270,7 +295,7 @@ public class ItemManager : MonoBehaviour
         switch (itemType)
         {
             case 0:
-                return $" + {level * grade * 3}"; // 공격력
+                return $" + {level * grade * 10}"; // 공격력
             case 1:
                 return $" + {level * grade * 0.05}"; // 스피드
             case 2:
@@ -292,7 +317,7 @@ public class ItemManager : MonoBehaviour
     {
         switch (itemType)
         {
-            case 0: return level * grade * 3f;
+            case 0: return level * grade * 10f;
             case 1: return level * grade * 0.05f;
             case 2: return level * grade * 0.1f;
             case 3: return level * grade * 0.5f;
