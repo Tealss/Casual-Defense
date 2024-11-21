@@ -22,6 +22,12 @@ public class Monster : MonoBehaviour
         currentHealth = maxHealth;
     }
 
+    public void SetMaxHealth(float value)
+    {
+        maxHealth = value;
+        currentHealth = maxHealth;  
+    }
+
     public void Initialize(Transform[] waypoints, float speed, ObjectPool objectPool)
     {
         currentHealth = maxHealth;
