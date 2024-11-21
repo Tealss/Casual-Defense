@@ -12,8 +12,18 @@ public class TowerManager : MonoBehaviour
     private ObjectPool objectPool;
     private Tiles selectedTile;
     private Tower selectedTower;
+    public int[] towerTypes = new int[6];
 
+    public static TowerManager I { get; private set; }
     private Dictionary<Tower, GameObject> activeEffects = new Dictionary<Tower, GameObject>();
+
+    private void Awake()
+    {
+        if (I == null)
+            I = this;
+        else
+            Destroy(gameObject);
+    }
 
     void Start()
     {
@@ -146,7 +156,18 @@ public class TowerManager : MonoBehaviour
 
         if (GameManager.I.gold < 300)
         {
-            //fadeout 텍스트용 자리
+            Vector3 spawnPosition = clickedTile.transform.position + new Vector3(0.2f, 0.2f, 0);
+            string notEnoughGoldText = "Not Enough Gold!";
+            Color textColor = Color.red;
+
+            FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
+            if (fadeOutTextSpawner != null)
+            {
+                fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, notEnoughGoldText, textColor);
+            }
+
+            HideBuildButton();
+            return; // 골드 부족 시 함수 종료
         }
 
         GameManager.I.SpendGold(300);
@@ -179,6 +200,8 @@ public class TowerManager : MonoBehaviour
                 }
             }
 
+            //towerTypes[randomTowerIndex] = randomTowerIndex;
+            //Debug.Log($"타워 타입: {randomTowerIndex}");
             SoundManager.I.PlaySoundEffect(6);
             selectedTowerGO.transform.position = towerPosition;
             selectedTowerGO.transform.SetParent(clickedTile.transform);

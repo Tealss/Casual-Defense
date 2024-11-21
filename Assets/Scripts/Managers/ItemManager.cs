@@ -31,7 +31,7 @@ public class ItemManager : MonoBehaviour
 
     public readonly float[] successRates = { 95f, 90f, 85f, 80f, 75f, 70f, 65f, 60f, 55f, 50f, 45f, 40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f, 3f };
     public readonly float[] probabilities = { 83.894f, 10f, 3f, 1.2f, 0.7f, 0.2f, 0.007f };
-    public readonly int[] sellPrices = { 50, 200, 500, 1000, 3000, 5000, 20000 };
+    public readonly int[] sellPrices = { 30, 200, 500, 1000, 3000, 5000, 20000 };
     public readonly Color[] gradeColors = { Color.white, new Color(0.7f, 0.9f, 1f), new Color(0.8f, 0.6f, 1f), new Color(1f, 0.6f, 0.8f), new Color(1f, 0.8f, 0.4f), Color.yellow, Color.red };
 
     private void Awake()
@@ -96,7 +96,7 @@ public class ItemManager : MonoBehaviour
     {
         if (!slotOccupied[index] || currentLevels[index] >= maxLevel) return;
 
-        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index]));
+        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.3f, currentLevels[index]));
         float successRate = successRates[currentLevels[index]];
 
         if (GameManager.I.gold < enhancementCost) return;
@@ -147,11 +147,11 @@ public class ItemManager : MonoBehaviour
     }
 
 
-    private void UpdateBuyButtonState() => buyButton.interactable = GameManager.I.gold >= 300;
+    private void UpdateBuyButtonState() => buyButton.interactable = GameManager.I.gold >= 200;
 
     private void PurchaseItem()
     {
-        const int itemCost = 300;
+        const int itemCost = 200;
         int purchasedQuantity = 0;
         int totalCost = itemCost * buyQuantity;
 
@@ -256,7 +256,7 @@ public class ItemManager : MonoBehaviour
         string typeDescription = GetItemTypeDescription(itemType);
         string optionDescription = GetItemTypeOption(itemType, level, grade);
 
-        float successRate = successRates[level - 1];  // 성공 확률 (현재 레벨에 따른)
+        float successRate = successRates[level - 1]; 
         Color gradeColor = gradeColors[grade - 1];
         int sellPrice = sellPrices[grade - 1];
         string coloredGradeName = $"<color=#{ColorUtility.ToHtmlStringRGBA(gradeColor)}>{gradeName}</color>";

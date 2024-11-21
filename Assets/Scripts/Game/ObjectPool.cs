@@ -13,6 +13,7 @@ public class ObjectPool : MonoBehaviour
     public GameObject[] towerPrefabs = new GameObject[7];
     public GameObject[] mergeEftPrefabs = new GameObject[7];
     public GameObject[] projectilePrefabs = new GameObject[7];
+    public GameObject[] hitEftPrefabs = new GameObject[7]; 
     public TowerStats[] towerStatsArray = new TowerStats[7];
 
     public Queue<GameObject> unitPool = new Queue<GameObject>();
@@ -23,6 +24,7 @@ public class ObjectPool : MonoBehaviour
 
     public Queue<GameObject>[] towerPools = new Queue<GameObject>[7];
     public Queue<GameObject>[] mergeEftPools = new Queue<GameObject>[7];
+    public Queue<GameObject>[] hitEftPools = new Queue<GameObject>[7]; 
 
     private int initialPoolSize = 0;
 
@@ -32,7 +34,7 @@ public class ObjectPool : MonoBehaviour
         InitializePool(hpSliderPrefab, hpSliderPool, initialPoolSize);
         InitializePool(towerBuildButtonPrefab, towerBuildButtonPool, initialPoolSize);
         InitializePool(towerMergeButtonPrefab, towerMergeButtonPool, initialPoolSize);
-        InitializePool(projectilePrefabs[0], projectilePool, initialPoolSize);  
+        InitializePool(projectilePrefabs[0], projectilePool, initialPoolSize);
 
         for (int i = 0; i < towerPrefabs.Length; i++)
         {
@@ -41,6 +43,9 @@ public class ObjectPool : MonoBehaviour
 
             mergeEftPools[i] = new Queue<GameObject>();
             InitializePool(mergeEftPrefabs[i], mergeEftPools[i], initialPoolSize);
+
+            hitEftPools[i] = new Queue<GameObject>(); // Initialize hit effect pools
+            InitializePool(hitEftPrefabs[i], hitEftPools[i], initialPoolSize);
         }
     }
 
@@ -144,14 +149,36 @@ public class ObjectPool : MonoBehaviour
     {
         ReturnToPool(projectile, projectilePool);
     }
+
+    public GameObject GetHitEffectFromPool(int effectIndex)
+    {
+        if (effectIndex < 0 || effectIndex >= hitEftPools.Length)
+        {
+            Debug.LogError("Hit Effect Index Error");
+            return null;
+        }
+
+        return GetFromPool(hitEftPools[effectIndex], hitEftPrefabs[effectIndex]);
+    }
+
+    public void ReturnHitEffectToPool(GameObject hitEffect, int effectIndex)
+    {
+        if (effectIndex < 0 || effectIndex >= hitEftPools.Length)
+        {
+            Debug.LogError("Hit Effect Index Error");
+            return;
+        }
+
+        ReturnToPool(hitEffect, hitEftPools[effectIndex]);
+    }
+
     public void ReturnUnitToPool(GameObject unit)
     {
         ReturnToPool(unit, unitPool);
     }
+
     public void ReturnHpSliderToPool(GameObject slider)
     {
         ReturnToPool(slider, hpSliderPool);
     }
-
-
 }

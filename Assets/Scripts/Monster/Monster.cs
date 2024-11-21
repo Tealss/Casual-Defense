@@ -84,8 +84,8 @@ public class Monster : MonoBehaviour
             isAlive = false;
             ReturnToPool();
 
-            Vector3 spawnPosition = transform.position + new Vector3(1f, 1.5f, 0);
-            string addGoldText =  $"+100";
+            Vector3 spawnPosition = transform.position + new Vector3(0.5f, 1.5f, 0);
+            string addGoldText =  $"+50";
             Color textColor = Color.yellow;
 
             FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
@@ -93,7 +93,7 @@ public class Monster : MonoBehaviour
             {
                 fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, addGoldText, textColor);
             }
-            GameManager.I.AddGold(100);
+            GameManager.I.AddGold(50);
         }
 
         UpdateHpUI();

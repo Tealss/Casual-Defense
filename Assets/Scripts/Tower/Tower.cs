@@ -138,7 +138,29 @@ public class Tower : MonoBehaviour
             HandleTowerSelection();
         }
     }
+    //public void SetProjectileStats(Projectile projectile)
+    //{
+    //    int towerTypeIndex = GetTowerTypeIndex(towerType); 
 
+    //    projectile.SetTowerStats(towerStats);
+    //    projectile.SetTowerTransform(transform, towerTypeIndex);
+    //}
+
+    //private int GetTowerTypeIndex(string towerType)
+    //{
+    //    switch (towerType)
+    //    {
+    //        case "1": return 0;
+    //        case "2": return 1;
+    //        case "3": return 2;
+    //        case "4": return 3;
+    //        case "5": return 4;
+    //        case "6": return 5;
+    //        case "7": return 6;
+    //        // 다른 타입 추가
+    //        default: return -1; // 기본값
+    //    }
+    //}
     private void HandleTowerSelection()
     {
 
