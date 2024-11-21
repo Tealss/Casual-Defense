@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using static UnityEngine.GraphicsBuffer;
 
 public class ItemManager : MonoBehaviour
 {
@@ -98,7 +99,7 @@ public class ItemManager : MonoBehaviour
         int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index]));
         float successRate = successRates[currentLevels[index]];
 
-        if (GameManager.I.Gold < enhancementCost) return;
+        if (GameManager.I.gold < enhancementCost) return;
 
         bool spent = GameManager.I.SpendGold(enhancementCost);
         if (!spent) return;
@@ -121,7 +122,7 @@ public class ItemManager : MonoBehaviour
         UpdateUIForSlot(index);
     }
 
-    private void UpdateBuyButtonState() => buyButton.interactable = GameManager.I.Gold >= 300;
+    private void UpdateBuyButtonState() => buyButton.interactable = GameManager.I.gold >= 300;
 
     private void PurchaseItem()
     {
@@ -129,7 +130,7 @@ public class ItemManager : MonoBehaviour
         int purchasedQuantity = 0;
         int totalCost = itemCost * buyQuantity;
 
-        if (GameManager.I.Gold < totalCost) return;
+        if (GameManager.I.gold < totalCost) return;
 
         for (int i = 0; i < buyQuantity; i++)
         {
@@ -269,15 +270,15 @@ public class ItemManager : MonoBehaviour
         switch (itemType)
         {
             case 0:
-                return $" + {level * grade * 5}"; // 공격력
+                return $" + {level * grade * 3}"; // 공격력
             case 1:
-                return $" + {level * grade * 0.1}"; // 스피드
+                return $" + {level * grade * 0.05}"; // 스피드
             case 2:
                 return $" + {level * grade * 0.1}"; // 범위
             case 3:
-                return $" + {level * grade * 2}%"; // 크확
+                return $" + {level * grade * 0.5}%"; // 크확
             case 4:
-                return $" + {level * grade * 1}%"; // 크뎀
+                return $" + {level * grade * 0.5}%"; // 크뎀
             case 5:
                 return $" + {level * grade * 2}%"; // 골드
             case 6:
@@ -291,11 +292,11 @@ public class ItemManager : MonoBehaviour
     {
         switch (itemType)
         {
-            case 0: return level * grade * 5f;
-            case 1: return level * grade * 0.1f;
+            case 0: return level * grade * 3f;
+            case 1: return level * grade * 0.05f;
             case 2: return level * grade * 0.1f;
-            case 3: return level * grade * 2f;
-            case 4: return level * grade * 1f;
+            case 3: return level * grade * 0.5f;
+            case 4: return level * grade * 0.5f;
             case 5: return level * grade * 2f;
             case 6: return level * grade * 5f;
             default: return 0f;

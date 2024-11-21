@@ -6,9 +6,9 @@ public class GameManager : MonoBehaviour
 {
     public Tower[] towers;
     public static GameManager I { get; private set; }
-    public int Gold { get; private set; } = 100000;
-    public int LifePoints { get; private set; } = 30;
-    public int TotalLifePoints { get; private set; } = 30;
+    public int gold { get; private set; } = 100000;
+    public int lifePoints { get; private set; } = 30;
+    public int totalLifePoints { get; private set; } = 30;
 
     private void Awake()
     {
@@ -33,9 +33,9 @@ public class GameManager : MonoBehaviour
 
     public bool SpendGold(int amount)
     {
-        if (Gold >= amount)
+        if (gold >= amount)
         {
-            Gold -= amount;
+            gold -= amount;
             return true;
         }
         else
@@ -47,20 +47,20 @@ public class GameManager : MonoBehaviour
 
     public void AddGold(int amount)
     {
-        Gold += amount;
+        gold += amount;
     }
 
     public void DecreaseLifePoints(int amount)
     {
-        LifePoints -= amount;
-        if (LifePoints < 0) LifePoints = 0;
+        lifePoints -= amount;
+        if (lifePoints < 0) lifePoints = 0;
 
         if (GameUiManager.I != null)
         {
-            GameUiManager.I.UpdateLifePointsText(LifePoints, TotalLifePoints);
+            GameUiManager.I.UpdateLifePointsText(lifePoints, totalLifePoints);
         }
 
-        if (LifePoints <= 0)
+        if (lifePoints <= 0)
         {
             if (GameUiManager.I != null)
             {

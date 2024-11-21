@@ -100,11 +100,11 @@ public class WaveManager : MonoBehaviour
                 Debug.LogError("MonsterHPSlider 컴포넌트를 찾을 수 없습니다.");
             }
 
-            UnitMovement unitMovement = unit.GetComponent<UnitMovement>();
-            if (unitMovement != null)
+            Monster monsterMovement = unit.GetComponent<Monster>();
+            if (monsterMovement != null)
             {
-                unitMovement.Initialize(waypoints, unitSpeed, objectPool);
-                unitMovement.SetHpSlider(hpSlider);
+                monsterMovement.Initialize(waypoints, unitSpeed, objectPool);
+                monsterMovement.SetHpSlider(hpSlider);
             }
 
             unitsSpawned++;
@@ -115,11 +115,11 @@ public class WaveManager : MonoBehaviour
     }
 
 
-    public void RemoveUnit(GameObject unit)
-    {
-        if (unit != null)
-        {
-            objectPool.ReturnToPool(unit, objectPool.unitPool);
-        }
-    }
+    //public void RemoveUnit(GameObject unit)
+    //{
+    //    if (unit != null)
+    //    {
+    //        objectPool.ReturnToPool(unit, objectPool.unitPool);
+    //    }
+    //}
 }

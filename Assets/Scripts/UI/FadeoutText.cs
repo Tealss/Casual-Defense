@@ -1,49 +1,37 @@
-//using UnityEngine;
-//using UnityEngine.UI;
-//using System.Collections;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-//public class TextFadeOut : MonoBehaviour
-//{
-//    public Text characterNameText;
-//    public float fadeDuration = 3f;
+public class FadeOutText : MonoBehaviour
+{
+    public Text textComponent;
+    public float moveSpeed;
+    public float fadeDuration;
 
-//    private IEnumerator fadeOutCoroutine;
+    private Vector3 moveDirection = new Vector3(1, 1, 0).normalized;
 
-//    void Start()
-//    {
-//        characterNameText.enabled = false;
-//    }
+    private Color textColor;
 
-//    public void DisplayErrorMessage(string message, Vector2 position, int fontSize, Color fontColor)
-//    {
-//        characterNameText.text = message;
-//        characterNameText.fontSize = fontSize;
-//        characterNameText.rectTransform.anchoredPosition = position;
-//        characterNameText.color = fontColor;
-//        characterNameText.enabled = true;
+    private void Start()
+    {
+        textColor = textComponent.color;
+        Destroy(gameObject, fadeDuration);
+    }
 
-//        if (fadeOutCoroutine != null)
-//        {
-//            StopCoroutine(fadeOutCoroutine);
-//        }
-//        fadeOutCoroutine = FadeOutText();
-//        StartCoroutine(fadeOutCoroutine);
-//    }
+    private void Update()
+    {
+        transform.position += moveDirection * moveSpeed * Time.deltaTime;
 
-//    private IEnumerator FadeOutText()
-//    {
-//        float elapsedTime = 0f;
-//        Color textColor = characterNameText.color;
+        // 페이드아웃 처리
+        float fadeAmount = Time.deltaTime / fadeDuration;
+        textColor.a -= fadeAmount;
+        textComponent.color = textColor;
+    }
 
-//        while (elapsedTime < fadeDuration)
-//        {
-//            elapsedTime += Time.deltaTime;
-//            float alpha = Mathf.Lerp(1f, 0f, elapsedTime / fadeDuration);
-//            textColor.a = alpha;
-//            characterNameText.color = textColor;
-//            yield return null;
-//        }
-
-//        characterNameText.enabled = false;
-//    }
-//}
+    public void Initialize(string message, Color color)
+    {
+        textComponent.text = message;
+        textColor = color;
+        textComponent.color = textColor;
+    }
+}

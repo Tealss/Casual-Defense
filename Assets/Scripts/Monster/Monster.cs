@@ -1,53 +1,119 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Monster : MonoBehaviour
 {
-    [Header("몬스터 설정")]
-    public float MaxHealth = 100f;
-    public float CurrentHealth;
+    public float maxHealth = 1000f;
+    public float currentHealth;
 
+    private Transform[] waypoints;
+    private int currentWaypointIndex = 0;
+    private float speed;
+    private GameManager gameManager;
+    private ObjectPool objectPool;
     private GameObject hpSlider;
-    private bool isAlive = true; 
 
-    void Start()
+    private bool isAlive = true;
+    private Slider hpSliderComponent;
+    private Text hpText;
+
+    private void Start()
     {
-        CurrentHealth = MaxHealth;
+        currentHealth = maxHealth;
     }
 
-    public void SetHpSlider(GameObject slider)
+    public void Initialize(Transform[] waypoints, float speed, ObjectPool objectPool)
     {
-        hpSlider = slider;
+        currentHealth = maxHealth;
+        this.waypoints = waypoints;
+        this.speed = speed;
+        this.objectPool = objectPool;
+        this.currentWaypointIndex = 0;
+        isAlive = true;
+
+        gameManager = FindObjectOfType<GameManager>();
     }
 
-    public GameObject GetHpSlider()
+    void Update()
     {
-        return hpSlider;
+        if (!isAlive || waypoints == null || waypoints.Length == 0) return;
+
+        Transform targetWaypoint = waypoints[currentWaypointIndex];
+        float step = speed * Time.deltaTime;
+        transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.position, step);
+
+        if (Vector3.Distance(transform.position, targetWaypoint.position) < 0.1f)
+        {
+            currentWaypointIndex++;
+
+            if (currentWaypointIndex >= waypoints.Length)
+            {
+                if (gameManager != null)
+                    gameManager.DecreaseLifePoints(1);
+
+                ReturnToPool();
+                return;
+            }
+        }
     }
 
     public void TakeDamage(float damage)
     {
         if (!isAlive) return;
 
-        CurrentHealth -= damage;
-        if (CurrentHealth <= 0)
+        currentHealth -= damage;
+        if (currentHealth <= 0)
         {
-            CurrentHealth = 0;
-            isAlive = false;  
-            Die();  
+            currentHealth = 0;
+            isAlive = false;
+            ReturnToPool();
+        }
+
+        UpdateHpUI();
+    }
+
+    private void UpdateHpUI()
+    {
+        if (hpSliderComponent != null)
+        {
+            hpSliderComponent.value = currentHealth;
+        }
+
+        if (hpText != null)
+        {
+            hpText.text = $"{currentHealth}";
         }
     }
 
-    public bool IsAlive()
+    private void ReturnToPool()
     {
-        return isAlive;
-    }
+        currentWaypointIndex = 0;
+        isAlive = false;
 
-    private void Die()
-    {
         if (hpSlider != null)
         {
-            hpSlider.SetActive(false);
+            objectPool.ReturnToPool(hpSlider, objectPool.hpSliderPool);
+            hpSlider = null;
         }
-        gameObject.SetActive(false);
+
+        objectPool.ReturnToPool(gameObject, objectPool.unitPool);
+    }
+
+    public void SetHpSlider(GameObject slider)
+    {
+        hpSlider = slider;
+
+        hpSliderComponent = hpSlider.GetComponent<Slider>();
+        if (hpSliderComponent != null)
+        {
+            hpSliderComponent.maxValue = maxHealth;
+            hpSliderComponent.value = currentHealth;
+        }
+
+        hpText = hpSlider.GetComponentInChildren<Text>();
+        if (hpText != null)
+        {
+            hpText.text = $"{currentHealth}";
+        }
     }
 }

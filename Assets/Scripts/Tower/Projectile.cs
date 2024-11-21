@@ -106,10 +106,11 @@ public class Projectile : MonoBehaviour
         float randomChance = Random.Range(0f, 100f);
         bool isCriticalHit = randomChance <= criticalChance;
 
+        float finalDamage = damage; // 원래 데미지
         if (isCriticalHit)
         {
-            damage *= criticalDamage;
-            //Debug.Log($"[DealDamageToTarget] 크리티컬 히트 발생! (확률: {criticalChance * 100}%)");
+            finalDamage *= criticalDamage;
+            // Debug.Log($"[DealDamageToTarget] 크리티컬 히트 발생! (확률: {criticalChance * 100}%)");
         }
 
         if (target != null && target.CompareTag("Monster"))
@@ -117,11 +118,27 @@ public class Projectile : MonoBehaviour
             Monster monster = target.GetComponent<Monster>();
             if (monster != null)
             {
-                monster.TakeDamage(damage);
-                //Debug.Log($"[DealDamageToTarget] {target.name}에게 {damage} 데미지 적용");
+                monster.TakeDamage(finalDamage);
+
+                Vector3 spawnPosition = target.transform.position + new Vector3(0.5f, 1f, 0); // 몬스터 머리 위
+                string damageText = isCriticalHit ? $"-{finalDamage}!" : $"-{finalDamage}";
+                Color textColor = isCriticalHit ? Color.red : Color.white;
+
+                FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
+                if (fadeOutTextSpawner != null)
+                {
+                    fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, damageText, textColor);
+                }
+                else
+                {
+                    Debug.LogWarning("FadeOutTextSpawner를 찾을 수 없습니다!");
+                }
+
+                // Debug.Log($"[DealDamageToTarget] {target.name}에게 {finalDamage} 데미지 적용");
             }
         }
     }
+
 
     private void ReturnToPool()
     {

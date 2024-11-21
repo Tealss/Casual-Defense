@@ -30,7 +30,7 @@ public class MonsterHPSlider : MonoBehaviour
             return;
         }
 
-        SetMaxHealth(monster.MaxHealth);
+        SetMaxHealth(monster.maxHealth);
         UpdateHealth();
     }
 
@@ -50,7 +50,7 @@ public class MonsterHPSlider : MonoBehaviour
             return;
         }
 
-        slider.value = monster.CurrentHealth;
+        slider.value = monster.currentHealth;
 
         UpdateSliderColor();
     }
@@ -77,7 +77,7 @@ public class MonsterHPSlider : MonoBehaviour
 
     private void UpdateSliderColor()
     {
-        float healthPercentage = monster.CurrentHealth / monster.MaxHealth;
+        float healthPercentage = monster.currentHealth / monster.maxHealth;
 
         if (healthPercentage > 0.5f)
         {

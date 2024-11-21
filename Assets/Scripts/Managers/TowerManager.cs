@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
+using static UnityEngine.GraphicsBuffer;
 
 public class TowerManager : MonoBehaviour
 {
@@ -85,7 +86,7 @@ public class TowerManager : MonoBehaviour
 
     private void ShowBuildButton(Vector3 screenPosition)
     {
-        if (GameManager.I.Gold < 300) 
+        if (GameManager.I.gold < 300) 
         {
             Debug.Log("No Money");
         }
@@ -143,7 +144,7 @@ public class TowerManager : MonoBehaviour
     {
         if (clickedTile == null || clickedTile.HasTower) return;
 
-        if (GameManager.I.Gold < 300)
+        if (GameManager.I.gold < 300)
         {
             //fadeout 텍스트용 자리
         }
@@ -182,6 +183,17 @@ public class TowerManager : MonoBehaviour
             selectedTowerGO.transform.position = towerPosition;
             selectedTowerGO.transform.SetParent(clickedTile.transform);
             clickedTile.HasTower = true;
+
+            Vector3 spawnPosition = towerPosition + new Vector3(0.2f, 0.2f, 0);
+            string damageText = $"-300";
+            Color textColor = Color.red;
+
+            FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
+            if (fadeOutTextSpawner != null)
+            {
+                fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, damageText, textColor);
+            }
+
             HideBuildButton();
         }
     }
