@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
@@ -12,7 +13,19 @@ public class Projectile : MonoBehaviour
 
     private Transform towerTransform;
     private Vector3 startPosition;
-    private Vector3 targetPosition;  // 목표 위치 추가
+    private Vector3 targetPosition;
+
+    private int towerTypeIndex;
+
+    private ObjectPool objectPool;
+    private EffectManager effectManager;
+
+    private void Awake()
+    {
+        // ObjectPool을 미리 한 번만 찾아서 저장해두기
+        objectPool = FindObjectOfType<ObjectPool>();
+        effectManager = FindObjectOfType<EffectManager>(); // Initialize effectManager
+    }
 
     private void OnEnable()
     {
@@ -22,16 +35,28 @@ public class Projectile : MonoBehaviour
         {
             startPosition = towerTransform.position + new Vector3(0, 2f, 0);
             transform.position = startPosition;
-            //Debug.Log($"[OnEnable] 발사체 시작 위치: {transform.position}");
         }
-
-        //Debug.Log($"[OnEnable] 발사체 활성화: 기본 속도: {speed}, 기본 데미지: {damage}");
     }
 
     private void OnDisable()
     {
         isActive = false;
         target = null;
+    }
+
+    private int GetTowerTypeIndexFromString(string towerType)
+    {
+        switch (towerType)
+        {
+            case "T1(Clone)": return 0;
+            case "T2(Clone)": return 1;
+            case "T3(Clone)": return 2;
+            case "T4(Clone)": return 3;
+            case "T5(Clone)": return 4;
+            case "T6(Clone)": return 5;
+            case "T7(Clone)": return 6;
+            default: return -1;
+        }
     }
 
     private void Update()
@@ -47,12 +72,7 @@ public class Projectile : MonoBehaviour
         if (targetTransform != null && targetTransform.gameObject.activeInHierarchy)
         {
             target = targetTransform;
-            targetPosition = target.position;  // 타겟 위치 저장
-            //Debug.Log($"[SetTarget] 타겟 설정됨: {target.name}");
-        }
-        else
-        {
-            //Debug.LogWarning("[SetTarget] 유효하지 않은 타겟이 설정되었습니다.");
+            targetPosition = target.position;
         }
     }
 
@@ -64,32 +84,28 @@ public class Projectile : MonoBehaviour
             speed = towerStats.projectileSpeed;
             criticalChance = towerStats.criticalChance;
             criticalDamage = towerStats.criticalDamage;
-            //Debug.Log($"[SetTowerStats] 적용 후 스피드: {speed}, 데미지: {damage}, 크리티컬 확률: {criticalChance}, 크리티컬 데미지: {criticalDamage}");
         }
-        else
-        {
-            Debug.LogWarning("[SetTowerStats] 타워 스탯이 null입니다.");
-        }
+    }
+
+    public void SetTowerTransform(Transform towerTransform, string towerType)
+    {
+        this.towerTransform = towerTransform;
+        this.towerTypeIndex = GetTowerTypeIndexFromString(towerType);  // towerType을 인덱스로 변환
     }
 
     private void MoveTowardsTarget()
     {
-        if (target != null && target.gameObject.activeInHierarchy)
-        {
-            targetPosition = target.position;
-        }
-
+        // 타겟이 비활성화되면 바로 풀로 반환
         if (target == null || !target.gameObject.activeInHierarchy)
         {
-
-            if (target == null)
-            {
-                targetPosition = transform.position;
-            }
+            ReturnToPool();
+            return;
         }
 
-        transform.LookAt(targetPosition);
+        // 타겟의 위치 갱신
+        targetPosition = target.position;
 
+        transform.LookAt(targetPosition);
         float moveDistance = speed * Time.deltaTime;
         transform.Translate(Vector3.forward * moveDistance);
 
@@ -106,11 +122,10 @@ public class Projectile : MonoBehaviour
         float randomChance = Random.Range(0f, 100f);
         bool isCriticalHit = randomChance <= criticalChance;
 
-        float finalDamage = damage; // 원래 데미지
+        float finalDamage = damage; // 기본 데미지
         if (isCriticalHit)
         {
             finalDamage *= criticalDamage;
-            // Debug.Log($"[DealDamageToTarget] 크리티컬 히트 발생! (확률: {criticalChance * 100}%)");
         }
 
         if (target != null && target.CompareTag("Monster"))
@@ -120,7 +135,12 @@ public class Projectile : MonoBehaviour
             {
                 monster.TakeDamage(finalDamage);
 
-                Vector3 spawnPosition = target.transform.position + new Vector3(0.5f, 1f, 0);
+                if (effectManager != null)
+                {
+                    effectManager.SpawnHitEffect(towerTypeIndex, target.position); // Use the correct towerTypeIndex
+                }
+
+                Vector3 spawnPosition = target.position + new Vector3(0.5f, 1f, 0);
                 string damageText = isCriticalHit ? $"-{(int)finalDamage}!" : $"-{(int)finalDamage}";
                 Color textColor = isCriticalHit ? Color.red : Color.white;
 
@@ -129,41 +149,16 @@ public class Projectile : MonoBehaviour
                 {
                     fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, damageText, textColor);
                 }
-                else
-                {
-                    Debug.LogWarning("FadeOutTextSpawner를 찾을 수 없습니다!");
-                }
-
-                Debug.Log($"[DealDamageToTarget] {target.name}에게 {finalDamage} 데미지 적용");
             }
         }
     }
 
-
     private void ReturnToPool()
     {
-        ObjectPool objectPool = FindObjectOfType<ObjectPool>();
         if (objectPool != null)
         {
             objectPool.ReturnProjectileToPool(gameObject);
-            //Debug.Log("[ReturnToPool] 발사체를 풀로 반환");
         }
         gameObject.SetActive(false);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Monster"))
-        {
-            //Debug.Log($"[OnTriggerEnter] 몬스터와 충돌: {other.name}");
-            DealDamageToTarget();
-            ReturnToPool();
-        }
-    }
-
-    public void SetTowerTransform(Transform towerTransform)
-    {
-        this.towerTransform = towerTransform;
-        //Debug.Log($"[SetTowerTransform] 타워 위치 설정: {towerTransform.position}");
     }
 }

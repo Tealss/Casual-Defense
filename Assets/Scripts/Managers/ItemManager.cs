@@ -50,13 +50,15 @@ public class ItemManager : MonoBehaviour
         buyButton.onClick.AddListener(PurchaseItem);
     }
 
-    private void InitializeItemSlotButtons()  
+    private void InitializeItemSlotButtons()
     {
         for (int i = 0; i < itemSlotButtons.Length; i++)
         {
             int index = i;
-            itemSlotButtons[index].onClick.AddListener(() => AttemptEnhancement(index));  
-            AddRightClickEventForItemSlotButton(itemSlotButtons[index], index); 
+
+            itemSlotButtons[index].onClick.RemoveAllListeners();
+            itemSlotButtons[index].onClick.AddListener(() => AttemptEnhancement(index));
+            AddRightClickEventForItemSlotButton(itemSlotButtons[index], index);
             UpdateUIForSlot(index);
         }
     }
@@ -96,7 +98,7 @@ public class ItemManager : MonoBehaviour
     {
         if (!slotOccupied[index] || currentLevels[index] >= maxLevel) return;
 
-        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.3f, currentLevels[index]));
+        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index]));
         float successRate = successRates[currentLevels[index]];
 
         if (GameManager.I.gold < enhancementCost) return;
@@ -109,32 +111,8 @@ public class ItemManager : MonoBehaviour
             currentLevels[index]++;
             SoundManager.I.PlaySoundEffect(3);
         }
-        else 
+        else
         {
-            if (currentLevels[index] >= 5 && currentLevels[index] <= 14)
-            {
-
-                if (UnityEngine.Random.Range(0, 100) < 30)
-                {
-                    currentLevels[index]--;
-                    SoundManager.I.PlaySoundEffect(4);
-                }
-            }
-            else if (currentLevels[index] >= 15 && currentLevels[index] <= 19)
-            {
- 
-                if (UnityEngine.Random.Range(0, 100) < 30)
-                {
-                    slotOccupied[index] = false; 
-                    itemGrades[index] = 0; 
-                    currentLevels[index] = 0; 
-                    NotifyItemStatsChanged();
-                    UpdateUIForSlot(index);
-                    SoundManager.I.PlaySoundEffect(5);
-                    return; 
-                }
-            }
-
             SoundManager.I.PlaySoundEffect(4);
         }
 
@@ -202,7 +180,9 @@ public class ItemManager : MonoBehaviour
 
     private void AddRightClickEventForItemSlotButton(Button button, int index)
     {
-        EventTrigger trigger = button.gameObject.AddComponent<EventTrigger>();
+        EventTrigger trigger = button.gameObject.GetComponent<EventTrigger>() ?? button.gameObject.AddComponent<EventTrigger>();
+
+        trigger.triggers.Clear();
         EventTrigger.Entry entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
         entry.callback.AddListener((data) =>
         {

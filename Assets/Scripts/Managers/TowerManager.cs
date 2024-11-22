@@ -12,7 +12,7 @@ public class TowerManager : MonoBehaviour
     private ObjectPool objectPool;
     private Tiles selectedTile;
     private Tower selectedTower;
-    public int[] towerTypes = new int[6];
+    public int[] towerTypes = new int[7];
 
     public static TowerManager I { get; private set; }
     private Dictionary<Tower, GameObject> activeEffects = new Dictionary<Tower, GameObject>();
@@ -200,8 +200,9 @@ public class TowerManager : MonoBehaviour
                 }
             }
 
-            //towerTypes[randomTowerIndex] = randomTowerIndex;
+            towerTypes[randomTowerIndex] = randomTowerIndex;
             //Debug.Log($"타워 타입: {randomTowerIndex}");
+
             SoundManager.I.PlaySoundEffect(6);
             selectedTowerGO.transform.position = towerPosition;
             selectedTowerGO.transform.SetParent(clickedTile.transform);

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Progress;
@@ -7,13 +8,11 @@ public class Tower : MonoBehaviour
     public TowerStats towerStats;
     public int level;
     public int towerIndex;
+    public string towerType;
+    public List<Item> items;
 
     private float attackTimer;
     private ObjectPool objectPool;
-    public string towerType;
-
-    public List<Item> items;
-
     private LineRenderer rangeIndicator;
     private bool isRangeVisible = false;
     private static Tower currentSelectedTower = null;
@@ -28,7 +27,6 @@ public class Tower : MonoBehaviour
         }
 
         attackTimer = 0f;
-
         InitializeStats();
 
         if (ItemManager.I != null)
@@ -58,7 +56,6 @@ public class Tower : MonoBehaviour
 
     private void OnDestroy()
     {
-        // 이벤트 등록 해제
         if (ItemManager.I != null)
             ItemManager.I.OnItemStatsChanged -= UpdateTowerStats;
     }
@@ -107,19 +104,12 @@ public class Tower : MonoBehaviour
             case 3: towerStats.criticalChance -= effect; break;
             case 4: towerStats.criticalDamage -= effect; break;
             case 5: towerStats.goldEarnAmount -= effect; break;
-            //case 6: towerStats.enemySlowAmount -= effect; break;
         }
     }
 
     public void ApplyMergeBonus()
     {
         towerStats.attackDamage *= 2.1f;
-        //towerStats.attackSpeed *= 2.1f;
-        //towerStats.attackRange *= 2.1f;
-        //towerStats.criticalChance *= 2.1f;
-        //towerStats.criticalDamage *= 2.1f;
-        //towerStats.goldEarnAmount *= 2.1f;
-        //towerStats.enemySlowAmount *= 2.1f;
     }
 
     private void Update()
@@ -133,37 +123,14 @@ public class Tower : MonoBehaviour
             Attack();
         }
 
-        if (Input.GetMouseButtonDown(0)) 
+        if (Input.GetMouseButtonDown(0))
         {
             HandleTowerSelection();
         }
     }
-    //public void SetProjectileStats(Projectile projectile)
-    //{
-    //    int towerTypeIndex = GetTowerTypeIndex(towerType); 
 
-    //    projectile.SetTowerStats(towerStats);
-    //    projectile.SetTowerTransform(transform, towerTypeIndex);
-    //}
-
-    //private int GetTowerTypeIndex(string towerType)
-    //{
-    //    switch (towerType)
-    //    {
-    //        case "1": return 0;
-    //        case "2": return 1;
-    //        case "3": return 2;
-    //        case "4": return 3;
-    //        case "5": return 4;
-    //        case "6": return 5;
-    //        case "7": return 6;
-    //        // 다른 타입 추가
-    //        default: return -1; // 기본값
-    //    }
-    //}
     private void HandleTowerSelection()
     {
-
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
@@ -178,18 +145,8 @@ public class Tower : MonoBehaviour
                     currentSelectedTower.HideAttackRange();
                 }
 
-
                 clickedTower.ShowAttackRangeFor2Seconds();
                 currentSelectedTower = clickedTower;
-
-                //Debug.Log($"Selected Tower Stats - {clickedTower.name}:");
-                //Debug.Log($"Attack Damage: {clickedTower.towerStats.attackDamage}");
-                //Debug.Log($"Attack Speed: {clickedTower.towerStats.attackSpeed}");
-                //Debug.Log($"Attack Range: {clickedTower.towerStats.attackRange}");
-                //Debug.Log($"Critical Chance: {clickedTower.towerStats.criticalChance}");
-                //Debug.Log($"Critical Damage: {clickedTower.towerStats.criticalDamage}");
-                //Debug.Log($"Gold Earn Amount: {clickedTower.towerStats.goldEarnAmount}");
-                //Debug.Log($"Enemy Slow Amount: {clickedTower.towerStats.enemySlowAmount}");
             }
         }
     }
@@ -213,6 +170,7 @@ public class Tower : MonoBehaviour
             Invoke("HideAttackRange", 1f);
         }
     }
+
     private void Attack()
     {
         GameObject target = FindNearestMonster();
@@ -224,12 +182,6 @@ public class Tower : MonoBehaviour
                 Debug.LogError("Projectile 풀을 확인요망");
                 return;
             }
-            GameObject projectilesFolder = GameObject.Find("ObjectPool");
-            if (projectilesFolder == null)
-            {
-                projectilesFolder = new GameObject("ObjectPool");
-            }
-            projectile.transform.SetParent(projectilesFolder.transform);
 
             projectile.transform.position = transform.position;
 
@@ -239,13 +191,18 @@ public class Tower : MonoBehaviour
                 SoundManager.I.PlaySoundEffect(5);
                 projectileScript.SetTarget(target.transform);
                 projectileScript.speed = towerStats.projectileSpeed;
+                projectileScript.SetTowerTransform(transform, towerType);
                 projectileScript.SetTowerStats(towerStats);
+
+                // 타워에서 이펙트 관리
+                SpawnHitEffect(target.transform.position);
             }
             else
             {
                 Debug.LogError("Projectile 스크립트가 할당되지 않음");
             }
         }
+
     }
 
     private void HideAttackRange()
@@ -272,5 +229,28 @@ public class Tower : MonoBehaviour
         }
 
         return nearestMonster;
+    }
+
+    private void SpawnHitEffect(Vector3 position)
+    {
+        if (objectPool != null)
+        {
+            GameObject hitEffect = objectPool.GetHitEffectFromPool(towerIndex);  // 타워 인덱스를 통해 효과 가져오기
+            if (hitEffect != null)
+            {
+                hitEffect.transform.position = position;
+                hitEffect.SetActive(true);
+
+                // 0.3초 후 이펙트를 비활성화하고 풀로 반환
+                StartCoroutine(DeactivateEffectAfterDelay(hitEffect, 0.3f));
+            }
+        }
+    }
+
+    private IEnumerator DeactivateEffectAfterDelay(GameObject effect, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        effect.SetActive(false);
+        objectPool.ReturnHitEffectToPool(effect, towerIndex);
     }
 }
