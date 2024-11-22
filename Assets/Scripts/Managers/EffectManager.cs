@@ -22,6 +22,7 @@ public class EffectManager : MonoBehaviour
             GameObject hitEffect = objectPool.GetHitEffectFromPool(towerTypeIndex);
             if (hitEffect != null)
             {
+                hitEffect.transform.SetParent(Folder.folder.transform, false);
                 hitEffect.transform.position = position;
                 hitEffect.SetActive(true);
 

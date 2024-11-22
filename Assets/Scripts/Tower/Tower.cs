@@ -182,7 +182,7 @@ public class Tower : MonoBehaviour
                 Debug.LogError("Projectile 풀을 확인요망");
                 return;
             }
-
+            projectile.transform.SetParent(Folder.folder.transform, false);
             projectile.transform.position = transform.position;
 
             Projectile projectileScript = projectile.GetComponent<Projectile>();
@@ -194,8 +194,6 @@ public class Tower : MonoBehaviour
                 projectileScript.SetTowerTransform(transform, towerType);
                 projectileScript.SetTowerStats(towerStats);
 
-                // 타워에서 이펙트 관리
-                SpawnHitEffect(target.transform.position);
             }
             else
             {
@@ -231,26 +229,4 @@ public class Tower : MonoBehaviour
         return nearestMonster;
     }
 
-    private void SpawnHitEffect(Vector3 position)
-    {
-        if (objectPool != null)
-        {
-            GameObject hitEffect = objectPool.GetHitEffectFromPool(towerIndex);  // 타워 인덱스를 통해 효과 가져오기
-            if (hitEffect != null)
-            {
-                hitEffect.transform.position = position;
-                hitEffect.SetActive(true);
-
-                // 0.3초 후 이펙트를 비활성화하고 풀로 반환
-                StartCoroutine(DeactivateEffectAfterDelay(hitEffect, 0.3f));
-            }
-        }
-    }
-
-    private IEnumerator DeactivateEffectAfterDelay(GameObject effect, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        effect.SetActive(false);
-        objectPool.ReturnHitEffectToPool(effect, towerIndex);
-    }
 }

@@ -256,14 +256,8 @@ public class TowerManager : MonoBehaviour
     private GameObject ShowMergeEffect(int effectIndex, Vector3 position)
     {
 
-        GameObject mergeEffectFolder = GameObject.Find("ObjectPool");
-        if (mergeEffectFolder == null)
-        {
-            mergeEffectFolder = new GameObject("ObjectPool");
-        }
-
         GameObject effect = objectPool.GetMergeEffectFromPool(effectIndex);
-        effect.transform.SetParent(mergeEffectFolder.transform, false);
+        effect.transform.SetParent(Folder.folder.transform, false);
         effect.transform.position = position;
 
 

@@ -6,6 +6,9 @@ public class ObjectPool : MonoBehaviour
 {
     [Header("Pools")]
     [SerializeField]
+
+    public static GameObject objectPoolFolder;
+
     public GameObject unitPrefab;
     public GameObject hpSliderPrefab;
     public GameObject towerBuildButtonPrefab;

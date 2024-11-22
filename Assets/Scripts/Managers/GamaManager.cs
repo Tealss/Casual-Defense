@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+
     public Tower[] towers;
     public static GameManager I { get; private set; }
     public int gold { get; private set; } = 200000;

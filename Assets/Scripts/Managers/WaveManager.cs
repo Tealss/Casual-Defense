@@ -72,17 +72,11 @@ public class WaveManager : MonoBehaviour
         int unitsSpawned = 0;
         float spawnEndTime = Time.time + spawnDuration;
 
-        GameObject unitsFolder = GameObject.Find("ObjectPool");
-        if (unitsFolder == null)
-        {
-            unitsFolder = new GameObject("ObjectPool"); 
-        }
-
         while (unitsSpawned < unitCountPerWave && Time.time < spawnEndTime)
         {
 
             GameObject unit = objectPool.GetFromPool(objectPool.unitPool, objectPool.unitPrefab);
-            unit.transform.SetParent(unitsFolder.transform, false);
+            unit.transform.SetParent(Folder.folder.transform, false);
             unit.transform.position = waypoints[0].position;
 
             Monster monsterMovement = unit.GetComponent<Monster>();
