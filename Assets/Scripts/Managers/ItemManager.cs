@@ -152,7 +152,7 @@ public class ItemManager : MonoBehaviour
                     fadeOutTextSpawner2.SpawnFadeOutText(spawnPosition2, fullText, fullTextColor, true);
                 }
 
-                break; // 루프 종료
+                break; 
             }
 
             if (!GameManager.I.SpendGold(itemCost)) break;
@@ -359,7 +359,7 @@ public class ItemManager : MonoBehaviour
 
         if (instantiatedItems[index] != null)
         {
-            Destroy(instantiatedItems[index]);  // 인스턴스화된 아이템 제거
+            Destroy(instantiatedItems[index]);
         }
 
         SoundManager.I.PlaySoundEffect(2);
@@ -371,8 +371,8 @@ public class ItemManager : MonoBehaviour
         levelTexts[index].text = "Empty";
         itemSlotButtons[index].image.color = Color.gray;
 
-        NotifyItemStatsChanged();  // 아이템 스탯 변화 알림
-        UpdateUIForSlot(index);  // UI 업데이트
+        NotifyItemStatsChanged();
+        UpdateUIForSlot(index);
     }
 
 

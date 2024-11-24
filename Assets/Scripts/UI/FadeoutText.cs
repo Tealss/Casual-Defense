@@ -4,13 +4,11 @@ using UnityEngine.UI;
 
 public class FadeOutText : MonoBehaviour
 {
-    // 이게 지금 페이드아웃 텍스트거든?
-    // 이걸 지금 텍스트로 고정시켜놓은거고
     public Text textComponent;
     public float moveSpeed;
-    public float fadeDuration;
+    public float fadeDuration = 0.3f;
 
-    private Vector3 moveDirection = new Vector3(1, 1, 0).normalized;
+    private Vector3 moveDirection = new Vector3(0.7f, 0.8f, 0).normalized;
 
     private Color textColor;
 
@@ -24,7 +22,6 @@ public class FadeOutText : MonoBehaviour
     {
         transform.position += moveDirection * moveSpeed * Time.deltaTime;
 
-        // 페이드아웃 처리
         float fadeAmount = Time.deltaTime / fadeDuration;
         textColor.a -= fadeAmount;
         textComponent.color = textColor;

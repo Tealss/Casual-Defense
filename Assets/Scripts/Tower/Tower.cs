@@ -224,13 +224,13 @@ public class Tower : MonoBehaviour
                     projectileScript.SetBehavior(new ProjectileBasic());
                     break;
                 case "T2":
-                    //projectileScript.SetBehavior(new CriticalDamageBehavior());
+                    projectileScript.SetBehavior(new ProjectileExplosive());
                     break;
                 case "T3":
                     //projectileScript.SetBehavior(new ExplosiveDamageBehavior());
                     break;
                 default:
-                    projectileScript.SetBehavior(new ProjectileBasic());
+                    projectileScript.SetBehavior(new ProjectileExplosive());
                     break;
             }
         }

@@ -17,8 +17,8 @@ public class ProjectileBasic : IProjectileBehavior
 
                 EffectManager.I.SpawnHitEffect(0, target.position);
 
-                Vector3 spawnPosition = target.position + new Vector3(0.5f, 1f, 0);
-                string damageText = isCriticalHit ? $"-{(int)finalDamage}!" : $"-{(int)finalDamage}";
+                Vector3 spawnPosition = target.position + new Vector3(0.6f, 0.7f, 0);
+                string damageText = isCriticalHit ? $"- {(int)finalDamage}!" : $"- {(int)finalDamage}";
                 Color textColor = isCriticalHit ? Color.red : Color.white;
 
                 FadeOutTextUse.I.SpawnFadeOutText(spawnPosition, damageText, textColor);
