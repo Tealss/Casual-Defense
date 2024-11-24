@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float speed = 0f;
-    public float damage = 0f;
+    public float speed = 0;
+    public float Damage { get; private set; }
+    public float CriticalChance => criticalChance;
+    public float CriticalDamage => criticalDamage;
+
     private Transform target;
     private bool isActive = false;
 
@@ -15,16 +18,12 @@ public class Projectile : MonoBehaviour
     private Vector3 startPosition;
     private Vector3 targetPosition;
 
-    private int towerTypeIndex;
-
     private ObjectPool objectPool;
-    private EffectManager effectManager;
+    private IProjectileBehavior projectileBehavior;
 
     private void Awake()
     {
-        // ObjectPool을 미리 한 번만 찾아서 저장해두기
         objectPool = FindObjectOfType<ObjectPool>();
-        effectManager = FindObjectOfType<EffectManager>(); // Initialize effectManager
     }
 
     private void OnEnable()
@@ -37,26 +36,14 @@ public class Projectile : MonoBehaviour
             transform.position = startPosition;
         }
     }
-
+    public void SetBehavior(IProjectileBehavior newBehavior)
+    {
+        projectileBehavior = newBehavior;
+    }
     private void OnDisable()
     {
         isActive = false;
         target = null;
-    }
-
-    private int GetTowerTypeIndexFromString(string towerType)
-    {
-        switch (towerType)
-        {
-            case "T1(Clone)": return 0;
-            case "T2(Clone)": return 1;
-            case "T3(Clone)": return 2;
-            case "T4(Clone)": return 3;
-            case "T5(Clone)": return 4;
-            case "T6(Clone)": return 5;
-            case "T7(Clone)": return 6;
-            default: return -1;
-        }
     }
 
     private void Update()
@@ -80,7 +67,7 @@ public class Projectile : MonoBehaviour
     {
         if (towerStats != null)
         {
-            damage = towerStats.attackDamage;
+            Damage = towerStats.attackDamage;
             speed = towerStats.projectileSpeed;
             criticalChance = towerStats.criticalChance;
             criticalDamage = towerStats.criticalDamage;
@@ -90,19 +77,21 @@ public class Projectile : MonoBehaviour
     public void SetTowerTransform(Transform towerTransform, string towerType)
     {
         this.towerTransform = towerTransform;
-        this.towerTypeIndex = GetTowerTypeIndexFromString(towerType);  // towerType을 인덱스로 변환
+    }
+
+    public void SetProjectileBehavior(IProjectileBehavior behavior)
+    {
+        projectileBehavior = behavior;
     }
 
     private void MoveTowardsTarget()
     {
-        // 타겟이 비활성화되면 바로 풀로 반환
         if (target == null || !target.gameObject.activeInHierarchy)
         {
             ReturnToPool();
             return;
         }
 
-        // 타겟의 위치 갱신
         targetPosition = target.position;
 
         transform.LookAt(targetPosition);
@@ -119,37 +108,9 @@ public class Projectile : MonoBehaviour
 
     private void DealDamageToTarget()
     {
-        float randomChance = Random.Range(0f, 100f);
-        bool isCriticalHit = randomChance <= criticalChance;
-
-        float finalDamage = damage; // 기본 데미지
-        if (isCriticalHit)
+        if (projectileBehavior != null)
         {
-            finalDamage *= criticalDamage;
-        }
-
-        if (target != null && target.CompareTag("Monster"))
-        {
-            Monster monster = target.GetComponent<Monster>();
-            if (monster != null)
-            {
-                monster.TakeDamage(finalDamage);
-
-                if (effectManager != null)
-                {
-                    effectManager.SpawnHitEffect(towerTypeIndex, target.position); // Use the correct towerTypeIndex
-                }
-
-                Vector3 spawnPosition = target.position + new Vector3(0.5f, 1f, 0);
-                string damageText = isCriticalHit ? $"-{(int)finalDamage}!" : $"-{(int)finalDamage}";
-                Color textColor = isCriticalHit ? Color.red : Color.white;
-
-                FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
-                if (fadeOutTextSpawner != null)
-                {
-                    fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, damageText, textColor);
-                }
-            }
+            projectileBehavior.Execute(this, target);
         }
     }
 

@@ -14,7 +14,7 @@ public class MonsterHPSlider : MonoBehaviour
         slider = GetComponent<Slider>();
         if (slider == null)
         {
-            Debug.LogError("슬라이더 컴포넌트를 찾을 수 없습니다.");
+            Debug.LogError("slider x");
         }
 
         sliderFillImage = slider.fillRect.GetComponent<Image>();
@@ -26,7 +26,7 @@ public class MonsterHPSlider : MonoBehaviour
 
         if (monster == null)
         {
-            Debug.LogError("Monster 스크립트를 찾을 수 없습니다.");
+            Debug.LogError("Monster x");
             return;
         }
 
@@ -46,7 +46,7 @@ public class MonsterHPSlider : MonoBehaviour
     {
         if (monster == null || slider == null)
         {
-            Debug.LogError("슬라이더나 몬스터가 null입니다.");
+            Debug.LogError("slider or monster is null");
             return;
         }
 
@@ -64,7 +64,7 @@ public class MonsterHPSlider : MonoBehaviour
         Collider unitCollider = monster.GetComponent<Collider>();
         if (unitCollider == null)
         {
-            Debug.LogError("유닛에 콜라이더가 없습니다.");
+            Debug.LogError("unit coilder x");
             return;
         }
 

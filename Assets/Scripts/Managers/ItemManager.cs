@@ -139,13 +139,28 @@ public class ItemManager : MonoBehaviour
         {
             int emptySlot = FindEmptySlot();
 
-            if (emptySlot == -1) break;
+            // 슬롯이 없는 경우 "Full" 텍스트 표시
+            if (emptySlot == -1)
+            {
+                Vector3 spawnPosition2 = GetButtonPositionInCanvas(buyButton) + new Vector3(1.5f, 2f, 0); ;
+                string fullText = "Full";
+                Color fullTextColor = Color.red;
+
+                FadeOutTextUse fadeOutTextSpawner2 = FindObjectOfType<FadeOutTextUse>();
+                if (fadeOutTextSpawner2 != null)
+                {
+                    fadeOutTextSpawner2.SpawnFadeOutText(spawnPosition2, fullText, fullTextColor, true);
+                }
+
+                break; // 루프 종료
+            }
 
             if (!GameManager.I.SpendGold(itemCost)) break;
 
             int itemGrade = DetermineItemGrade();
             purchasedQuantity++;
 
+            // 선택된 등급 토글이 켜져 있을 경우 바로 골드 추가
             if (gradeToggles[itemGrade - 1].isOn)
             {
                 int sellPrice = sellPrices[itemGrade - 1];
@@ -154,9 +169,26 @@ public class ItemManager : MonoBehaviour
             }
 
             CreateItemInSlot(emptySlot, itemGrade);
+
+            Vector3 spawnPosition = GetButtonPositionInCanvas(buyButton);
+            string damageText = $"- {itemCost}";
+            Color textColor = Color.red;
+
+            FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
+            if (fadeOutTextSpawner != null)
+            {
+                fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, damageText, textColor, true);
+            }
         }
     }
 
+    private Vector3 GetButtonPositionInCanvas(Button button)
+    {
+        RectTransform rectTransform = button.GetComponent<RectTransform>();
+        Vector2 anchoredPosition = rectTransform.anchoredPosition;
+        return anchoredPosition;
+    }
+// 안녕
     private int FindEmptySlot()
     {
         for (int i = 0; i < slotOccupied.Length; i++)

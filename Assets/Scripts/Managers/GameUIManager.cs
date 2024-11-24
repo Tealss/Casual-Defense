@@ -109,7 +109,7 @@ public class GameUiManager : MonoBehaviour
             int itemLevel = ItemManager.I.currentLevels[slotIndex];
             return ItemManager.I.GetItemDescription(slotIndex, itemGrade, itemLevel);
         }
-        return "Empty Slot";
+        return "    Empty Slot";
     }
 
     public void UpdateItemInfo(int slotIndex, string itemDescription)

@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 
     public Tower[] towers;
     public static GameManager I { get; private set; }
-    public int gold { get; private set; } = 200000;
+    public int gold { get; private set; } = 20000;
     public int lifePoints { get; private set; } = 30;
     public int totalLifePoints { get; private set; } = 30;
 

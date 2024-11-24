@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class FadeOutText : MonoBehaviour
 {
+    // 이게 지금 페이드아웃 텍스트거든?
+    // 이걸 지금 텍스트로 고정시켜놓은거고
     public Text textComponent;
     public float moveSpeed;
     public float fadeDuration;

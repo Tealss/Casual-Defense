@@ -171,36 +171,73 @@ public class Tower : MonoBehaviour
         }
     }
 
+    private int GetTowerTypeIndexFromString(string towerType)
+    {
+        switch (towerType)
+        {
+            case "T1(Clone)": return 0;
+            case "T2(Clone)": return 1;
+            case "T3(Clone)": return 2;
+            case "T4(Clone)": return 3;
+            case "T5(Clone)": return 4;
+            case "T6(Clone)": return 5;
+            case "T7(Clone)": return 6;
+            default: return -1;
+        }
+    }
+
     private void Attack()
     {
         GameObject target = FindNearestMonster();
         if (target != null)
         {
-            GameObject projectile = objectPool.GetProjectileFromPool(towerIndex);
-            if (projectile == null)
-            {
-                Debug.LogError("Projectile 풀을 확인요망");
-                return;
-            }
-            projectile.transform.SetParent(Folder.folder.transform, false);
-            projectile.transform.position = transform.position;
+            this.towerIndex = GetTowerTypeIndexFromString(towerType);
+            Fire(target.transform);
+        }
+    }
 
-            Projectile projectileScript = projectile.GetComponent<Projectile>();
-            if (projectileScript != null)
-            {
-                SoundManager.I.PlaySoundEffect(5);
-                projectileScript.SetTarget(target.transform);
-                projectileScript.speed = towerStats.projectileSpeed;
-                projectileScript.SetTowerTransform(transform, towerType);
-                projectileScript.SetTowerStats(towerStats);
-
-            }
-            else
-            {
-                Debug.LogError("Projectile 스크립트가 할당되지 않음");
-            }
+    public void Fire(Transform target)
+    {
+        GameObject projectile = objectPool.GetProjectileFromPool(towerIndex);
+        if (projectile == null)
+        {
+            Debug.LogError("Projectile 풀을 확인요망");
+            return;
         }
 
+        projectile.transform.SetParent(Folder.folder.transform, false);
+        projectile.transform.position = transform.position;
+
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        if (projectileScript != null)
+        {
+            SoundManager.I.PlaySoundEffect(5);
+            projectileScript.SetTarget(target);
+
+            projectileScript.speed = towerStats.projectileSpeed;
+            projectileScript.SetTowerTransform(transform, towerType);
+            projectileScript.SetTowerStats(towerStats);
+
+            switch (towerType)
+            {
+                case "T1":
+                    projectileScript.SetBehavior(new ProjectileBasic());
+                    break;
+                case "T2":
+                    //projectileScript.SetBehavior(new CriticalDamageBehavior());
+                    break;
+                case "T3":
+                    //projectileScript.SetBehavior(new ExplosiveDamageBehavior());
+                    break;
+                default:
+                    projectileScript.SetBehavior(new ProjectileBasic());
+                    break;
+            }
+        }
+        else
+        {
+            Debug.LogError("Projectile 스크립트가 할당되지 않음");
+        }
     }
 
     private void HideAttackRange()
@@ -228,5 +265,4 @@ public class Tower : MonoBehaviour
 
         return nearestMonster;
     }
-
 }
