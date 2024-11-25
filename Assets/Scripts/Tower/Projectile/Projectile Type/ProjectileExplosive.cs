@@ -12,7 +12,7 @@ public class ProjectileExplosive : IProjectileBehavior
                 Monster monster = hitCollider.GetComponent<Monster>();
                 if (monster != null)
                 {
-                    float explosiveDamage = projectile.Damage * 0.3f;
+                    float explosiveDamage = projectile.damage * 0.3f;
                     monster.TakeDamage(explosiveDamage);
 
                     EffectManager.I.SpawnHitEffect(1, target.position);

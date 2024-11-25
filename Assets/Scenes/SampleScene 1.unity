@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5145089, g: 0.70157117, b: 0.8393521, a: 1}
+  m_IndirectSpecularColor: {r: 0.5144359, g: 0.7014622, b: 0.8392981, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -26461,6 +26461,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadeOutTextPrefab: {fileID: 1873071883053270950, guid: 936f63974c1d19545a17102d19a891c7, type: 3}
+  canvas: {fileID: 0}
 --- !u!1 &1510443312
 GameObject:
   m_ObjectHideFlags: 0

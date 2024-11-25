@@ -1,12 +1,14 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
     public float speed = 0;
-    public float Damage { get; private set; }
+    public float damage { get; private set; }
     public float CriticalChance => criticalChance;
     public float CriticalDamage => criticalDamage;
+    public float range = 0;
 
     private Transform target;
     private bool isActive = false;
@@ -14,12 +16,21 @@ public class Projectile : MonoBehaviour
     private float criticalChance = 0f;
     private float criticalDamage = 0f;
 
-    private Transform towerTransform;
+    //private Tower tower;
+    public Transform towerTransform;
     private Vector3 startPosition;
     private Vector3 targetPosition;
 
     private ObjectPool objectPool;
     private IProjectileBehavior projectileBehavior;
+
+    //Lighting Tower
+    public int maxChainHits = 3; 
+    public HashSet<Monster> previousTargets = new HashSet<Monster>();
+
+    //Ice Tower
+    public float slowAmount = 0.5f; 
+    public float slowDuration = 3f;
 
     private void Awake()
     {
@@ -53,6 +64,10 @@ public class Projectile : MonoBehaviour
             MoveTowardsTarget();
         }
     }
+    public void Initialize()
+    {
+        previousTargets.Clear();
+    }
 
     public void SetTarget(Transform targetTransform)
     {
@@ -67,10 +82,14 @@ public class Projectile : MonoBehaviour
     {
         if (towerStats != null)
         {
-            Damage = towerStats.attackDamage;
+            damage = towerStats.attackDamage;
             speed = towerStats.projectileSpeed;
             criticalChance = towerStats.criticalChance;
             criticalDamage = towerStats.criticalDamage;
+            range = towerStats.attackRange;
+            //slowAmount = slowAmount + tower.level;
+
+
         }
     }
 

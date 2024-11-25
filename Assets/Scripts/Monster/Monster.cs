@@ -1,6 +1,6 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
 
 public class Monster : MonoBehaviour
 {
@@ -18,15 +18,21 @@ public class Monster : MonoBehaviour
     private Slider hpSliderComponent;
     private Text hpText;
 
+    private Coroutine slowCoroutine;
+    private bool isSlowed = false;
+    //private Renderer monsterRenderer; // Renderer to access the material
+    //private Color originalColor; // To store the original color of the monster
+
     private void Start()
     {
         currentHealth = maxHealth;
+
     }
 
     public void SetMaxHealth(float value)
     {
         maxHealth = value;
-        currentHealth = maxHealth;  
+        currentHealth = maxHealth;
     }
 
     public void Initialize(Transform[] waypoints, float speed, ObjectPool objectPool)
@@ -85,7 +91,7 @@ public class Monster : MonoBehaviour
             ReturnToPool();
 
             Vector3 spawnPosition = transform.position + new Vector3(0.5f, 1.5f, 0);
-            string addGoldText =  $"+50";
+            string addGoldText = $"+50";
             Color textColor = Color.yellow;
 
             FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
@@ -117,6 +123,12 @@ public class Monster : MonoBehaviour
         currentWaypointIndex = 0;
         isAlive = false;
 
+        //if (slowCoroutine != null)
+        //{
+        //    StopCoroutine(slowCoroutine);
+        //    slowCoroutine = null;
+        //}
+
         if (hpSlider != null)
         {
             objectPool.ReturnToPool(hpSlider, objectPool.hpSliderPool);
@@ -142,5 +154,30 @@ public class Monster : MonoBehaviour
         {
             hpText.text = $"{(int)currentHealth}";
         }
+    }
+
+    public void ApplySlow(float slowAmount, float duration)
+    {
+        if (!isSlowed)
+        {
+            isSlowed = true;
+            if (slowCoroutine != null) 
+            {
+                StopCoroutine(slowCoroutine);
+            }
+
+            if (gameObject.activeInHierarchy)
+            {
+                slowCoroutine = StartCoroutine(SlowCoroutine(slowAmount, duration));
+            }
+        }
+    }
+
+    private IEnumerator SlowCoroutine(float slowAmount, float duration)
+    {
+        speed -= slowAmount;
+        yield return new WaitForSeconds(duration);
+        speed += slowAmount;
+        isSlowed = false;
     }
 }

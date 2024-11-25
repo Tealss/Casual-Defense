@@ -211,7 +211,7 @@ public class Tower : MonoBehaviour
         Projectile projectileScript = projectile.GetComponent<Projectile>();
         if (projectileScript != null)
         {
-            SoundManager.I.PlaySoundEffect(5);
+            projectileScript.Initialize(); 
             projectileScript.SetTarget(target);
 
             projectileScript.speed = towerStats.projectileSpeed;
@@ -227,10 +227,13 @@ public class Tower : MonoBehaviour
                     projectileScript.SetBehavior(new ProjectileExplosive());
                     break;
                 case "T3":
-                    //projectileScript.SetBehavior(new ExplosiveDamageBehavior());
+                    projectileScript.SetBehavior(new ProjectileLightning());
+                    break;
+                case "T4":
+                    projectileScript.SetBehavior(new ProjectileIce());
                     break;
                 default:
-                    projectileScript.SetBehavior(new ProjectileExplosive());
+                    projectileScript.SetBehavior(new ProjectileIce());
                     break;
             }
         }

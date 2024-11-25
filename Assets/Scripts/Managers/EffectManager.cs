@@ -6,6 +6,7 @@ public class EffectManager : MonoBehaviour
     private ObjectPool objectPool;
     public static EffectManager I; // 싱글톤으로 변경
 
+
     private void Awake()
     {
         if (I == null)
@@ -20,7 +21,6 @@ public class EffectManager : MonoBehaviour
         }
     }
 
-    // 타워 타입 인덱스와 위치를 받아 히트 이펙트를 생성하는 메서드
     public void SpawnHitEffect(int towerTypeIndex, Vector3 position)
     {
         if (objectPool != null)
@@ -32,7 +32,6 @@ public class EffectManager : MonoBehaviour
                 hitEffect.transform.position = position;
                 hitEffect.SetActive(true);
 
-                // 일정 시간 후에 이펙트를 풀로 반환
                 StartCoroutine(ReturnEffectToPoolAfterDelay(hitEffect, towerTypeIndex, 0.5f));
             }
         }
