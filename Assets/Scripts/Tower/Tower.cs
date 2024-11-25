@@ -110,6 +110,27 @@ public class Tower : MonoBehaviour
     public void ApplyMergeBonus()
     {
         towerStats.attackDamage *= 2.1f;
+
+        switch (towerType)
+        {
+            case "T1":
+                break;
+            case "T2":
+                break;
+            case "T3":
+                break;
+            case "T4(Clone)":
+                towerStats.enemySlowAmount += 0.1f;
+                break;
+            case "T5":
+                break;
+            case "T6":
+                break;
+            case "T7":
+                break;
+            default:
+                break;
+        }
     }
 
     private void Update()

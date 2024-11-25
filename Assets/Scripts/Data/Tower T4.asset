@@ -18,12 +18,12 @@ MonoBehaviour:
   baseCriticalChance: 1
   baseCriticalDamage: 0.1
   baseGoldEarnAmount: 0
-  baseEnemySlowAmount: 0
+  baseEnemySlowAmount: 0.4
   projectileSpeed: 4
-  attackDamage: 1
+  attackDamage: 21
   attackSpeed: 1
   attackRange: 1.5
   criticalChance: 1
   criticalDamage: 0.1
   goldEarnAmount: 0
-  enemySlowAmount: 0
+  enemySlowAmount: 0.6

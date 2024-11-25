@@ -4,8 +4,7 @@ using UnityEngine;
 public class EffectManager : MonoBehaviour
 {
     private ObjectPool objectPool;
-    public static EffectManager I; // ΩÃ±€≈Ê¿∏∑Œ ∫Ø∞Ê
-
+    public static EffectManager I;
 
     private void Awake()
     {
@@ -53,4 +52,5 @@ public class EffectManager : MonoBehaviour
             objectPool.ReturnHitEffectToPool(effect, towerTypeIndex);
         }
     }
+
 }

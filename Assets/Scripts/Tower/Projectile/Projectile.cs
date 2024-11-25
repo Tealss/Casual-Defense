@@ -29,7 +29,7 @@ public class Projectile : MonoBehaviour
     public HashSet<Monster> previousTargets = new HashSet<Monster>();
 
     //Ice Tower
-    public float slowAmount = 0.5f; 
+    public float slowAmount = 0f; 
     public float slowDuration = 3f;
 
     private void Awake()
@@ -86,6 +86,7 @@ public class Projectile : MonoBehaviour
             speed = towerStats.projectileSpeed;
             criticalChance = towerStats.criticalChance;
             criticalDamage = towerStats.criticalDamage;
+            slowAmount = towerStats.enemySlowAmount;
             range = towerStats.attackRange;
             //slowAmount = slowAmount + tower.level;
 

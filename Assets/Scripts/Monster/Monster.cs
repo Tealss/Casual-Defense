@@ -1,10 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Monster : MonoBehaviour
 {
-    public float maxHealth = 1000f;
+    public float maxHealth = 0f;
     public float currentHealth;
 
     private Transform[] waypoints;
@@ -20,12 +21,19 @@ public class Monster : MonoBehaviour
 
     private Coroutine slowCoroutine;
     private bool isSlowed = false;
-    //private Renderer monsterRenderer; // Renderer to access the material
-    //private Color originalColor; // To store the original color of the monster
+
+    private List<Renderer> renderers = new List<Renderer>();
+    private Dictionary<Renderer, Color> originalColors = new Dictionary<Renderer, Color>();
 
     private void Start()
     {
         currentHealth = maxHealth;
+
+        foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+        {
+            renderers.Add(renderer);
+            originalColors[renderer] = renderer.material.color;
+        }
 
     }
 
@@ -158,26 +166,57 @@ public class Monster : MonoBehaviour
 
     public void ApplySlow(float slowAmount, float duration)
     {
-        if (!isSlowed)
-        {
-            isSlowed = true;
-            if (slowCoroutine != null) 
-            {
-                StopCoroutine(slowCoroutine);
-            }
+        if (!isAlive) return;
 
-            if (gameObject.activeInHierarchy)
-            {
-                slowCoroutine = StartCoroutine(SlowCoroutine(slowAmount, duration));
-            }
+        if (isSlowed)
+        {
+            StopCoroutine(slowCoroutine);
         }
+        else
+        {
+            speed -= slowAmount;
+            isSlowed = true;
+        }
+
+        slowCoroutine = StartCoroutine(SlowCoroutine(slowAmount, duration));
     }
 
     private IEnumerator SlowCoroutine(float slowAmount, float duration)
     {
-        speed -= slowAmount;
-        yield return new WaitForSeconds(duration);
+        ChangeColor(Color.cyan);
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            ChangeColor(Color.cyan);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        RestoreOriginalColor();
         speed += slowAmount;
         isSlowed = false;
     }
+
+    private void ChangeColor(Color color)
+    {
+        foreach (Renderer renderer in renderers)
+        {
+            if (renderer != null)
+            {
+                renderer.material.color = color;
+            }
+        }
+    }
+
+    private void RestoreOriginalColor()
+    {
+        foreach (Renderer renderer in renderers)
+        {
+            if (renderer != null && originalColors.ContainsKey(renderer))
+            {
+                renderer.material.color = originalColors[renderer];
+            }
+        }
+    }
+
 }

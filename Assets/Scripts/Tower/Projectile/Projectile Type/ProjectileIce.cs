@@ -17,6 +17,7 @@ public class ProjectileIce : IProjectileBehavior
                 monster.ApplySlow(projectile.slowAmount, projectile.slowDuration);
 
                 EffectManager.I.SpawnHitEffect(3, target.position);
+
                 Vector3 spawnPosition = target.position + new Vector3(0.6f, 0.7f, 0);
                 string damageText = isCriticalHit ? $"- {(int)finalDamage}!" : $"- {(int)finalDamage}";
                 Color textColor = isCriticalHit ? Color.red : Color.white;

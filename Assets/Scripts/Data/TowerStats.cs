@@ -15,7 +15,6 @@ public class TowerStats : ScriptableObject
     [Header("Projectile")]
     public float projectileSpeed;
 
-    // 실제 게임 내에서 사용할 현재 스탯
     [HideInInspector] public float attackDamage;
     [HideInInspector] public float attackSpeed;
     [HideInInspector] public float attackRange;
