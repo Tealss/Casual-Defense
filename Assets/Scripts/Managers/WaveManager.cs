@@ -31,7 +31,7 @@ public class WaveManager : MonoBehaviour
 
         if (hpSliderParent == null)
         {
-            Debug.LogError("hpSliderParent가 null입니다. UI/Canvas/HpSlider가 할당되지 않았습니다.");
+            Debug.LogError("HP 슬라이더 부모가 설정되지 않았습니다. UI/Canvas/HpSlider를 확인하세요.");
         }
 
         StartCoroutine(WaveRoutine());
@@ -54,9 +54,9 @@ public class WaveManager : MonoBehaviour
 
             while (currentWaveTimer > 0)
             {
-                currentWaveTimer -= 1f;
+                currentWaveTimer -= Time.deltaTime;
                 gameUIManager.UpdateTimerText(Mathf.CeilToInt(currentWaveTimer));
-                yield return new WaitForSeconds(1f);
+                yield return null;
             }
 
             isSpawning = false;
@@ -74,38 +74,7 @@ public class WaveManager : MonoBehaviour
 
         while (unitsSpawned < unitCountPerWave && Time.time < spawnEndTime)
         {
-
-            GameObject unit = objectPool.GetFromPool(objectPool.unitPool, objectPool.unitPrefab);
-            unit.transform.SetParent(Folder.folder.transform, false);
-            unit.transform.position = waypoints[0].position;
-
-            Monster monsterMovement = unit.GetComponent<Monster>();
-            if (monsterMovement != null)
-            {
-                float calculatedMaxHealth = CalculateMonsterMaxHealthForWave(monsterMovement);
-
-                monsterMovement.SetMaxHealth(calculatedMaxHealth);
-                monsterMovement.Initialize(waypoints, unitSpeed, objectPool);
-
-
-                GameObject hpSlider = objectPool.GetFromPool(objectPool.hpSliderPool, objectPool.hpSliderPrefab);
-                hpSlider.transform.SetParent(hpSliderParent, false);
-                Vector3 unitPosition = unit.transform.position;
-                hpSlider.transform.position = new Vector3(unitPosition.x, unitPosition.y + 2f, unitPosition.z);
-
-                MonsterHPSlider hpSliderScript = hpSlider.GetComponent<MonsterHPSlider>();
-                if (hpSliderScript != null)
-                {
-                    hpSliderScript.Initialize(unit);
-                }
-                else
-                {
-                    Debug.LogError("MonsterHPSlider 컴포넌트를 찾을 수 없습니다.");
-                }
-
-                monsterMovement.SetHpSlider(hpSlider);
-            }
-
+            SpawnSingleUnit();
             unitsSpawned++;
             yield return new WaitForSeconds(spawnInterval);
         }
@@ -113,10 +82,68 @@ public class WaveManager : MonoBehaviour
         isSpawning = false;
     }
 
-    private float CalculateMonsterMaxHealthForWave(Monster monster)
+    private void SpawnSingleUnit()
     {
-        float healthMultiplier = Mathf.Pow(1.5f, currentWave - 1); 
-        return monster.maxHealth * healthMultiplier;
+
+        GameObject unit = objectPool.GetFromPool("Monster", objectPool.monsterPrefab);
+        if (unit == null)
+        {
+            Debug.LogError("오브젝트 풀에서 유닛을 가져올 수 없습니다.");
+            return;
+        }
+
+        unit.transform.SetParent(Folder.folder.transform, false);
+        unit.transform.position = waypoints[0].position;
+
+        Monster monster = unit.GetComponent<Monster>();
+        if (monster != null)
+        {
+            InitializeMonster(monster);
+            AttachHpSliderToMonster(unit);
+        }
     }
 
+    private void InitializeMonster(Monster monster)
+    {
+        float calculatedMaxHealth = CalculateMonsterMaxHealthForWave(monster);
+        monster.SetMaxHealth(calculatedMaxHealth);
+        monster.Initialize(waypoints, unitSpeed, objectPool);
+    }
+
+    private void AttachHpSliderToMonster(GameObject unit)
+    {
+        GameObject hpSlider = objectPool.GetFromPool("HealthBar", objectPool.healthBarPrefab);
+        if (hpSlider == null)
+        {
+            Debug.LogError("오브젝트 풀에서 HP 슬라이더를 가져올 수 없습니다.");
+            return;
+        }
+
+        hpSlider.transform.SetParent(hpSliderParent, false);
+
+        Vector3 unitPosition = unit.transform.position;
+        hpSlider.transform.position = new Vector3(unitPosition.x, unitPosition.y + 2f, unitPosition.z);
+
+        MonsterHPSlider hpSliderScript = hpSlider.GetComponent<MonsterHPSlider>();
+        if (hpSliderScript != null)
+        {
+            hpSliderScript.Initialize(unit);
+        }
+        else
+        {
+            Debug.LogError("MonsterHPSlider 컴포넌트를 찾을 수 없습니다.");
+        }
+
+        Monster monster = unit.GetComponent<Monster>();
+        if (monster != null)
+        {
+            monster.SetHpSlider(hpSlider);
+        }
+    }
+
+    private float CalculateMonsterMaxHealthForWave(Monster monster)
+    {
+        float healthMultiplier = Mathf.Pow(1.5f, currentWave - 1);
+        return monster.maxHealth * healthMultiplier;
+    }
 }

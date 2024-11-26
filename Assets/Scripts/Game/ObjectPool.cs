@@ -4,52 +4,46 @@ using UnityEngine;
 
 public class ObjectPool : MonoBehaviour
 {
-    [Header("Pools")]
-    [SerializeField]
-
-    public static GameObject objectPoolFolder;
-
-    public GameObject unitPrefab;
-    public GameObject hpSliderPrefab;
+    [Header("Prefab References")]
+    public GameObject monsterPrefab;
+    public GameObject healthBarPrefab;
     public GameObject towerBuildButtonPrefab;
     public GameObject towerMergeButtonPrefab;
 
     public GameObject[] towerPrefabs = new GameObject[7];
     public GameObject[] mergeEftPrefabs = new GameObject[7];
     public GameObject[] projectilePrefabs = new GameObject[7];
-    public GameObject[] hitEftPrefabs = new GameObject[7]; 
+    public GameObject[] hitEftPrefabs = new GameObject[7];
     public TowerStats[] towerStatsArray = new TowerStats[7];
 
-    public Queue<GameObject> unitPool = new Queue<GameObject>();
-    public Queue<GameObject> hpSliderPool = new Queue<GameObject>();
-    public Queue<GameObject> towerBuildButtonPool = new Queue<GameObject>();
-    public Queue<GameObject> towerMergeButtonPool = new Queue<GameObject>();
-    public Queue<GameObject> projectilePool = new Queue<GameObject>();
-
-    public Queue<GameObject>[] towerPools = new Queue<GameObject>[7];
-    public Queue<GameObject>[] mergeEftPools = new Queue<GameObject>[7];
-    public Queue<GameObject>[] hitEftPools = new Queue<GameObject>[7]; 
-
+    private Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
     private int initialPoolSize = 0;
 
     void Start()
     {
-        InitializePool(unitPrefab, unitPool, initialPoolSize);
-        InitializePool(hpSliderPrefab, hpSliderPool, initialPoolSize);
-        InitializePool(towerBuildButtonPrefab, towerBuildButtonPool, initialPoolSize);
-        InitializePool(towerMergeButtonPrefab, towerMergeButtonPool, initialPoolSize);
-        InitializePool(projectilePrefabs[0], projectilePool, initialPoolSize);
+        // Initialize fixed pools
+        RegisterPool("Monster", monsterPrefab);
+        RegisterPool("HealthBar", healthBarPrefab);
+        RegisterPool("TowerBuildButton", towerBuildButtonPrefab);
+        RegisterPool("TowerMergeButton", towerMergeButtonPrefab);
 
+        // Initialize dynamic pools (arrays)
         for (int i = 0; i < towerPrefabs.Length; i++)
         {
-            towerPools[i] = new Queue<GameObject>();
-            InitializePool(towerPrefabs[i], towerPools[i], initialPoolSize);
+            RegisterPool($"Tower_{i}", towerPrefabs[i]);
+            RegisterPool($"MergeEffect_{i}", mergeEftPrefabs[i]);
+            RegisterPool($"Projectile_{i}", projectilePrefabs[i]);
+            RegisterPool($"HitEffect_{i}", hitEftPrefabs[i]);
+        }
+    }
 
-            mergeEftPools[i] = new Queue<GameObject>();
-            InitializePool(mergeEftPrefabs[i], mergeEftPools[i], initialPoolSize);
-
-            hitEftPools[i] = new Queue<GameObject>(); // Initialize hit effect pools
-            InitializePool(hitEftPrefabs[i], hitEftPools[i], initialPoolSize);
+    private void RegisterPool(string poolName, GameObject prefab)
+    {
+        if (!pools.ContainsKey(poolName))
+        {
+            Queue<GameObject> pool = new Queue<GameObject>();
+            pools.Add(poolName, pool);
+            InitializePool(prefab, pool, initialPoolSize);
         }
     }
 
@@ -63,8 +57,15 @@ public class ObjectPool : MonoBehaviour
         }
     }
 
-    public GameObject GetFromPool(Queue<GameObject> pool, GameObject prefab)
+    public GameObject GetFromPool(string poolName, GameObject prefab)
     {
+        if (!pools.ContainsKey(poolName))
+        {
+            Debug.LogWarning($"Pool {poolName} does not exist. Creating a new pool.");
+            RegisterPool(poolName, prefab);
+        }
+
+        Queue<GameObject> pool = pools[poolName];
         if (pool.Count > 0)
         {
             GameObject obj = pool.Dequeue();
@@ -79,111 +80,48 @@ public class ObjectPool : MonoBehaviour
         }
     }
 
-    public void ReturnToPool(GameObject obj, Queue<GameObject> pool)
+    public void ReturnToPool(string poolName, GameObject obj)
     {
-        obj.SetActive(false);
-        pool.Enqueue(obj);
+        if (pools.ContainsKey(poolName))
+        {
+            obj.SetActive(false);
+            pools[poolName].Enqueue(obj);
+        }
+        else
+        {
+            Debug.LogWarning($"Pool {poolName} does not exist. Object will be destroyed.");
+            Destroy(obj);
+        }
     }
 
-    public GameObject GetTowerFromPool(int towerIndex)
+    public GameObject GetTower(int index)
     {
-        if (towerIndex < 0 || towerIndex >= towerPools.Length)
-        {
-            Debug.LogError("Tower Index Error");
-            return null;
-        }
-
-        GameObject tower = GetFromPool(towerPools[towerIndex], towerPrefabs[towerIndex]);
+        string poolName = $"Tower_{index}";
+        GameObject tower = GetFromPool(poolName, towerPrefabs[index]);
         Tower towerComponent = tower.GetComponent<Tower>();
 
         if (towerComponent != null)
         {
-            towerComponent.towerStats = towerStatsArray[towerIndex];
+            towerComponent.towerStats = towerStatsArray[index];
             towerComponent.InitializeStats();
         }
 
         return tower;
     }
 
-    public void ReturnTowerToPool(GameObject obj, int towerIndex)
+    public void ReturnTower(int index, GameObject tower)
     {
-        if (towerIndex < 0 || towerIndex >= towerPools.Length)
-        {
-            Debug.LogError("Tower Index Error");
-            return;
-        }
-
-        ReturnToPool(obj, towerPools[towerIndex]);
+        string poolName = $"Tower_{index}";
+        ReturnToPool(poolName, tower);
     }
 
-    public GameObject GetMergeEffectFromPool(int effectIndex)
+    public GameObject GetProjectile(int index)
     {
-        if (effectIndex < 0 || effectIndex >= mergeEftPools.Length)
-        {
-            Debug.LogError("EFT Index Error");
-            return null;
-        }
-
-        return GetFromPool(mergeEftPools[effectIndex], mergeEftPrefabs[effectIndex]);
+        return GetFromPool($"Projectile_{index}", projectilePrefabs[index]);
     }
 
-    public void ReturnMergeEffectToPool(GameObject obj, int effectIndex)
+    public void ReturnProjectile(int index, GameObject projectile)
     {
-        if (effectIndex < 0 || effectIndex >= mergeEftPools.Length)
-        {
-            Debug.LogError("EFT Index Error");
-            return;
-        }
-
-        ReturnToPool(obj, mergeEftPools[effectIndex]);
+        ReturnToPool($"Projectile_{index}", projectile);
     }
-
-    public GameObject GetProjectileFromPool(int towerIndex)
-    {
-        if (towerIndex < 0 || towerIndex >= projectilePrefabs.Length)
-        {
-            Debug.LogError("Projectile Index Error");
-            return null;
-        }
-
-        return GetFromPool(projectilePool, projectilePrefabs[towerIndex]);
-    }
-
-    public void ReturnProjectileToPool(GameObject projectile)
-    {
-        ReturnToPool(projectile, projectilePool);
-    }
-
-    public GameObject GetHitEffectFromPool(int effectIndex)
-    {
-        if (effectIndex < 0 || effectIndex >= hitEftPools.Length)
-        {
-            Debug.LogError("Hit Effect Index Error");
-            return null;
-        }
-
-        return GetFromPool(hitEftPools[effectIndex], hitEftPrefabs[effectIndex]);
-    }
-
-    public void ReturnHitEffectToPool(GameObject hitEffect, int effectIndex)
-    {
-        if (effectIndex < 0 || effectIndex >= hitEftPools.Length)
-        {
-            Debug.LogError("Hit Effect Index Error");
-            return;
-        }
-
-        ReturnToPool(hitEffect, hitEftPools[effectIndex]);
-    }
-
-    public void ReturnUnitToPool(GameObject unit)
-    {
-        ReturnToPool(unit, unitPool);
-    }
-
-    public void ReturnHpSliderToPool(GameObject slider)
-    {
-        ReturnToPool(slider, hpSliderPool);
-    }
-
 }

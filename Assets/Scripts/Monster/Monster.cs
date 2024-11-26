@@ -131,19 +131,15 @@ public class Monster : MonoBehaviour
         currentWaypointIndex = 0;
         isAlive = false;
 
-        //if (slowCoroutine != null)
-        //{
-        //    StopCoroutine(slowCoroutine);
-        //    slowCoroutine = null;
-        //}
-
         if (hpSlider != null)
         {
-            objectPool.ReturnToPool(hpSlider, objectPool.hpSliderPool);
+            string sliderPoolName = "HealthBar";
+            objectPool.ReturnToPool(sliderPoolName, hpSlider);
             hpSlider = null;
         }
 
-        objectPool.ReturnToPool(gameObject, objectPool.unitPool);
+        string monsterPoolName = "Monster";
+        objectPool.ReturnToPool(monsterPoolName, gameObject);
     }
 
     public void SetHpSlider(GameObject slider)

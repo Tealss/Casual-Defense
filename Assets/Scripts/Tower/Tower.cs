@@ -213,56 +213,57 @@ public class Tower : MonoBehaviour
         if (target != null)
         {
             this.towerIndex = GetTowerTypeIndexFromString(towerType);
-            Fire(target.transform);
+           // Fire(target.transform);
         }
     }
 
-    public void Fire(Transform target)
-    {
-        GameObject projectile = objectPool.GetProjectileFromPool(towerIndex);
-        if (projectile == null)
-        {
-            Debug.LogError("Projectile 풀을 확인요망");
-            return;
-        }
+    //public void Fire(Transform target)
+    //{
+    //    GameObject projectile = objectPool.GetFromPool($"Projectile_{towerIndex}", objectPool.projectilePrefabs[towerIndex]);
+    //    if (projectile == null)
+    //    {
+    //        Debug.LogError("Projectile 풀을 확인요망");
+    //        return;
+    //    }
+    //    int projectileTypeIndex = towerIndex;
 
-        projectile.transform.SetParent(Folder.folder.transform, false);
-        projectile.transform.position = transform.position;
+    //    projectile.transform.SetParent(Folder.folder.transform, false);
+    //    projectile.transform.position = transform.position;
 
-        Projectile projectileScript = projectile.GetComponent<Projectile>();
-        if (projectileScript != null)
-        {
-            projectileScript.Initialize(); 
-            projectileScript.SetTarget(target);
+    //    Projectile projectileScript = projectile.GetComponent<Projectile>();
+    //    if (projectileScript != null)
+    //    {
+    //        projectileScript.Initialize(); 
+    //        projectileScript.SetTarget(target);
 
-            projectileScript.speed = towerStats.projectileSpeed;
-            projectileScript.SetTowerTransform(transform, towerType);
-            projectileScript.SetTowerStats(towerStats);
+    //        projectileScript.speed = towerStats.projectileSpeed;
+    //        projectileScript.SetTowerTransform(transform, projectileTypeIndex);
+    //        projectileScript.SetTowerStats(towerStats);
 
-            switch (towerType)
-            {
-                case "T1":
-                    projectileScript.SetBehavior(new ProjectileBasic());
-                    break;
-                case "T2":
-                    projectileScript.SetBehavior(new ProjectileExplosive());
-                    break;
-                case "T3":
-                    projectileScript.SetBehavior(new ProjectileLightning());
-                    break;
-                case "T4":
-                    projectileScript.SetBehavior(new ProjectileIce());
-                    break;
-                default:
-                    projectileScript.SetBehavior(new ProjectileIce());
-                    break;
-            }
-        }
-        else
-        {
-            Debug.LogError("Projectile 스크립트가 할당되지 않음");
-        }
-    }
+    //        switch (towerType)
+    //        {
+    //            case "T1":
+    //                projectileScript.SetBehavior(new ProjectileBasic());
+    //                break;
+    //            case "T2":
+    //                projectileScript.SetBehavior(new ProjectileExplosive());
+    //                break;
+    //            case "T3":
+    //                projectileScript.SetBehavior(new ProjectileLightning());
+    //                break;
+    //            case "T4":
+    //                projectileScript.SetBehavior(new ProjectileIce());
+    //                break;
+    //            default:
+    //                projectileScript.SetBehavior(new ProjectileIce());
+    //                break;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("Projectile 스크립트가 할당되지 않음");
+    //    }
+    //}
 
     private void HideAttackRange()
     {

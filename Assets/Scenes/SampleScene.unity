@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.51463014, g: 0.7016362, b: 0.8394003, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -11710,8 +11710,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 036d7f8aa3fbb4c4caf26c47cdd5a56e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitPrefab: {fileID: 6285209290496832306, guid: a604ffbac01747d6b33aff45d9e3dd8a, type: 3}
-  hpSliderPrefab: {fileID: 1292146651817448466, guid: fa97addece4b0314a87a7ab4d893085a, type: 3}
+  monsterPrefab: {fileID: 6285209290496832306, guid: a604ffbac01747d6b33aff45d9e3dd8a, type: 3}
+  healthBarPrefab: {fileID: 1292146651817448466, guid: fa97addece4b0314a87a7ab4d893085a, type: 3}
   towerBuildButtonPrefab: {fileID: 6010510747048211428, guid: 5702c37976668514dbb0663126ba39fb, type: 3}
   towerMergeButtonPrefab: {fileID: 3299047786225081237, guid: 9e812cf6aec6ac54e8529cc79e3fca3b, type: 3}
   towerPrefabs:

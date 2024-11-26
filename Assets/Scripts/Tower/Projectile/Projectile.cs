@@ -17,6 +17,7 @@ public class Projectile : MonoBehaviour
     private float criticalDamage = 0f;
 
     //private Tower tower;
+    private int projectileTypeIndex;
     public Transform towerTransform;
     private Vector3 startPosition;
     private Vector3 targetPosition;
@@ -94,9 +95,10 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void SetTowerTransform(Transform towerTransform, string towerType)
+    public void SetTowerTransform(Transform towerTransform, int projectileTypeIndex)
     {
         this.towerTransform = towerTransform;
+        this.projectileTypeIndex = projectileTypeIndex;
     }
 
     public void SetProjectileBehavior(IProjectileBehavior behavior)
@@ -138,7 +140,8 @@ public class Projectile : MonoBehaviour
     {
         if (objectPool != null)
         {
-            objectPool.ReturnProjectileToPool(gameObject);
+            string poolName = $"Projectile_{projectileTypeIndex}"; // projectileTypeIndex는 해당 투사체의 타입 인덱스
+            objectPool.ReturnToPool(poolName, gameObject);
         }
         gameObject.SetActive(false);
     }

@@ -24,19 +24,21 @@ public class EffectManager : MonoBehaviour
     {
         if (objectPool != null)
         {
-            GameObject hitEffect = objectPool.GetHitEffectFromPool(towerTypeIndex);
+            string poolName = $"HitEffect_{towerTypeIndex}";
+            GameObject hitEffect = objectPool.GetFromPool(poolName, objectPool.hitEftPrefabs[towerTypeIndex]);
             if (hitEffect != null)
             {
                 hitEffect.transform.SetParent(Folder.folder.transform, false);
                 hitEffect.transform.position = position;
                 hitEffect.SetActive(true);
 
-                StartCoroutine(ReturnEffectToPoolAfterDelay(hitEffect, towerTypeIndex, 0.5f));
+                // 일정 시간이 지난 후 반환
+                StartCoroutine(ReturnEffectToPoolAfterDelay(hitEffect, poolName, 0.5f));
             }
         }
     }
 
-    private IEnumerator ReturnEffectToPoolAfterDelay(GameObject effect, int towerTypeIndex, float delay)
+    private IEnumerator ReturnEffectToPoolAfterDelay(GameObject effect, string poolName, float delay)
     {
         if (effect == null || !effect.activeInHierarchy)
         {
@@ -49,8 +51,7 @@ public class EffectManager : MonoBehaviour
 
         if (objectPool != null)
         {
-            objectPool.ReturnHitEffectToPool(effect, towerTypeIndex);
+            objectPool.ReturnToPool(poolName, effect);
         }
     }
-
 }
