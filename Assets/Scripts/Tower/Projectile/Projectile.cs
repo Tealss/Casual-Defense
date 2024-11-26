@@ -16,7 +16,6 @@ public class Projectile : MonoBehaviour
     private float criticalChance = 0f;
     private float criticalDamage = 0f;
 
-    //private Tower tower;
     private int projectileTypeIndex;
     public Transform towerTransform;
     private Vector3 startPosition;
@@ -30,7 +29,7 @@ public class Projectile : MonoBehaviour
     public HashSet<Monster> previousTargets = new HashSet<Monster>();
 
     //Ice Tower
-    public float slowAmount = 0f; 
+    public float slowAmount = 0; 
     public float slowDuration = 3f;
 
     private void Awake()
@@ -89,8 +88,6 @@ public class Projectile : MonoBehaviour
             criticalDamage = towerStats.criticalDamage;
             slowAmount = towerStats.enemySlowAmount;
             range = towerStats.attackRange;
-            //slowAmount = slowAmount + tower.level;
-
 
         }
     }

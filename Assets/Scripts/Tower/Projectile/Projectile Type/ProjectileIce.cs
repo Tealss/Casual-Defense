@@ -1,4 +1,5 @@
 using UnityEngine;
+using static Unity.PlasticSCM.Editor.WebApi.CredentialsResponse;
 
 public class ProjectileIce : IProjectileBehavior
 {
@@ -15,7 +16,7 @@ public class ProjectileIce : IProjectileBehavior
 
                 monster.TakeDamage(finalDamage);
                 monster.ApplySlow(projectile.slowAmount, projectile.slowDuration);
-
+                Debug.Log($"¼Óµµ: {projectile.slowAmount}");
                 EffectManager.I.SpawnHitEffect(3, target.position);
 
                 Vector3 spawnPosition = target.position + new Vector3(0.6f, 0.7f, 0);

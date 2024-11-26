@@ -166,13 +166,11 @@ public class Monster : MonoBehaviour
 
         if (isSlowed)
         {
-            StopCoroutine(slowCoroutine);
+            return;
         }
-        else
-        {
-            speed -= slowAmount;
-            isSlowed = true;
-        }
+
+        speed -= slowAmount;
+        isSlowed = true;
 
         slowCoroutine = StartCoroutine(SlowCoroutine(slowAmount, duration));
     }
