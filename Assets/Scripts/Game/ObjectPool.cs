@@ -17,7 +17,7 @@ public class ObjectPool : MonoBehaviour
     public TowerStats[] towerStatsArray = new TowerStats[7];
 
     private Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
-    private int initialPoolSize = 0;
+    private int initialPoolSize = 1;
 
     void Start()
     {

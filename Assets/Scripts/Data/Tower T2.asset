@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseAttackDamage: 10
   baseAttackSpeed: 1
-  baseAttackRange: 1.5
+  baseAttackRange: 2
   baseCriticalChance: 1
   baseCriticalDamage: 0.1
   baseGoldEarnAmount: 0
   baseEnemySlowAmount: 0
   projectileSpeed: 4
-  attackDamage: 1
+  attackDamage: 92.60999
   attackSpeed: 1
   attackRange: 1.5
   criticalChance: 1

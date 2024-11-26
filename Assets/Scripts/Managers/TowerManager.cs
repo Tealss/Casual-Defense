@@ -257,7 +257,7 @@ public class TowerManager : MonoBehaviour
             {
                 if (!activeEffects.ContainsKey(tower))
                 {
-                    int effectIndex = tower.level - 1;
+                    int effectIndex = Mathf.Max(0, tower.level - 1);
                     GameObject effect = ShowMergeEffect(effectIndex, tower.transform.position);
                     activeEffects[tower] = effect;
                 }
@@ -267,7 +267,14 @@ public class TowerManager : MonoBehaviour
 
     private GameObject ShowMergeEffect(int effectIndex, Vector3 position)
     {
+        effectIndex = Mathf.Clamp(effectIndex, 0, objectPool.mergeEftPrefabs.Length - 1);
+
+        // Log the index and prefab being requested
+        Debug.Log($"index: {effectIndex}");
+
         GameObject effect = objectPool.GetFromPool($"MergeEffect_{effectIndex}", objectPool.mergeEftPrefabs[effectIndex]);
+
+
         effect.transform.position = position;
         return effect;
     }

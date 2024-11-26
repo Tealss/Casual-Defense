@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseAttackDamage: 10
   baseAttackSpeed: 1
-  baseAttackRange: 1.5
+  baseAttackRange: 2
   baseCriticalChance: 1
   baseCriticalDamage: 0.1
   baseGoldEarnAmount: 0

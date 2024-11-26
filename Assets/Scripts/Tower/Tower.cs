@@ -39,6 +39,7 @@ public class Tower : MonoBehaviour
         rangeIndicator.material = new Material(Shader.Find("Sprites/Default"));
         rangeIndicator.startColor = Color.green;
         rangeIndicator.endColor = Color.green;
+
     }
 
     public void InitializeStats()
@@ -110,23 +111,23 @@ public class Tower : MonoBehaviour
     public void ApplyMergeBonus()
     {
         towerStats.attackDamage *= 2.1f;
-
         switch (towerType)
         {
-            case "T1":
+            case "Tower_0":
                 break;
-            case "T2":
+            case "Tower_1":
                 break;
-            case "T3":
+            case "Tower_2":
+                Debug.Log("T3");
                 break;
-            case "T4(Clone)":
+            case "Tower_3)":
                 towerStats.enemySlowAmount += 0.1f;
                 break;
-            case "T5":
+            case "Tower_4":
                 break;
-            case "T6":
+            case "Tower_5":
                 break;
-            case "T7":
+            case "Tower_6":
                 break;
             default:
                 break;
@@ -196,14 +197,15 @@ public class Tower : MonoBehaviour
     {
         switch (towerType)
         {
-            case "T1(Clone)": return 0;
-            case "T2(Clone)": return 1;
-            case "T3(Clone)": return 2;
-            case "T4(Clone)": return 3;
-            case "T5(Clone)": return 4;
-            case "T6(Clone)": return 5;
-            case "T7(Clone)": return 6;
-            default: return -1;
+            case "Tower_0": return 0;
+            case "Tower_1": return 1;
+            case "Tower_2": return 2;
+            case "Tower_3": return 3;
+            case "Tower_4": return 4;
+            case "Tower_5": return 5;
+            case "Tower_6": return 6;
+            default:
+                return -1;
         }
     }
 
@@ -213,57 +215,59 @@ public class Tower : MonoBehaviour
         if (target != null)
         {
             this.towerIndex = GetTowerTypeIndexFromString(towerType);
-           // Fire(target.transform);
+            Fire(target.transform);
         }
     }
 
-    //public void Fire(Transform target)
-    //{
-    //    GameObject projectile = objectPool.GetFromPool($"Projectile_{towerIndex}", objectPool.projectilePrefabs[towerIndex]);
-    //    if (projectile == null)
-    //    {
-    //        Debug.LogError("Projectile 풀을 확인요망");
-    //        return;
-    //    }
-    //    int projectileTypeIndex = towerIndex;
+    public void Fire(Transform target)
+    {
+        //Debug.Log($"Tower Type: {towerType}, Projectile Type Index: {towerIndex}");
+        GameObject projectile = objectPool.GetFromPool($"Projectile_{towerIndex}", objectPool.projectilePrefabs[towerIndex]);
+        if (projectile == null)
+        {
+            Debug.LogError("Check the projectile pool");
+            return;
+        }
 
-    //    projectile.transform.SetParent(Folder.folder.transform, false);
-    //    projectile.transform.position = transform.position;
+        int projectileTypeIndex = towerIndex;
 
-    //    Projectile projectileScript = projectile.GetComponent<Projectile>();
-    //    if (projectileScript != null)
-    //    {
-    //        projectileScript.Initialize(); 
-    //        projectileScript.SetTarget(target);
+        projectile.transform.SetParent(Folder.folder.transform, false);
+        projectile.transform.position = transform.position;
 
-    //        projectileScript.speed = towerStats.projectileSpeed;
-    //        projectileScript.SetTowerTransform(transform, projectileTypeIndex);
-    //        projectileScript.SetTowerStats(towerStats);
+        Projectile projectileScript = projectile.GetComponent<Projectile>();
+        if (projectileScript != null)
+        {
+            projectileScript.Initialize();
+            projectileScript.SetTarget(target);
 
-    //        switch (towerType)
-    //        {
-    //            case "T1":
-    //                projectileScript.SetBehavior(new ProjectileBasic());
-    //                break;
-    //            case "T2":
-    //                projectileScript.SetBehavior(new ProjectileExplosive());
-    //                break;
-    //            case "T3":
-    //                projectileScript.SetBehavior(new ProjectileLightning());
-    //                break;
-    //            case "T4":
-    //                projectileScript.SetBehavior(new ProjectileIce());
-    //                break;
-    //            default:
-    //                projectileScript.SetBehavior(new ProjectileIce());
-    //                break;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("Projectile 스크립트가 할당되지 않음");
-    //    }
-    //}
+            projectileScript.speed = towerStats.projectileSpeed;
+            projectileScript.SetTowerTransform(transform, projectileTypeIndex);
+            projectileScript.SetTowerStats(towerStats);
+
+            switch (towerType)
+            {
+                case "Tower_0":
+                    projectileScript.SetBehavior(new ProjectileBasic());
+                    break;
+                case "Tower_1":
+                    projectileScript.SetBehavior(new ProjectileExplosive());
+                    break;
+                case "Tower_2":
+                    projectileScript.SetBehavior(new ProjectileLightning());
+                    break;
+                case "Tower_3":
+                    projectileScript.SetBehavior(new ProjectileIce());
+                    break;
+                default:
+                    projectileScript.SetBehavior(new ProjectileIce());
+                    break;
+            }
+        }
+        else
+        {
+            Debug.LogError("Projectile 스크립트가 할당되지 않음");
+        }
+    }
 
     private void HideAttackRange()
     {

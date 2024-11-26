@@ -140,7 +140,7 @@ public class Projectile : MonoBehaviour
     {
         if (objectPool != null)
         {
-            string poolName = $"Projectile_{projectileTypeIndex}"; // projectileTypeIndex는 해당 투사체의 타입 인덱스
+            string poolName = $"Projectile_{projectileTypeIndex}";
             objectPool.ReturnToPool(poolName, gameObject);
         }
         gameObject.SetActive(false);
