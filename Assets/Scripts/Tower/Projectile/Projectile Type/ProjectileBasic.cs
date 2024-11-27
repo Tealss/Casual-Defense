@@ -8,6 +8,7 @@ public class ProjectileBasic : IProjectileBehavior
         {
             if (target == null || !target.gameObject.activeInHierarchy)
                 return;
+
             Monster monster = target.GetComponent<Monster>();
             if (monster != null)
             {

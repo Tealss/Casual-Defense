@@ -11,6 +11,7 @@ public class ProjectileBoss : IProjectileBehavior
         {
             if (target == null || !target.gameObject.activeInHierarchy)
                 return;
+
             Monster monster = prioritizedTarget.GetComponent<Monster>();
             if (monster != null)
             {

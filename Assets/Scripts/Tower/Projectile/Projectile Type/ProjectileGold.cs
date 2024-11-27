@@ -14,7 +14,7 @@ public class ProjectileGold: IProjectileBehavior
                 float damage = GameManager.I.gold * 0.05f + projectile.damage * 0.05f;
                 damage *= projectile.level + 1;
 
-                Debug.Log($"{projectile.level} , {damage}");
+                //Debug.Log($"{projectile.level} , {damage}");
                 float randomChance = Random.Range(0f, 100f);
                 bool isCriticalHit = randomChance <= projectile.CriticalChance;
 
