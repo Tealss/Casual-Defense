@@ -11,6 +11,7 @@ public class Monster : MonoBehaviour
     private Transform[] waypoints;
     private int currentWaypointIndex = 0;
     private float speed;
+    private float originalSpeed;
     private GameManager gameManager;
     private ObjectPool objectPool;
     private GameObject hpSlider;
@@ -21,6 +22,7 @@ public class Monster : MonoBehaviour
 
     private Coroutine slowCoroutine;
     private bool isSlowed = false;
+    private float currentSlowAmount = 0f;
 
     private List<Renderer> renderers = new List<Renderer>();
     private Dictionary<Renderer, Color> originalColors = new Dictionary<Renderer, Color>();
@@ -34,7 +36,6 @@ public class Monster : MonoBehaviour
             renderers.Add(renderer);
             originalColors[renderer] = renderer.material.color;
         }
-
     }
 
     public void SetMaxHealth(float value)
@@ -48,6 +49,7 @@ public class Monster : MonoBehaviour
         currentHealth = maxHealth;
         this.waypoints = waypoints;
         this.speed = speed;
+        this.originalSpeed = speed;
         this.objectPool = objectPool;
         this.currentWaypointIndex = 0;
         isAlive = true;
@@ -69,7 +71,6 @@ public class Monster : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * speed);
         }
-
         transform.position = Vector3.MoveTowards(transform.position, targetWaypoint.position, step);
 
         if (Vector3.Distance(transform.position, targetWaypoint.position) < 0.1f)
@@ -128,6 +129,16 @@ public class Monster : MonoBehaviour
 
     private void ReturnToPool()
     {
+        RestoreOriginalColor();
+
+        if (isSlowed)
+        {
+            StopCoroutine(slowCoroutine);
+            speed = originalSpeed;
+            currentSlowAmount = 0f;
+            isSlowed = false;
+        }
+
         currentWaypointIndex = 0;
         isAlive = false;
 
@@ -169,25 +180,26 @@ public class Monster : MonoBehaviour
             return;
         }
 
+        currentSlowAmount = slowAmount;
         speed -= slowAmount;
         isSlowed = true;
 
-        slowCoroutine = StartCoroutine(SlowCoroutine(slowAmount, duration));
+        slowCoroutine = StartCoroutine(SlowCoroutine(duration));
     }
 
-    private IEnumerator SlowCoroutine(float slowAmount, float duration)
+    private IEnumerator SlowCoroutine(float duration)
     {
         ChangeColor(Color.cyan);
         float elapsed = 0f;
         while (elapsed < duration)
         {
-            ChangeColor(Color.cyan);
             elapsed += Time.deltaTime;
             yield return null;
         }
 
         RestoreOriginalColor();
-        speed += slowAmount;
+        speed = originalSpeed;
+        currentSlowAmount = 0f;
         isSlowed = false;
     }
 
@@ -212,5 +224,4 @@ public class Monster : MonoBehaviour
             }
         }
     }
-
 }
