@@ -4,6 +4,7 @@ using UnityEngine;
 public class TowerStats : ScriptableObject
 {
     [Header("Base Stats")]
+    public float baseLevel;
     public float baseAttackDamage;
     public float baseAttackSpeed;
     public float baseAttackRange;
@@ -14,7 +15,7 @@ public class TowerStats : ScriptableObject
 
     [Header("Projectile")]
     public float projectileSpeed;
-
+    [HideInInspector] public float level = 1;
     [HideInInspector] public float attackDamage;
     [HideInInspector] public float attackSpeed;
     [HideInInspector] public float attackRange;
@@ -25,6 +26,7 @@ public class TowerStats : ScriptableObject
 
     public void ResetStats()
     {
+        level = baseLevel;
         attackDamage = baseAttackDamage;
         attackSpeed = baseAttackSpeed;
         attackRange = baseAttackRange;

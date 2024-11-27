@@ -1,9 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    public float level;
     public float speed = 0;
     public float damage { get; private set; }
     public float CriticalChance => criticalChance;
@@ -24,12 +24,10 @@ public class Projectile : MonoBehaviour
     private ObjectPool objectPool;
     private IProjectileBehavior projectileBehavior;
 
-    //Lighting Tower
-    public int maxChainHits = 3; 
+    public int maxChainHits = 3;
     public HashSet<Monster> previousTargets = new HashSet<Monster>();
 
-    //Ice Tower
-    public float slowAmount = 0; 
+    public float slowAmount = 0;
     public float slowDuration = 3f;
 
     private void Awake()
@@ -41,16 +39,29 @@ public class Projectile : MonoBehaviour
     {
         isActive = true;
 
-        if (towerTransform != null)
+        if (towerTransform != null && target != null)
         {
-            startPosition = towerTransform.position + new Vector3(0, 2f, 0);
+            CalculateFirePoint(target);
             transform.position = startPosition;
         }
     }
+
+    private void CalculateFirePoint(Transform targetTransform)
+    {
+        Collider targetCollider = targetTransform.GetComponent<Collider>();
+        if (targetCollider != null)
+        {
+            Vector3 colliderCenter = targetCollider.bounds.center;
+            Vector3 firePoint = colliderCenter + targetTransform.up * 1f + targetTransform.forward * 0.5f;
+            startPosition = firePoint;
+        }
+    }
+
     public void SetBehavior(IProjectileBehavior newBehavior)
     {
         projectileBehavior = newBehavior;
     }
+
     private void OnDisable()
     {
         isActive = false;
@@ -64,6 +75,7 @@ public class Projectile : MonoBehaviour
             MoveTowardsTarget();
         }
     }
+
     public void Initialize()
     {
         previousTargets.Clear();
@@ -73,8 +85,11 @@ public class Projectile : MonoBehaviour
     {
         if (targetTransform != null && targetTransform.gameObject.activeInHierarchy)
         {
-            target = targetTransform;
-            targetPosition = target.position;
+            if (target == null || !target.Equals(targetTransform))
+            {
+                target = targetTransform;
+                targetPosition = target.position;
+            }
         }
     }
 
@@ -82,13 +97,13 @@ public class Projectile : MonoBehaviour
     {
         if (towerStats != null)
         {
+            level = towerStats.level;
             damage = towerStats.attackDamage;
             speed = towerStats.projectileSpeed;
             criticalChance = towerStats.criticalChance;
             criticalDamage = towerStats.criticalDamage;
             slowAmount = towerStats.enemySlowAmount;
             range = towerStats.attackRange;
-
         }
     }
 
@@ -111,13 +126,23 @@ public class Projectile : MonoBehaviour
             return;
         }
 
-        targetPosition = target.position;
-
-        transform.LookAt(targetPosition);
+        Vector3 direction = (target.position - transform.position).normalized;
         float moveDistance = speed * Time.deltaTime;
-        transform.Translate(Vector3.forward * moveDistance);
 
-        float distanceToTarget = Vector3.Distance(transform.position, targetPosition);
+        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance))
+        {
+            Monster monster = hit.transform.GetComponent<Monster>();
+            if (monster != null && hit.transform == target)
+            {
+                DealDamageToTarget();
+                ReturnToPool();
+                return;
+            }
+        }
+
+        transform.Translate(direction * moveDistance);
+
+        float distanceToTarget = Vector3.Distance(transform.position, target.position);
         if (distanceToTarget <= 0.5f)
         {
             DealDamageToTarget();
@@ -127,7 +152,7 @@ public class Projectile : MonoBehaviour
 
     private void DealDamageToTarget()
     {
-        if (projectileBehavior != null)
+        if (projectileBehavior != null && target != null && target.gameObject.activeInHierarchy)
         {
             projectileBehavior.Execute(this, target);
         }

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbdc8b2587741694fac39dfc3d0de68d, type: 3}
   m_Name: Tower T6
   m_EditorClassIdentifier: 
+  baseLevel: 0
   baseAttackDamage: 10
   baseAttackSpeed: 1
   baseAttackRange: 2
@@ -19,11 +20,12 @@ MonoBehaviour:
   baseCriticalDamage: 0.1
   baseGoldEarnAmount: 0
   baseEnemySlowAmount: 0
-  projectileSpeed: 4
+  projectileSpeed: 6
+  level: 0
   attackDamage: 10
   attackSpeed: 1
   attackRange: 2
   criticalChance: 1
   criticalDamage: 0.1
   goldEarnAmount: 0
-  enemySlowAmount: 1
+  enemySlowAmount: 0

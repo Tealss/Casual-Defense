@@ -36,7 +36,6 @@ public class ObjectPool : MonoBehaviour
             RegisterPool($"HitEffect_{i}", hitEftPrefabs[i]);
         }
     }
-
     private void RegisterPool(string poolName, GameObject prefab)
     {
         if (!pools.ContainsKey(poolName))
@@ -54,6 +53,11 @@ public class ObjectPool : MonoBehaviour
             GameObject obj = Instantiate(prefab);
             obj.SetActive(false);
             pool.Enqueue(obj);
+
+            if (Folder.folder != null)
+            {
+                obj.transform.SetParent(Folder.folder.transform, false);
+            }
         }
     }
 
@@ -70,7 +74,15 @@ public class ObjectPool : MonoBehaviour
         {
             GameObject obj = pool.Dequeue();
             obj.SetActive(true);
+
+            if (Folder.folder != null)
+            {
+                obj.transform.SetParent(Folder.folder.transform, false);
+            }
+
             return obj;
+
+
         }
         else
         {

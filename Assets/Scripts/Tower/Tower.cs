@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Progress;
@@ -111,6 +110,7 @@ public class Tower : MonoBehaviour
     public void ApplyMergeBonus()
     {
         towerStats.attackDamage *= 2.1f;
+        towerStats.level += 1;
         switch (towerType)
         {
             case "Tower_0":
@@ -222,6 +222,7 @@ public class Tower : MonoBehaviour
     public void Fire(Transform target)
     {
         //Debug.Log($"Tower Type: {towerType}, Projectile Type Index: {towerIndex}");
+
         GameObject projectile = objectPool.GetFromPool($"Projectile_{towerIndex}", objectPool.projectilePrefabs[towerIndex]);
         if (projectile == null)
         {
@@ -231,7 +232,7 @@ public class Tower : MonoBehaviour
 
         int projectileTypeIndex = towerIndex;
 
-        projectile.transform.SetParent(Folder.folder.transform, false);
+        //projectile.transform.SetParent(Folder.folder.transform, false);
         projectile.transform.position = transform.position;
 
         Projectile projectileScript = projectile.GetComponent<Projectile>();
@@ -258,8 +259,17 @@ public class Tower : MonoBehaviour
                 case "Tower_3":
                     projectileScript.SetBehavior(new ProjectileIce());
                     break;
+                case "Tower_4":
+                    projectileScript.SetBehavior(new ProjectileRandom());
+                    break;
+                case "Tower_5":
+                    projectileScript.SetBehavior(new ProjectileGold());
+                    break;
+                case "Tower_6":
+                    projectileScript.SetBehavior(new ProjectileBoss());
+                    break;
                 default:
-                    projectileScript.SetBehavior(new ProjectileIce());
+                    projectileScript.SetBehavior(new ProjectileBasic());
                     break;
             }
         }

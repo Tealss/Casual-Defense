@@ -22,16 +22,20 @@ public class ProjectileLightning : IProjectileBehavior
                     if (monster != null && !projectile.previousTargets.Contains(monster))
                     {
                         float chainDamage = projectile.damage * 0.25f;
-                        monster.TakeDamage(chainDamage);
+
+                        float randomChance = Random.Range(0f, 100f);
+                        bool isCriticalHit = randomChance <= projectile.CriticalChance;
+                        float finalDamage = isCriticalHit ? chainDamage * projectile.CriticalDamage : chainDamage;
+                        monster.TakeDamage(finalDamage);
 
                         CreateLightningEffect(towerPosition, monster.transform.position);
 
                         EffectManager.I.SpawnHitEffect(2, monster.transform.position);
 
                         Vector3 spawnPosition = monster.transform.position + new Vector3(0.5f, 1f, 0);
-                        string damageText = $"-{(int)chainDamage}";
+                        string damageText = isCriticalHit ? $"- {(int)finalDamage}!" : $"- {(int)finalDamage}";
+                        Color textColor = isCriticalHit ? Color.red : Color.white;
 
-                        Color textColor = Color.white;
                         FadeOutTextUse.I.SpawnFadeOutText(spawnPosition, damageText, textColor);
 
                         projectile.previousTargets.Add(monster);

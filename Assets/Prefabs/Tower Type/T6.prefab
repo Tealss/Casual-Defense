@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4521902469289120713}
   - component: {fileID: 4862417304503896439}
   - component: {fileID: 1076249822848298829}
-  - component: {fileID: 8891891395060466417}
+  - component: {fileID: -3920901402918168625}
   m_Layer: 0
   m_Name: T6
   m_TagString: Tower
@@ -63,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 23fe6e6315af1c6458ea91a3b762eaa4, type: 2}
+  - {fileID: 2100000, guid: f9ec407a080d408459742617c9dc6607, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -106,7 +106,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8891891395060466417
+--- !u!114 &-3920901402918168625
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a006d85faea4dfb46af3babe4d29762f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerStats: {fileID: 11400000, guid: dda8d2dbc45495d4e945a7fd15d41c6c, type: 2}
+  towerStats: {fileID: 11400000, guid: 0973c70e8a331d34daec0e4f6af4a56d, type: 2}
   level: 1
   towerIndex: 0
-  towerType: 6
+  towerType: 4

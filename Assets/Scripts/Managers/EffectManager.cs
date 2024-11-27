@@ -32,7 +32,6 @@ public class EffectManager : MonoBehaviour
                 hitEffect.transform.position = position;
                 hitEffect.SetActive(true);
 
-                // 일정 시간이 지난 후 반환
                 StartCoroutine(ReturnEffectToPoolAfterDelay(hitEffect, poolName, 0.5f));
             }
         }

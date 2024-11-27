@@ -11,7 +11,7 @@ public class TowerManager : MonoBehaviour
     private ObjectPool objectPool;
     private Tiles selectedTile;
     private Tower selectedTower;
-    public int[] towerTypes = new int[7];
+    //public int[] towerTypes = new int[7];
 
     public static TowerManager I { get; private set; }
     private Dictionary<Tower, GameObject> activeEffects = new Dictionary<Tower, GameObject>();
@@ -154,10 +154,9 @@ public class TowerManager : MonoBehaviour
             HideBuildButton();
             return;
         }
-
+        
         GameManager.I.SpendGold(300);
-
-        int randomTowerIndex = Random.Range(3, 3);
+        int randomTowerIndex = Random.Range(0, objectPool.towerPrefabs.Length);
         GameObject towerGO = objectPool.GetFromPool($"Tower_{randomTowerIndex}", objectPool.towerPrefabs[randomTowerIndex]);
 
         if (towerGO != null)
@@ -270,7 +269,7 @@ public class TowerManager : MonoBehaviour
         effectIndex = Mathf.Clamp(effectIndex, 0, objectPool.mergeEftPrefabs.Length - 1);
 
         // Log the index and prefab being requested
-        Debug.Log($"index: {effectIndex}");
+        //Debug.Log($"index: {effectIndex}");
 
         GameObject effect = objectPool.GetFromPool($"MergeEffect_{effectIndex}", objectPool.mergeEftPrefabs[effectIndex]);
 

@@ -7,6 +7,8 @@ TagManager:
   - Tile
   - Tower
   - Monster
+  - Bounty
+  - Boss
   layers:
   - Default
   - TransparentFX
