@@ -16,7 +16,7 @@ public class ProjectileLightning : IProjectileBehavior
 
             foreach (var hitCollider in hitColliders)
             {
-                if (hitCollider.CompareTag("Monster"))
+                if (hitCollider.CompareTag("Monster") || hitCollider.CompareTag("Bounty")|| hitCollider.CompareTag("Boss"))
                 {
                     Monster monster = hitCollider.GetComponent<Monster>();
                     if (monster != null && !projectile.previousTargets.Contains(monster))

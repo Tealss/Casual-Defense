@@ -6,7 +6,7 @@ public class ProjectileExplosive : IProjectileBehavior
         Collider[] hitColliders = Physics.OverlapSphere(target.position, 2f);
         foreach (var hitCollider in hitColliders)
         {
-            if (hitCollider.CompareTag("Monster"))
+            if (hitCollider.CompareTag("Monster") || hitCollider.CompareTag("Bounty") || hitCollider.CompareTag("Boss"))
             {
                 Monster monster = hitCollider.GetComponent<Monster>();
                 if (monster != null)
@@ -27,6 +27,6 @@ public class ProjectileExplosive : IProjectileBehavior
                 }
             }
         }
-        Debug.Log("Explosion damage applied to nearby targets!");
+
     }
 }

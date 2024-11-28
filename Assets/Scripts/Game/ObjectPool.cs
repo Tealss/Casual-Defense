@@ -16,6 +16,9 @@ public class ObjectPool : MonoBehaviour
     public GameObject[] hitEftPrefabs = new GameObject[7];
     public TowerStats[] towerStatsArray = new TowerStats[7];
 
+    // No Pool
+    public GameObject[] bountyMonsterPrefabs;
+
     private Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
     private int initialPoolSize = 1;
 
@@ -26,10 +29,10 @@ public class ObjectPool : MonoBehaviour
         RegisterPool("HealthBar", healthBarPrefab);
         RegisterPool("TowerBuildButton", towerBuildButtonPrefab);
         RegisterPool("TowerMergeButton", towerMergeButtonPrefab);
-
         // Initialize dynamic pools (arrays)
         for (int i = 0; i < towerPrefabs.Length; i++)
         {
+            RegisterPool($"Bounty_{i}", bountyMonsterPrefabs[i]);
             RegisterPool($"Tower_{i}", towerPrefabs[i]);
             RegisterPool($"MergeEffect_{i}", mergeEftPrefabs[i]);
             RegisterPool($"Projectile_{i}", projectilePrefabs[i]);

@@ -1,10 +1,12 @@
+using UnityEditor.VersionControl;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class ProjectileBasic : IProjectileBehavior
 {
     public void Execute(Projectile projectile, Transform target)
     {
-        if (target != null && target.CompareTag("Monster"))
+        if (target != null && (target.CompareTag("Monster") || target.CompareTag("Bounty") || target.CompareTag("Boss")))
         {
             if (target == null || !target.gameObject.activeInHierarchy)
                 return;
@@ -25,6 +27,7 @@ public class ProjectileBasic : IProjectileBehavior
                 Color textColor = isCriticalHit ? Color.red : Color.white;
 
                 FadeOutTextUse.I.SpawnFadeOutText(spawnPosition, damageText, textColor);
+
             }
         }
     }

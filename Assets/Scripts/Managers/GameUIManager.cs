@@ -10,6 +10,8 @@ public class GameUiManager : MonoBehaviour
     public GameObject[] popupWindows;
     public Button[] popupWindowButtons;
 
+    public Button[] bountyButtons;
+
     [Header("Text UI")]
     [Space]
     public Text infoText;
@@ -39,6 +41,12 @@ public class GameUiManager : MonoBehaviour
 
     void Start()
     {
+        for (int i = 0; i < bountyButtons.Length; i++)
+        {
+            int index = i;
+            bountyButtons[index].onClick.AddListener(() => OnBountyButtonClicked(index));
+        }
+
         UpdateGoldUI(GameManager.I.gold);
         UpdateLifePointsText(GameManager.I.lifePoints, GameManager.I.totalLifePoints);
         gameOverPanel.SetActive(false);
@@ -47,6 +55,14 @@ public class GameUiManager : MonoBehaviour
         AddEventTriggerToPopupWindowButtons();
         UpdateProbabilityText();
         StartCoroutine(RefreshProbabilityText());
+    }
+
+    public void OnBountyButtonClicked(int index)
+    {
+        if (WaveManager.I != null)
+        {
+            WaveManager.I.SpawnBountyMonster(index); 
+        }
     }
 
     private void AddEventTriggerToPopupWindowButtons()

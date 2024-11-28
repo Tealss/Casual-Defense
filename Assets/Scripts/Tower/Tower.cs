@@ -287,7 +287,12 @@ public class Tower : MonoBehaviour
 
     private GameObject FindNearestMonster()
     {
-        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
+        GameObject[] monsters = CombineArrays(
+            GameObject.FindGameObjectsWithTag("Monster"),
+            GameObject.FindGameObjectsWithTag("Bounty"),
+            GameObject.FindGameObjectsWithTag("Boss")
+        );
+
         GameObject nearestMonster = null;
         float minDistance = Mathf.Infinity;
 
@@ -303,5 +308,14 @@ public class Tower : MonoBehaviour
         }
 
         return nearestMonster;
+    }
+
+    private GameObject[] CombineArrays(GameObject[] array1, GameObject[] array2, GameObject[] array3)
+    {
+        List<GameObject> combinedList = new List<GameObject>();
+        combinedList.AddRange(array1);
+        combinedList.AddRange(array2);
+        combinedList.AddRange(array3);
+        return combinedList.ToArray();
     }
 }

@@ -3,9 +3,10 @@ using System.Collections;
 
 public class WaveManager : MonoBehaviour
 {
+    public static WaveManager I;
+
     [Header("유닛 이동")]
     [SerializeField] private Transform[] waypoints;
-
     [Header("HP 슬라이더")]
     [SerializeField] private Transform hpSliderParent;
 
@@ -17,12 +18,20 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private float waveDuration = 60f;
     [SerializeField] private float spawnDuration = 30f;
 
-    private int currentWave = 1;
+    public int currentWave = 1;
     private bool isSpawning = false;
     private float currentWaveTimer;
 
     private GameUiManager gameUIManager;
     private ObjectPool objectPool;
+
+    private void Awake()
+    {
+        if (I == null)
+            I = this;
+        else
+            Destroy(gameObject);
+    }
 
     void Start()
     {
@@ -36,12 +45,33 @@ public class WaveManager : MonoBehaviour
 
         StartCoroutine(WaveRoutine());
     }
+    public void SpawnBountyMonster(int index)
+    {
+        if (index >= 0 && index < objectPool.bountyMonsterPrefabs.Length)
+        {
+            GameObject bountyMonster = Instantiate(objectPool.bountyMonsterPrefabs[index], transform.position, Quaternion.identity);
+            bountyMonster.transform.position = waypoints[0].position;
+
+            Monster monster = bountyMonster.GetComponent<Monster>();
+            if (monster != null)
+            {
+                monster.bountyIndex = index;
+                InitializeMonster(monster);
+                AttachHpSliderToMonster(bountyMonster);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Invalid bounty monster index.");
+        }
+    }
 
     private IEnumerator WaveRoutine()
     {
         while (currentWave <= maxWaveCount)
         {
-            Debug.Log($"Wave {currentWave} 시작!");
+
+            //Debug.Log($"Wave {currentWave} 시작!");
 
             currentWaveTimer = waveDuration;
             gameUIManager.UpdateWaveText(currentWave);

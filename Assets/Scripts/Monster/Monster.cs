@@ -13,6 +13,7 @@ public class Monster : MonoBehaviour
     private float speed;
     private float originalSpeed;
     private GameManager gameManager;
+    public int bountyIndex;
     private ObjectPool objectPool;
     private GameObject hpSlider;
 
@@ -27,6 +28,8 @@ public class Monster : MonoBehaviour
     private List<Renderer> renderers = new List<Renderer>();
     private Dictionary<Renderer, Color> originalColors = new Dictionary<Renderer, Color>();
 
+    private bool isBountyMonster = false;  // Flag to check if this is a Bounty Monster
+
     private void Start()
     {
         currentHealth = maxHealth;
@@ -36,6 +39,9 @@ public class Monster : MonoBehaviour
             renderers.Add(renderer);
             originalColors[renderer] = renderer.material.color;
         }
+
+        // Check if it's a Bounty Monster by the name or other condition
+        isBountyMonster = this.CompareTag("Bounty");  // Example: Check if it has the tag "BountyMonster"
     }
 
     public void SetMaxHealth(float value)
@@ -100,7 +106,12 @@ public class Monster : MonoBehaviour
             ReturnToPool();
 
             Vector3 spawnPosition = transform.position + new Vector3(0.5f, 1.5f, 0);
-            string addGoldText = $"+50";
+
+            int goldMultiplier = GetGoldMultiplierForBounty(bountyIndex);
+
+            int killGold = (50 + WaveManager.I.currentWave) * goldMultiplier;
+
+            string addGoldText = $"+ {killGold}";
             Color textColor = Color.yellow;
 
             FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
@@ -108,10 +119,27 @@ public class Monster : MonoBehaviour
             {
                 fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, addGoldText, textColor);
             }
-            GameManager.I.AddGold(50);
+
+            GameManager.I.AddGold(killGold);
         }
 
         UpdateHpUI();
+    }
+
+    private int GetGoldMultiplierForBounty(int bountyIndex)
+    {
+        switch (bountyIndex)
+        {
+            case 0: return 10;
+            case 1: return 20;
+            case 2: return 30;
+            case 3: return 40;
+            case 4: return 50;
+            case 5: return 60;
+            case 6: return 70;
+            case 7: return 80;
+            default: return 1;
+        }
     }
 
     private void UpdateHpUI()
@@ -142,15 +170,31 @@ public class Monster : MonoBehaviour
         currentWaypointIndex = 0;
         isAlive = false;
 
-        if (hpSlider != null)
+        // Check if this is a Bounty Monster and return both the monster and HP slider to the pool
+        if (isBountyMonster)
         {
-            string sliderPoolName = "HealthBar";
-            objectPool.ReturnToPool(sliderPoolName, hpSlider);
-            hpSlider = null;
-        }
+            if (hpSlider != null)
+            {
+                string sliderPoolName = "HealthBar";
+                objectPool.ReturnToPool(sliderPoolName, hpSlider);
+                hpSlider = null;
+            }
 
-        string monsterPoolName = "Monster";
-        objectPool.ReturnToPool(monsterPoolName, gameObject);
+            Destroy(gameObject);
+        }
+        else
+        {
+            // Regular monster pool return
+            if (hpSlider != null)
+            {
+                string sliderPoolName = "HealthBar";
+                objectPool.ReturnToPool(sliderPoolName, hpSlider);
+                hpSlider = null;
+            }
+
+            string monsterPoolName = "Monster"; // Regular monster pool
+            objectPool.ReturnToPool(monsterPoolName, gameObject);
+        }
     }
 
     public void SetHpSlider(GameObject slider)

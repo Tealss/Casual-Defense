@@ -5,7 +5,7 @@ public class ProjectileIce : IProjectileBehavior
 
     public void Execute(Projectile projectile, Transform target)
     {
-        if (target != null && target.CompareTag("Monster"))
+        if (target != null && (target.CompareTag("Monster") || target.CompareTag("Bounty") || target.CompareTag("Boss")))
         {
             if (target == null || !target.gameObject.activeInHierarchy)
                 return;

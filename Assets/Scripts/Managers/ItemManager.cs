@@ -90,7 +90,7 @@ public class ItemManager : MonoBehaviour
 
 
         itemTypesInSlots[slotIndex] = itemTypeIndex;
-        Debug.Log($"아이템이 슬롯 {slotIndex + 1}에 생성되었습니다. 아이템 타입: {itemTypeIndex} ({selectedItemPrefab.name})");
+        //Debug.Log($"아이템이 슬롯 {slotIndex + 1}에 생성되었습니다. 아이템 타입: {itemTypeIndex} ({selectedItemPrefab.name})");
         NotifyItemStatsChanged();
         UpdateUIForSlot(slotIndex);
     }

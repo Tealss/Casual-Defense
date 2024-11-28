@@ -43,26 +43,19 @@ public class Projectile : MonoBehaviour
 
         if (towerTransform != null && target != null)
         {
-            // FirePoint를 계산하여 발사 시작 위치를 설정합니다.
             CalculateFirePoint(target);
-            transform.position = startPosition;  // 새로 계산된 startPosition을 적용
+            transform.position = startPosition;
         }
     }
 
     private void CalculateFirePoint(Transform targetTransform)
     {
-        // 몬스터의 콜라이더를 찾습니다.
         Collider targetCollider = targetTransform.GetComponent<Collider>();
         if (targetCollider != null)
         {
-            // 콜라이더의 중앙 위치
             Vector3 colliderCenter = targetCollider.bounds.center;
 
-            // 몬스터의 "머리 앞위치" 계산
-            // 여기서 targetTransform.up은 몬스터의 상단 방향, targetTransform.forward는 몬스터의 앞 방향입니다.
             Vector3 firePoint = colliderCenter + targetTransform.up * 1f + targetTransform.forward * 0.5f;
-
-            // 파이어포인트 위치 설정 (필요에 따라 오프셋 값 조정)
             startPosition = firePoint;
         }
     }
@@ -136,11 +129,9 @@ public class Projectile : MonoBehaviour
             return;
         }
 
-        // 물선의 방향은 여전히 원래 방식대로
         Vector3 direction = (target.position - transform.position).normalized;
         float moveDistance = speed * Time.deltaTime;
 
-        // 물선 발사와 관련된 로직은 그대로 유지됩니다.
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance))
         {
             Monster monster = hit.transform.GetComponent<Monster>();
