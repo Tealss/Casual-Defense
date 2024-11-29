@@ -180,7 +180,7 @@ private void PurchaseItem()
 
         Vector3 spawnPosition = GetButtonPositionInCanvas(buyButton);
         string damageText = $"- {itemCost}";
-        Color textColor = Color.red;
+        Color textColor = Color.blue;
 
         FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
         if (fadeOutTextSpawner != null)
@@ -391,10 +391,21 @@ private void PurchaseItem()
         itemGrades[index] = 0;
 
         levelTexts[index].text = "Empty";
-        itemSlotButtons[index].image.color = Color.gray;
+        itemSlotButtons[index].image.color = Color.white;
 
         NotifyItemStatsChanged();
         UpdateUIForSlot(index);
+
+        Vector3 spawnPosition = GetButtonPositionInCanvas(itemSlotButtons[index]);
+        string sellText = $"+ {sellPrice}";
+        Color textColor = Color.yellow;
+
+        FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
+        if (fadeOutTextSpawner != null)
+        {
+           fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, sellText, textColor, true);
+        }
+
     }
 
 

@@ -190,13 +190,13 @@ public class TowerManager : MonoBehaviour
 
     private void ShowGoldSpentMessage(Vector3 position, int amount)
     {
-        ShowFadeOutMessage(position, $"-{amount}", Color.red);
+        ShowFadeOutMessage(position, $"- {amount}", Color.blue);
     }
 
     private void ShowFadeOutMessage(Vector3 position, string message, Color color)
     {
         FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
-        fadeOutTextSpawner?.SpawnFadeOutText(position + new Vector3(0.2f, 0.2f, 0), message, color);
+        fadeOutTextSpawner?.SpawnFadeOutText(position + new Vector3(0.3f, 0.4f, 0), message, color);
     }
 
     private void MergeTower(Tower tower)
