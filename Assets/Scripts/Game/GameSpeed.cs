@@ -8,7 +8,7 @@ public class GameSpeed : MonoBehaviour
     [SerializeField] private Text speedText;
 
     private int currentSpeedIndex = 0;
-    private readonly float[] speedLevels = { 1f, 2f, 10f };
+    private readonly float[] speedLevels = { 1f, 2f, 3f };
 
     private void Start()
     {

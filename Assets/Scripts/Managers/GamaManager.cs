@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
             {
                 GameUiManager.I.ShowGameOverPanel();
             }
-            Debug.Log("게임 오버!");
+            //Debug.Log("게임 오버!");
         }
     }
 }

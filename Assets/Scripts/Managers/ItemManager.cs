@@ -64,8 +64,20 @@ public class ItemManager : MonoBehaviour
     }
     private void CreateItemInSlot(int slotIndex, int itemGrade)
     {
-        //Destroy(instantiatedItems[slotIndex]);
+        if (slotIndex < 0 || slotIndex >= instantiatedItems.Length)
+        {
+            Debug.LogError($"Invalid slotIndex: {slotIndex}");
+            return;
+        }
+
         int itemTypeIndex = UnityEngine.Random.Range(0, itemPrefabs.Length);
+
+        if (itemTypeIndex < 0 || itemTypeIndex >= itemPrefabs.Length)
+        {
+            Debug.LogError($"Invalid itemTypeIndex: {itemTypeIndex}");
+            return;
+        }
+
         GameObject selectedItemPrefab = itemPrefabs[itemTypeIndex];
 
         Transform itemFolder = itemSlotButtons[slotIndex].transform.Find("Item");
@@ -75,11 +87,9 @@ public class ItemManager : MonoBehaviour
         itemRect.anchoredPosition = Vector2.zero;
         itemRect.localScale = Vector3.one;
 
-
         itemGrades[slotIndex] = itemGrade;
         currentLevels[slotIndex] = 1;
         slotOccupied[slotIndex] = true;
-
 
         itemSlotButtons[slotIndex].image.color = gradeColors[itemGrade - 1];
 
@@ -88,12 +98,11 @@ public class ItemManager : MonoBehaviour
 
         GameUiManager.I.UpdateItemInfo(slotIndex, GetItemDescription(slotIndex, itemGrade, currentLevels[slotIndex]));
 
-
         itemTypesInSlots[slotIndex] = itemTypeIndex;
-        //Debug.Log($"아이템이 슬롯 {slotIndex + 1}에 생성되었습니다. 아이템 타입: {itemTypeIndex} ({selectedItemPrefab.name})");
         NotifyItemStatsChanged();
         UpdateUIForSlot(slotIndex);
     }
+
     private void AttemptEnhancement(int index)
     {
         if (!slotOccupied[index] || currentLevels[index] >= maxLevel) return;
@@ -127,60 +136,59 @@ public class ItemManager : MonoBehaviour
 
     private void UpdateBuyButtonState() => buyButton.interactable = GameManager.I.gold >= 200;
 
-    private void PurchaseItem()
+private void PurchaseItem()
+{
+    const int itemCost = 200;
+    int purchasedQuantity = 0;
+    int totalCost = itemCost * buyQuantity;
+
+    // Check if there's enough gold
+    if (GameManager.I.gold < totalCost) return;
+
+    for (int i = 0; i < buyQuantity; i++)
     {
-        const int itemCost = 200;
-        int purchasedQuantity = 0;
-        int totalCost = itemCost * buyQuantity;
+        int emptySlot = FindEmptySlot();
 
-        if (GameManager.I.gold < totalCost) return;
-
-        for (int i = 0; i < buyQuantity; i++)
+        if (emptySlot == -1)
         {
-            int emptySlot = FindEmptySlot();
+            Vector3 spawnPosition2 = GetButtonPositionInCanvas(buyButton) + new Vector3(1.5f, 2f, 0);
+            string fullText = "Full";
+            Color fullTextColor = Color.red;
 
-            // 슬롯이 없는 경우 "Full" 텍스트 표시
-            if (emptySlot == -1)
+            FadeOutTextUse fadeOutTextSpawner2 = FindObjectOfType<FadeOutTextUse>();
+            if (fadeOutTextSpawner2 != null)
             {
-                Vector3 spawnPosition2 = GetButtonPositionInCanvas(buyButton) + new Vector3(1.5f, 2f, 0); ;
-                string fullText = "Full";
-                Color fullTextColor = Color.red;
-
-                FadeOutTextUse fadeOutTextSpawner2 = FindObjectOfType<FadeOutTextUse>();
-                if (fadeOutTextSpawner2 != null)
-                {
-                    fadeOutTextSpawner2.SpawnFadeOutText(spawnPosition2, fullText, fullTextColor, true);
-                }
-
-                break; 
+                fadeOutTextSpawner2.SpawnFadeOutText(spawnPosition2, fullText, fullTextColor, true);
             }
 
-            if (!GameManager.I.SpendGold(itemCost)) break;
+            break;
+        }
 
-            int itemGrade = DetermineItemGrade();
-            purchasedQuantity++;
+        if (!GameManager.I.SpendGold(itemCost)) break;
 
-            // 선택된 등급 토글이 켜져 있을 경우 바로 골드 추가
-            if (gradeToggles[itemGrade - 1].isOn)
-            {
-                int sellPrice = sellPrices[itemGrade - 1];
-                GameManager.I.AddGold(sellPrice);
-                continue;
-            }
+        int itemGrade = DetermineItemGrade();
+        purchasedQuantity++;
 
-            CreateItemInSlot(emptySlot, itemGrade);
+        if (gradeToggles[itemGrade - 1].isOn)
+        {
+            int sellPrice = sellPrices[itemGrade - 1];
+            GameManager.I.AddGold(sellPrice);
+            continue;
+        }
 
-            Vector3 spawnPosition = GetButtonPositionInCanvas(buyButton);
-            string damageText = $"- {itemCost}";
-            Color textColor = Color.red;
+        CreateItemInSlot(emptySlot, itemGrade);
 
-            FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
-            if (fadeOutTextSpawner != null)
-            {
-                fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, damageText, textColor, true);
-            }
+        Vector3 spawnPosition = GetButtonPositionInCanvas(buyButton);
+        string damageText = $"- {itemCost}";
+        Color textColor = Color.red;
+
+        FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
+        if (fadeOutTextSpawner != null)
+        {
+            fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, damageText, textColor, true);
         }
     }
+}
 
     private Vector3 GetButtonPositionInCanvas(Button button)
     {
@@ -188,7 +196,7 @@ public class ItemManager : MonoBehaviour
         Vector2 anchoredPosition = rectTransform.anchoredPosition;
         return anchoredPosition;
     }
-// 안녕
+
     private int FindEmptySlot()
     {
         for (int i = 0; i < slotOccupied.Length; i++)

@@ -5,22 +5,21 @@ public class WaveManager : MonoBehaviour
 {
     public static WaveManager I;
 
-    [Header("유닛 이동")]
-    [SerializeField] private Transform[] waypoints;
-    [Header("HP 슬라이더")]
-    [SerializeField] private Transform hpSliderParent;
-
-    [Header("웨이브 세팅")]
+    [Header("Wave Set")]
     [SerializeField] private float unitSpeed = 5f;
     [SerializeField] private int maxWaveCount = 100;
     [SerializeField] private int unitCountPerWave = 30;
     [SerializeField] private float spawnInterval = 1f;
-    [SerializeField] private float waveDuration = 60f;
+    [SerializeField] private float waveDuration = 50f;
     [SerializeField] private float spawnDuration = 30f;
+
+    [SerializeField] private Transform[] waypoints;
+    [SerializeField] private Transform hpSliderParent;
 
     public int currentWave = 1;
     private bool isSpawning = false;
     private float currentWaveTimer;
+    private float waveHealthMultiplier = 1f;
 
     private GameUiManager gameUIManager;
     private ObjectPool objectPool;
@@ -40,11 +39,12 @@ public class WaveManager : MonoBehaviour
 
         if (hpSliderParent == null)
         {
-            Debug.LogError("HP 슬라이더 부모가 설정되지 않았습니다. UI/Canvas/HpSlider를 확인하세요.");
+            Debug.LogError("HP Slider parent check");
         }
 
         StartCoroutine(WaveRoutine());
     }
+
     public void SpawnBountyMonster(int index)
     {
         if (index >= 0 && index < objectPool.bountyMonsterPrefabs.Length)
@@ -70,11 +70,10 @@ public class WaveManager : MonoBehaviour
     {
         while (currentWave <= maxWaveCount)
         {
-
-            //Debug.Log($"Wave {currentWave} 시작!");
-
             currentWaveTimer = waveDuration;
             gameUIManager.UpdateWaveText(currentWave);
+
+            CalculateWaveHealthMultiplier();
 
             if (!isSpawning)
             {
@@ -90,11 +89,19 @@ public class WaveManager : MonoBehaviour
             }
 
             isSpawning = false;
-            Debug.Log($"Wave {currentWave} 종료!");
             currentWave++;
         }
 
-        Debug.Log("모든 웨이브 종료!");
+        Debug.Log("All wave END!");
+    }
+
+    private void CalculateWaveHealthMultiplier()
+    {
+        if (waveHealthMultiplier == 1f)
+        {
+            waveHealthMultiplier = Mathf.Pow(1.5f, Mathf.Max(currentWave - 1, 0));
+            Debug.Log($"Wave {currentWave} - Health Multiplier: {waveHealthMultiplier}");
+        }
     }
 
     private IEnumerator SpawnUnits()
@@ -114,11 +121,10 @@ public class WaveManager : MonoBehaviour
 
     private void SpawnSingleUnit()
     {
-
         GameObject unit = objectPool.GetFromPool("Monster", objectPool.monsterPrefab);
         if (unit == null)
         {
-            Debug.LogError("오브젝트 풀에서 유닛을 가져올 수 없습니다.");
+            Debug.LogError("Can't get the monster from object pool");
             return;
         }
 
@@ -135,9 +141,11 @@ public class WaveManager : MonoBehaviour
 
     private void InitializeMonster(Monster monster)
     {
-        float calculatedMaxHealth = CalculateMonsterMaxHealthForWave(monster);
+        float calculatedMaxHealth = monster.maxHealth * waveHealthMultiplier;
         monster.SetMaxHealth(calculatedMaxHealth);
         monster.Initialize(waypoints, unitSpeed, objectPool);
+
+        Debug.Log($"Wave {currentWave} - Initial Health: {monster.maxHealth}, Multiplier: {waveHealthMultiplier}, Calculated Max Health: {calculatedMaxHealth}");
     }
 
     private void AttachHpSliderToMonster(GameObject unit)
@@ -145,7 +153,7 @@ public class WaveManager : MonoBehaviour
         GameObject hpSlider = objectPool.GetFromPool("HealthBar", objectPool.healthBarPrefab);
         if (hpSlider == null)
         {
-            Debug.LogError("오브젝트 풀에서 HP 슬라이더를 가져올 수 없습니다.");
+            Debug.LogError("Can't get the healthBar from object pool.");
             return;
         }
 
@@ -161,7 +169,7 @@ public class WaveManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("MonsterHPSlider 컴포넌트를 찾을 수 없습니다.");
+            Debug.LogError("Cant' find MonsterHPSlider.");
         }
 
         Monster monster = unit.GetComponent<Monster>();
@@ -169,11 +177,5 @@ public class WaveManager : MonoBehaviour
         {
             monster.SetHpSlider(hpSlider);
         }
-    }
-
-    private float CalculateMonsterMaxHealthForWave(Monster monster)
-    {
-        float healthMultiplier = Mathf.Pow(1.5f, currentWave - 1);
-        return monster.maxHealth * healthMultiplier;
     }
 }

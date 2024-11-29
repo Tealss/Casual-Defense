@@ -119,7 +119,7 @@ public class Monster : MonoBehaviour
             {
                 fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, addGoldText, textColor);
             }
-
+            //sad
             GameManager.I.AddGold(killGold);
         }
 
@@ -267,5 +267,34 @@ public class Monster : MonoBehaviour
                 renderer.material.color = originalColors[renderer];
             }
         }
+    }
+    public void ResetState()
+    {
+        // Reset all monster states for reuse
+        currentHealth = maxHealth;
+        currentWaypointIndex = 0;
+        speed = originalSpeed;
+        isAlive = true;
+
+        if (isSlowed && slowCoroutine != null)
+        {
+            StopCoroutine(slowCoroutine);
+            isSlowed = false;
+        }
+
+        RestoreOriginalColor();
+
+        if (hpSliderComponent != null)
+        {
+            hpSliderComponent.value = 1f; // Full HP
+        }
+
+        if (hpText != null)
+        {
+            hpText.text = $"{(int)maxHealth}";
+        }
+
+        bountyIndex = -1; // Reset bounty index
+        Debug.Log("Monster state has been reset.");
     }
 }
