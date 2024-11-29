@@ -15,7 +15,7 @@ public class TowerStats : ScriptableObject
 
     [Header("Projectile")]
     public float projectileSpeed;
-    [HideInInspector] public float level = 1;
+    [HideInInspector] public float level;
     [HideInInspector] public float attackDamage;
     [HideInInspector] public float attackSpeed;
     [HideInInspector] public float attackRange;

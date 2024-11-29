@@ -9,6 +9,7 @@ public class Projectile : MonoBehaviour
     public float CriticalChance => criticalChance;
     public float CriticalDamage => criticalDamage;
     public float range = 0;
+    public float goldEarn = 0;
 
     private Transform target;
     private bool isActive = false;
@@ -106,6 +107,7 @@ public class Projectile : MonoBehaviour
             criticalChance = towerStats.criticalChance;
             criticalDamage = towerStats.criticalDamage;
             slowAmount = towerStats.enemySlowAmount;
+            goldEarn = towerStats.goldEarnAmount;
             range = towerStats.attackRange;
         }
     }
@@ -114,6 +116,7 @@ public class Projectile : MonoBehaviour
     {
         this.towerTransform = towerTransform;
         this.projectileTypeIndex = projectileTypeIndex;
+
     }
 
     public void SetProjectileBehavior(IProjectileBehavior behavior)

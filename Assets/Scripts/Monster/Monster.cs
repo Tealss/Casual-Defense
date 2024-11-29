@@ -7,6 +7,7 @@ public class Monster : MonoBehaviour
 {
     public float maxHealth = 0f;
     public float currentHealth;
+    public float addGold;
 
     private Transform[] waypoints;
     private int currentWaypointIndex = 0;
@@ -109,7 +110,7 @@ public class Monster : MonoBehaviour
 
             int goldMultiplier = GetGoldMultiplierForBounty(bountyIndex);
 
-            int killGold = (50 + WaveManager.I.currentWave) * goldMultiplier;
+            int killGold = 50  * goldMultiplier;
 
             string addGoldText = $"+ {killGold}";
             Color textColor = Color.yellow;
@@ -130,14 +131,14 @@ public class Monster : MonoBehaviour
     {
         switch (bountyIndex)
         {
-            case 0: return 10;
-            case 1: return 20;
-            case 2: return 30;
-            case 3: return 40;
-            case 4: return 50;
-            case 5: return 60;
-            case 6: return 70;
-            case 7: return 80;
+            case 0: return 1;
+            case 1: return 10;
+            case 2: return 20;
+            case 3: return 30;
+            case 4: return 40;
+            case 5: return 50;
+            case 6: return 60;
+            case 7: return 70;
             default: return 1;
         }
     }

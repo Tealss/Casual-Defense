@@ -87,7 +87,7 @@ public class Tower : MonoBehaviour
                 case 3: towerStats.criticalChance += effect; break;
                 case 4: towerStats.criticalDamage += effect; break;
                 case 5: towerStats.goldEarnAmount += effect; break;
-                case 6: towerStats.enemySlowAmount += effect; break;
+
             }
         }
     }
@@ -240,7 +240,7 @@ public class Tower : MonoBehaviour
         {
             projectileScript.Initialize();
             projectileScript.SetTarget(target);
-
+            projectileScript.goldEarn = towerStats.goldEarnAmount;
             projectileScript.speed = towerStats.projectileSpeed;
             projectileScript.SetTowerTransform(transform, projectileTypeIndex);
             projectileScript.SetTowerStats(towerStats);

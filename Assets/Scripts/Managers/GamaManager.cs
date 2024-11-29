@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
 
     public Tower[] towers;
+    public TowerStats towerStats;
     public static GameManager I { get; private set; }
     public int gold { get; private set; } = 20000;
     public int lifePoints { get; private set; } = 30;
@@ -70,4 +71,5 @@ public class GameManager : MonoBehaviour
             //Debug.Log("게임 오버!");
         }
     }
+
 }

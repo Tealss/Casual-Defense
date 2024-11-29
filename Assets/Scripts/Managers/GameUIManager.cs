@@ -61,7 +61,7 @@ public class GameUiManager : MonoBehaviour
     {
         if (WaveManager.I != null)
         {
-            WaveManager.I.SpawnBountyMonster(index); 
+            WaveManager.I.SpawnBountyMonster(index + 1); 
         }
     }
 

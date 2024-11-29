@@ -325,7 +325,7 @@ private void PurchaseItem()
             case 4:
                 return $" + {level * grade * 0.5}%"; // ≈©µ©
             case 5:
-                return $" + {level * grade * 2}%"; // ∞ÒµÂ
+                return $" + {level * grade * 3}"; // ∞ÒµÂ
             case 6:
                 return $" + {level * grade * 5}%"; // ¿”Ω√
             default:
@@ -342,10 +342,24 @@ private void PurchaseItem()
             case 2: return level * grade * 0.1f;
             case 3: return level * grade * 0.5f;
             case 4: return level * grade * 0.5f;
-            case 5: return level * grade * 2f;
+            case 5: return level * grade * 3f;
             case 6: return level * grade * 5f;
             default: return 0f;
         }
+    }
+    public float GetTotalItemEffect(int itemType)
+    {
+        float totalEffect = 0f;
+
+        for (int i = 0; i < itemTypesInSlots.Length; i++)
+        {
+            if (slotOccupied[i] && itemTypesInSlots[i] == itemType)
+            {
+                totalEffect += GetItemTypeEffect(itemType, currentLevels[i], itemGrades[i]);
+            }
+        }
+
+        return totalEffect;
     }
 
     private void SellItem(int index)

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class WaveManager : MonoBehaviour
 {
@@ -62,7 +63,7 @@ public class WaveManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Invalid bounty monster index.");
+            //Debug.LogWarning("Invalid bounty monster index.");
         }
     }
 
@@ -78,7 +79,15 @@ public class WaveManager : MonoBehaviour
             if (!isSpawning)
             {
                 isSpawning = true;
-                StartCoroutine(SpawnUnits());
+
+                if (IsBossWave(currentWave))
+                {
+                    SpawnBossMonster();
+                }
+                else
+                {
+                    StartCoroutine(SpawnUnits());
+                }
             }
 
             while (currentWaveTimer > 0)
@@ -95,12 +104,38 @@ public class WaveManager : MonoBehaviour
         Debug.Log("All wave END!");
     }
 
+    private bool IsBossWave(int waveNumber)
+    {
+        return waveNumber % 10 == 0;
+    }
+
+    private void SpawnBossMonster()
+    {
+        int bossIndex = (currentWave / 10) - 1;
+        if (bossIndex >= 0 && bossIndex < objectPool.bossMonsterPrefabs.Length)
+        {
+            GameObject bossMonster = Instantiate(objectPool.bossMonsterPrefabs[bossIndex], transform.position, Quaternion.identity);
+            bossMonster.transform.position = waypoints[0].position;
+
+            Monster monster = bossMonster.GetComponent<Monster>();
+            if (monster != null)
+            {
+                InitializeMonster(monster);
+                AttachHpSliderToMonster(bossMonster);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("Invalid boss index.");
+        }
+    }
+
     private void CalculateWaveHealthMultiplier()
     {
         if (waveHealthMultiplier == 1f)
         {
             waveHealthMultiplier = Mathf.Pow(1.5f, Mathf.Max(currentWave - 1, 0));
-            Debug.Log($"Wave {currentWave} - Health Multiplier: {waveHealthMultiplier}");
+            //Debug.Log($"Wave {currentWave} - Health Multiplier: {waveHealthMultiplier}");
         }
     }
 

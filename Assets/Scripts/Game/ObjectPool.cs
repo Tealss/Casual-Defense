@@ -16,7 +16,7 @@ public class ObjectPool : MonoBehaviour
     public GameObject[] hitEftPrefabs = new GameObject[7];
     public TowerStats[] towerStatsArray = new TowerStats[7];
 
-    // No Pool
+    public GameObject[] bossMonsterPrefabs;
     public GameObject[] bountyMonsterPrefabs;
 
     private Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
@@ -37,6 +37,10 @@ public class ObjectPool : MonoBehaviour
             RegisterPool($"MergeEffect_{i}", mergeEftPrefabs[i]);
             RegisterPool($"Projectile_{i}", projectilePrefabs[i]);
             RegisterPool($"HitEffect_{i}", hitEftPrefabs[i]);
+        }
+        for (int i = 0;i < bossMonsterPrefabs.Length;i++)
+        {
+            RegisterPool($"Boss_{i}", bossMonsterPrefabs[i]);
         }
     }
     private void RegisterPool(string poolName, GameObject prefab)

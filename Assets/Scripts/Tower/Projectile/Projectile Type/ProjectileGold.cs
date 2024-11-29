@@ -10,25 +10,28 @@ public class ProjectileGold: IProjectileBehavior
             Monster monster = target.GetComponent<Monster>();
             if (monster != null)
             {
-               
-                float damage = GameManager.I.gold * 0.05f + projectile.damage * 0.05f;
+
+                float damage = projectile.goldEarn + projectile.damage * 0.1f;
                 damage *= projectile.level + 1;
 
-                //Debug.Log($"{projectile.level} , {damage}");
+                //Debug.Log($"{projectile.level} , {damage}, {projectile.goldEarn}");
                 float randomChance = Random.Range(0f, 100f);
                 bool isCriticalHit = randomChance <= projectile.CriticalChance;
-
                 float finalDamage = isCriticalHit ? damage * projectile.CriticalDamage : damage;
 
+
                 monster.TakeDamage(finalDamage);
+                GameManager.I.AddGold((int)finalDamage);
 
                 EffectManager.I.SpawnHitEffect(5, target.position);
 
                 Vector3 spawnPosition = target.position + new Vector3(0.6f, 0.7f, 0);
-                string damageText = isCriticalHit ? $"- {(int)finalDamage}!" : $"- {(int)finalDamage}";
-                Color textColor = isCriticalHit ? Color.red : Color.white;
+                string damageText = isCriticalHit ? $"+ {(int)finalDamage}!" : $"+ {(int)finalDamage}";
+                Color textColor = isCriticalHit ? Color.cyan : Color.yellow;
 
                 FadeOutTextUse.I.SpawnFadeOutText(spawnPosition, damageText, textColor);
+
+                //Debug.Log($" CP/{projectile.CriticalChance} CD/{projectile.CriticalDamage} R/{projectile.range} G/{projectile.goldEarn} S/{projectile.speed}");
             }
         }
     }
