@@ -145,7 +145,7 @@ public class WaveManager : MonoBehaviour
         monster.SetMaxHealth(calculatedMaxHealth);
         monster.Initialize(waypoints, unitSpeed, objectPool);
 
-        Debug.Log($"Wave {currentWave} - Initial Health: {monster.maxHealth}, Multiplier: {waveHealthMultiplier}, Calculated Max Health: {calculatedMaxHealth}");
+        //Debug.Log($"Wave {currentWave} - Initial Health: {monster.maxHealth}, Multiplier: {waveHealthMultiplier}, Calculated Max Health: {calculatedMaxHealth}");
     }
 
     private void AttachHpSliderToMonster(GameObject unit)

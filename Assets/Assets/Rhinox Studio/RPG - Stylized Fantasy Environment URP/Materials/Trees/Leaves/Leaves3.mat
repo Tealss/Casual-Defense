@@ -22,6 +22,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Leaves3
   m_Shader: {fileID: -6465566751694194690, guid: 4c6d157e67564504cb314333b43da76c, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _BUILTIN_ALPHATEST_ON
   - _BUILTIN_AlphaClip
@@ -33,6 +35,7 @@ Material:
   stringTagMap:
     RenderType: TransparentCutout
   disabledShaderPasses: []
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -93,7 +96,7 @@ Material:
     - _Speed: 10
     m_Colors:
     - _Bottom_Color: {r: 0.09900379, g: 0.22190507, b: 0.003413924, a: 1}
-    - _Color: {r: 0.21711902, g: 0.4245283, b: 0.014017452, a: 0}
+    - _Color: {r: 1, g: 0, b: 0, a: 0}
     - _Height: {r: 53.1, g: 0, b: 0, a: 0}
     - _Smoothness: {r: 10.7, g: 0, b: 0, a: 0}
     - _Top_Color: {r: 0.15385652, g: 0.2924528, b: 0.0124154445, a: 1}
