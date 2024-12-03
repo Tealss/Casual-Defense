@@ -33,6 +33,7 @@ public class ProjectileBoss : IProjectileBehavior
                 monster.TakeDamage(finalDamage);
 
                 EffectManager.I.SpawnHitEffect(6, prioritizedTarget.position);
+                SoundManager.I.PlaySoundEffect(5);
 
                 Vector3 spawnPosition = prioritizedTarget.position + new Vector3(0.6f, 0.7f, 0);
                 string damageText = isCriticalHit ? $"- {(int)finalDamage}!" : $"- {(int)finalDamage}";

@@ -6,11 +6,11 @@ public class GameManager : MonoBehaviour
 {
 
     public Tower[] towers;
-    public TowerStats towerStats;
+    //public TowerStats towerStats;
     public static GameManager I { get; private set; }
-    public int gold { get; private set; } = 20000;
-    public int lifePoints { get; private set; } = 30;
-    public int totalLifePoints { get; private set; } = 30;
+    public int gold { get; private set; } = 2000;
+    public int lifePoints { get; private set; } = 50;
+    public int totalLifePoints { get; private set; } = 50;
 
     private void Awake()
     {

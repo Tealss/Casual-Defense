@@ -118,7 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a006d85faea4dfb46af3babe4d29762f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerStats: {fileID: 11400000, guid: dda8d2dbc45495d4e945a7fd15d41c6c, type: 2}
+  towerStats: {fileID: 11400000, guid: 40c812b5bce79274ea390fcd77ee4300, type: 2}
   level: 1
   towerIndex: 0
-  towerType: 6
+  towerType: 5

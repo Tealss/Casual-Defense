@@ -242,6 +242,7 @@ public class Tower : MonoBehaviour
             projectileScript.SetTarget(target);
             projectileScript.goldEarn = towerStats.goldEarnAmount;
             projectileScript.speed = towerStats.projectileSpeed;
+            //projectileScript.slowAmount = towerStats.enemySlowAmount;
             projectileScript.SetTowerTransform(transform, projectileTypeIndex);
             projectileScript.SetTowerStats(towerStats);
 

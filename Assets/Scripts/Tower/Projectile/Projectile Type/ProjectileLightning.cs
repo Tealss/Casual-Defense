@@ -31,6 +31,7 @@ public class ProjectileLightning : IProjectileBehavior
                         CreateLightningEffect(towerPosition, monster.transform.position);
 
                         EffectManager.I.SpawnHitEffect(2, monster.transform.position);
+                        SoundManager.I.PlaySoundEffect(12);
 
                         Vector3 spawnPosition = monster.transform.position + new Vector3(0.5f, 1f, 0);
                         string damageText = isCriticalHit ? $"- {(int)finalDamage}!" : $"- {(int)finalDamage}";

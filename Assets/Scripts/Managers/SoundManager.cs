@@ -4,22 +4,22 @@ using UnityEngine.UI;
 
 public class SoundManager : MonoBehaviour
 {
-    [Header("배경음")]
-    [SerializeField]
+    [Header("BGM")]
+    [Space]
     public List<AudioClip> backgroundMusicClips;
     public Slider backgroundMusicSlider;
     public Button muteBackgroundButton;
     public Image backgroundMuteOffImage;
 
-    [Header("효과음")]
-    [SerializeField]
+    [Header("SFX")]
+    [Space]
     public List<AudioClip> soundEffects;
     public Slider effectsSoundSlider;
     public Button muteEffectsButton;
     public Image effectsMuteOffImage;
 
     public static SoundManager I { get; private set; }
-
+    public AudioSource BackgroundAudioSource => backgroundAudioSource;
     private AudioSource backgroundAudioSource;
     private AudioSource effectsAudioSource;
 
@@ -46,7 +46,7 @@ public class SoundManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("배경음악 리스트가 비어 있습니다.");
+            Debug.LogWarning("The list is empty");
         }
 
         if (backgroundMusicSlider != null)
@@ -73,19 +73,6 @@ public class SoundManager : MonoBehaviour
 
         UpdateBackgroundMuteIcon();
         UpdateEffectsMuteIcon();
-    }
-
-    public void PlayBackgroundMusic(int index)
-    {
-        if (index >= 0 && index < backgroundMusicClips.Count)
-        {
-            backgroundAudioSource.clip = backgroundMusicClips[index];
-            backgroundAudioSource.Play();
-        }
-        else
-        {
-            Debug.LogWarning("유효하지 않은 배경음악 인덱스입니다.");
-        }
     }
 
     public void SetBackgroundVolume(float volume)
@@ -181,17 +168,60 @@ public class SoundManager : MonoBehaviour
     {
         effectsMuteOffImage.gameObject.SetActive(isEffectsMuted || effectsAudioSource.volume == 0);
     }
+    public void PlayBackgroundMusic(int index)
+    {
+        if (index >= 0 && index < backgroundMusicClips.Count)
+        {
+            backgroundAudioSource.clip = backgroundMusicClips[index];
+
+
+            if (index == 0)
+            {
+                backgroundAudioSource.volume = 0.8f;
+            }
+            else
+            {
+                backgroundAudioSource.volume = 1.0f;
+            }
+
+            backgroundAudioSource.Play();
+        }
+        else
+        {
+            Debug.LogWarning("Bgm is null");
+        }
+    }
 
     public void PlaySoundEffect(int index)
     {
         if (index >= 0 && index < soundEffects.Count)
         {
-            float volumeMultiplier = (index == 3 || index == 4 || index == 5) ? 0.25f : 1.0f;
-            effectsAudioSource.PlayOneShot(soundEffects[index], effectsAudioSource.volume * volumeMultiplier);
+
+            float baseVolume;
+
+            if (index == 12 || index == 13)
+            {
+                baseVolume = 0.15f;
+            }
+            else if (index >= 3)
+            {
+                baseVolume = 0.25f;
+            }
+            else
+            {
+                baseVolume = 1.0f;
+            }
+
+            float sliderAdjustedVolume = effectsAudioSource.volume;
+
+            float finalVolume = baseVolume * sliderAdjustedVolume;
+
+            effectsAudioSource.PlayOneShot(soundEffects[index], finalVolume);
         }
         else
         {
-            Debug.LogWarning("유효하지 않은 효과음 인덱스입니다.");
+            Debug.LogWarning("Sfx is null");
         }
     }
+
 }

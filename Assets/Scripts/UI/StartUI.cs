@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -5,11 +6,11 @@ public class StartUI : MonoBehaviour
 {
     public Text blinkingText;
     public GameObject[] setFalseObject;
-    public GameObject[] setFadeFalseObject;
     public GameObject[] setTrueObject;
+    public GameObject[] gameManagers;
 
     private bool isBlinking = true;
-    private bool hasTriggered = false; // 트리거가 한 번만 발생하도록 관리하는 변수
+    private bool hasTransitioned = false;
 
     void Start()
     {
@@ -18,10 +19,9 @@ public class StartUI : MonoBehaviour
 
     void Update()
     {
-        // Input.anyKeyDown이 처음 눌렸을 때만 트리거 실행
-        if (Input.anyKeyDown && !hasTriggered)
+        if (Input.anyKeyDown && !hasTransitioned)
         {
-            hasTriggered = true; // 트리거 실행됨
+            hasTransitioned = true;
 
             if (setFalseObject != null)
             {
@@ -29,54 +29,120 @@ public class StartUI : MonoBehaviour
                 {
                     setFalseObject[i].SetActive(false);
                 }
+            }
 
-                for (int i = 0; i < setTrueObject.Length; i++)
-                {
-                    setTrueObject[i].SetActive(true);
-                }
-
-                if (setFadeFalseObject != null)
-                {
-                    for (int i = 0; i < setFadeFalseObject.Length; i++)
-                    {
-                        StartCoroutine(FadeOutAndDisable(setFadeFalseObject[i]));
-                    }
-                }
+            if (setTrueObject != null)
+            {
+                StartCoroutine(ActivateObjectsSequentially());
             }
 
             isBlinking = false;
             blinkingText.enabled = true;
+
+            SoundManager.I.PlaySoundEffect(10);
+            StartCoroutine(FadeOutAndIn(0f, 1f));
         }
     }
 
-    private System.Collections.IEnumerator BlinkText()
+    private IEnumerator BlinkText()
     {
         while (isBlinking)
         {
             blinkingText.enabled = !blinkingText.enabled;
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(0.3f);
         }
     }
 
-    private System.Collections.IEnumerator FadeOutAndDisable(GameObject obj)
+    private IEnumerator ActivateObjectsSequentially()
     {
-        CanvasGroup canvasGroup = obj.GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
+        for (int i = 0; i < Mathf.Min(2, setTrueObject.Length); i++)
         {
-            // CanvasGroup이 없으면 추가
-            canvasGroup = obj.AddComponent<CanvasGroup>();
+            setTrueObject[i].SetActive(true);
         }
 
-        float duration = 2f; // 페이드 아웃 시간
-        float startAlpha = canvasGroup.alpha;
-
-        for (float t = 0; t < duration; t += Time.deltaTime)
+        for (int i = 2; i < setTrueObject.Length - 1; i++)
         {
-            canvasGroup.alpha = Mathf.Lerp(startAlpha, 0, t / duration);
+            StartCoroutine(FadeInObject(setTrueObject[i]));
+            yield return new WaitForSeconds(0.45f);
+        }
+
+        for (int i = setTrueObject.Length - 1; i < setTrueObject.Length; i++)
+        {
+            yield return new WaitForSeconds(1.00f);
+            setTrueObject[i].SetActive(true);
+
+        }
+
+        if (gameManagers != null)
+        {
+            foreach (GameObject manager in gameManagers)
+            {
+                if (manager != null)
+                {
+                    manager.SetActive(true);
+                }
+            }
+        }
+    }
+
+    private IEnumerator FadeInObject(GameObject obj)
+    {
+        float duration = 1.5f;
+        float elapsedTime = 0f;
+
+        obj.SetActive(true);
+        Transform objTransform = obj.transform;
+
+        Vector3 initialScale = Vector3.zero;
+        Vector3 targetScale = Vector3.one;
+
+        objTransform.localScale = initialScale;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float progress = elapsedTime / duration;
+
+            objTransform.localScale = Vector3.Lerp(initialScale, targetScale, progress);
+
             yield return null;
         }
 
-        canvasGroup.alpha = 0;
-        obj.SetActive(false); // 페이드 아웃 후 오브젝트 비활성화
+        objTransform.localScale = targetScale;
+    }
+
+    private IEnumerator FadeOutAndIn(float fadeOutVolume, float fadeInVolume)
+    {
+        float fadeDuration = 0.5f;
+        float elapsedTime = 0f;
+
+        AudioSource backgroundAudioSource = SoundManager.I.BackgroundAudioSource;
+        float initialVolume = backgroundAudioSource.volume;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float volume = Mathf.Lerp(initialVolume, fadeOutVolume, elapsedTime / fadeDuration);
+            backgroundAudioSource.volume = volume;
+            yield return null;
+        }
+
+        backgroundAudioSource.Stop();
+
+        SoundManager.I.PlayBackgroundMusic(0);
+
+        backgroundAudioSource = SoundManager.I.BackgroundAudioSource;
+        backgroundAudioSource.volume = 0f;
+
+        elapsedTime = 0f;
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float volume = Mathf.Lerp(0f, fadeInVolume, elapsedTime / fadeDuration);
+            backgroundAudioSource.volume = volume;
+            yield return null;
+        }
+
+        backgroundAudioSource.volume = fadeInVolume;
     }
 }

@@ -21,8 +21,8 @@ MonoBehaviour:
   baseGoldEarnAmount: 0
   baseEnemySlowAmount: 0.4
   projectileSpeed: 6
-  level: 1
-  attackDamage: 21
+  level: 0
+  attackDamage: 10
   attackSpeed: 1
   attackRange: 2
   criticalChance: 1

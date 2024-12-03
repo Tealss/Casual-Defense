@@ -21,6 +21,7 @@ public class ProjectileBasic : IProjectileBehavior
                 monster.TakeDamage(finalDamage);
 
                 EffectManager.I.SpawnHitEffect(0, target.position);
+                SoundManager.I.PlaySoundEffect(5);
 
                 Vector3 spawnPosition = target.position + new Vector3(0.6f, 0.7f, 0);
                 string damageText = isCriticalHit ? $"- {(int)finalDamage}!" : $"- {(int)finalDamage}";

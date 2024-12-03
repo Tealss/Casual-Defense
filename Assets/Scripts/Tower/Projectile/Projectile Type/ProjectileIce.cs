@@ -18,8 +18,10 @@ public class ProjectileIce : IProjectileBehavior
 
                 monster.TakeDamage(finalDamage);
                 monster.ApplySlow(projectile.slowAmount, projectile.slowDuration);
+
                 //Debug.Log($"¼Óµµ: {projectile.slowAmount}");
                 EffectManager.I.SpawnHitEffect(3, target.position);
+                SoundManager.I.PlaySoundEffect(9);
 
                 Vector3 spawnPosition = target.position + new Vector3(0.6f, 0.7f, 0);
                 string damageText = isCriticalHit ? $"- {(int)finalDamage}!" : $"- {(int)finalDamage}";
@@ -27,7 +29,6 @@ public class ProjectileIce : IProjectileBehavior
 
                 FadeOutTextUse.I.SpawnFadeOutText(spawnPosition, damageText, textColor);
 
-                //Debug.Log(projectile.slowAmount);
             }
         }
     }

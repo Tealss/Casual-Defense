@@ -18,6 +18,7 @@ public class ProjectileExplosive : IProjectileBehavior
                     monster.TakeDamage(finalDamage);
 
                     EffectManager.I.SpawnHitEffect(1, target.position);
+                    SoundManager.I.PlaySoundEffect(13);
 
                     Vector3 spawnPosition = monster.transform.position + new Vector3(0.6f, 0.7f, 0);
                     string damageText = isCriticalHit ? $"- {(int)finalDamage}!" : $"- {(int)finalDamage}";

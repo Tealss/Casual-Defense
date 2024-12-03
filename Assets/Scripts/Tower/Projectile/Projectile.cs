@@ -83,6 +83,7 @@ public class Projectile : MonoBehaviour
     public void Initialize()
     {
         previousTargets.Clear();
+        slowAmount = 0;
     }
 
     public void SetTarget(Transform targetTransform)

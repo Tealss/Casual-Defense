@@ -647,8 +647,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a7c391c21a5b9c4ea03ae3b38584c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 50
+  maxHealth: 30
   currentHealth: 0
+  addGold: 0
+  bountyIndex: 0
 --- !u!136 &5299033605554283902
 CapsuleCollider:
   m_ObjectHideFlags: 0

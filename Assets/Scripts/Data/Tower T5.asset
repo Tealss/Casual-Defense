@@ -28,4 +28,4 @@ MonoBehaviour:
   criticalChance: 1
   criticalDamage: 0.1
   goldEarnAmount: 0
-  enemySlowAmount: 0
+  enemySlowAmount: 1

@@ -38,6 +38,10 @@ public class TowerManager : MonoBehaviour
             HandleTileClick();
         }
     }
+    public void Initialize()
+    {
+        gameObject.SetActive(true);     
+    }
 
     private void HandleTileClick()
     {
@@ -95,12 +99,7 @@ public class TowerManager : MonoBehaviour
 
     private void ShowBuildButton(Vector3 screenPosition)
     {
-        if (GameManager.I.gold < 300)
-        {
-            Debug.Log("No Money");
-            return;
-        }
-
+     
         if (currentBuildButton == null)
         {
             currentBuildButton = objectPool.GetFromPool("TowerBuildButton", objectPool.towerBuildButtonPrefab);
@@ -151,13 +150,17 @@ public class TowerManager : MonoBehaviour
         if (GameManager.I.gold < 300)
         {
             ShowNotEnoughGoldMessage(clickedTile.transform.position);
-            HideBuildButton();
+            if (currentBuildButton != null)
+            {
+                StartCoroutine(ShakeBuildButton(currentBuildButton, 0.3f, 7f));
+            }
+            //HideBuildButton();
             return;
         }
         
         GameManager.I.SpendGold(300);
         //objectPool.towerPrefabs.Length
-        int randomTowerIndex = Random.Range(0, objectPool.towerPrefabs.Length);
+        int randomTowerIndex = Random.Range(3, 3);
         GameObject towerGO = objectPool.GetFromPool($"Tower_{randomTowerIndex}", objectPool.towerPrefabs[randomTowerIndex]);
 
         if (towerGO != null)
@@ -166,6 +169,7 @@ public class TowerManager : MonoBehaviour
             ShowGoldSpentMessage(clickedTile.transform.position, 300);
         }
 
+        SoundManager.I.PlaySoundEffect(7);
         HideBuildButton();
     }
 
@@ -198,6 +202,26 @@ public class TowerManager : MonoBehaviour
         FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
         fadeOutTextSpawner?.SpawnFadeOutText(position + new Vector3(0.3f, 0.4f, 0), message, color);
     }
+    private IEnumerator ShakeBuildButton(GameObject button, float duration = 0.5f, float magnitude = 10f)
+    {
+        if (button == null) yield break;
+
+        RectTransform rectTransform = button.GetComponent<RectTransform>();
+        Vector3 originalPosition = rectTransform.anchoredPosition;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            float offsetX = Random.Range(-1f, 1f) * magnitude;
+            float offsetY = Random.Range(-1f, 1f) * magnitude;
+
+            rectTransform.anchoredPosition = originalPosition + new Vector3(offsetX, offsetY, 0);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        rectTransform.anchoredPosition = originalPosition;
+    }
 
     private void MergeTower(Tower tower)
     {
@@ -223,6 +247,7 @@ public class TowerManager : MonoBehaviour
             RemoveMergeEffect(tower);
         }
 
+        SoundManager.I.PlaySoundEffect(8);
         HideMergeButton();
     }
 
