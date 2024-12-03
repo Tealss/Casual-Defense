@@ -136,59 +136,68 @@ public class ItemManager : MonoBehaviour
 
     private void UpdateBuyButtonState() => buyButton.interactable = GameManager.I.gold >= 200;
 
-private void PurchaseItem()
-{
-    const int itemCost = 200;
-    int purchasedQuantity = 0;
-    int totalCost = itemCost * buyQuantity;
-
-    // Check if there's enough gold
-    if (GameManager.I.gold < totalCost) return;
-
-    for (int i = 0; i < buyQuantity; i++)
+    private void PurchaseItem()
     {
-        int emptySlot = FindEmptySlot();
+        const int itemCost = 200;
+        int purchasedQuantity = 0;
+        int totalCost = itemCost * buyQuantity;
 
-        if (emptySlot == -1)
+        // Check if there's enough gold
+        if (GameManager.I.gold < totalCost) return;
+
+        for (int i = 0; i < buyQuantity; i++)
         {
-            Vector3 spawnPosition2 = GetButtonPositionInCanvas(buyButton) + new Vector3(1.5f, 2f, 0);
-            string fullText = "Full";
-            Color fullTextColor = Color.red;
+            int emptySlot = FindEmptySlot();
 
-            FadeOutTextUse fadeOutTextSpawner2 = FindObjectOfType<FadeOutTextUse>();
-            if (fadeOutTextSpawner2 != null)
+            if (emptySlot == -1)
             {
-                fadeOutTextSpawner2.SpawnFadeOutText(spawnPosition2, fullText, fullTextColor, true);
+                Vector3 spawnPosition2 = GetButtonPositionInCanvas(buyButton) + new Vector3(1.5f, 2f, 0);
+                string fullText = "Full";
+                Color fullTextColor = Color.red;
+
+                FadeOutTextUse fadeOutTextSpawner2 = FindObjectOfType<FadeOutTextUse>();
+                if (fadeOutTextSpawner2 != null)
+                {
+                    fadeOutTextSpawner2.SpawnFadeOutText(spawnPosition2, fullText, fullTextColor, true);
+                }
+
+                break;
             }
 
-            break;
-        }
+            if (!GameManager.I.SpendGold(itemCost)) break;
 
-        if (!GameManager.I.SpendGold(itemCost)) break;
+            int itemGrade = DetermineItemGrade();
 
-        int itemGrade = DetermineItemGrade();
-        purchasedQuantity++;
+            if (itemGrade < 1 || itemGrade > sellPrices.Length)
+            {
+                Debug.LogError($"Invalid itemGrade: {itemGrade}");
+                continue;
+            }
 
-        if (gradeToggles[itemGrade - 1].isOn)
-        {
-            int sellPrice = sellPrices[itemGrade - 1];
-            GameManager.I.AddGold(sellPrice);
-            continue;
-        }
+            purchasedQuantity++;
 
-        CreateItemInSlot(emptySlot, itemGrade);
+            if (itemGrade - 1 < gradeToggles.Length && gradeToggles[itemGrade - 1].isOn)
+            {
+                int sellPrice = sellPrices[itemGrade - 1];
+                GameManager.I.AddGold(sellPrice);
+                continue;
+            }
 
-        Vector3 spawnPosition = GetButtonPositionInCanvas(buyButton);
-        string damageText = $"- {itemCost}";
-        Color textColor = Color.blue;
 
-        FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
-        if (fadeOutTextSpawner != null)
-        {
-            fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, damageText, textColor, true);
+            CreateItemInSlot(emptySlot, itemGrade);
+
+            Vector3 spawnPosition = GetButtonPositionInCanvas(buyButton);
+            string damageText = $"- {itemCost}";
+            Color textColor = Color.blue;
+
+            FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
+            if (fadeOutTextSpawner != null)
+            {
+                fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, damageText, textColor, true);
+            }
         }
     }
-}
+
 
     private Vector3 GetButtonPositionInCanvas(Button button)
     {

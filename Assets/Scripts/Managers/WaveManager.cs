@@ -43,7 +43,7 @@ public class WaveManager : MonoBehaviour
             Debug.LogError("HP Slider parent check");
         }
 
-        StartCoroutine(WaveRoutine());
+        //StartCoroutine(WaveRoutine());
     }
 
     public void SpawnBountyMonster(int index)

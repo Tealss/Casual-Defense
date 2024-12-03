@@ -118,7 +118,7 @@ public class Tower : MonoBehaviour
             case "Tower_1":
                 break;
             case "Tower_2":
-                Debug.Log("T3");
+                //Debug.Log("T3");
                 break;
             case "Tower_3)":
                 towerStats.enemySlowAmount += 0.1f;
