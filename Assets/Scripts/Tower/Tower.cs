@@ -10,6 +10,7 @@ public class Tower : MonoBehaviour
     public string towerType;
     public List<Item> items;
 
+    private Animator animator;
     private float attackTimer;
     private ObjectPool objectPool;
     private LineRenderer rangeIndicator;
@@ -21,12 +22,19 @@ public class Tower : MonoBehaviour
         objectPool = FindObjectOfType<ObjectPool>();
         if (objectPool == null)
         {
-            Debug.LogError("ObjectPool을 찾을 수 없음");
+            Debug.LogError("can't find the ObjectPool");
             return;
         }
 
         attackTimer = 0f;
         InitializeStats();
+
+        animator = GetComponent<Animator>();
+        if (animator == null)
+        {
+            Debug.LogError("Animator is null.");
+        }
+
 
         if (ItemManager.I != null)
             ItemManager.I.OnItemStatsChanged += UpdateTowerStats;
@@ -36,9 +44,26 @@ public class Tower : MonoBehaviour
         rangeIndicator.startWidth = 0.1f;
         rangeIndicator.endWidth = 0.1f;
         rangeIndicator.material = new Material(Shader.Find("Sprites/Default"));
-        rangeIndicator.startColor = Color.green;
+        rangeIndicator.startColor = Color.red;
         rangeIndicator.endColor = Color.green;
 
+    }
+
+    private void Update()
+    {
+        if (towerStats == null || objectPool == null) return;
+
+        attackTimer += Time.deltaTime;
+        if (attackTimer >= 1f / towerStats.attackSpeed)
+        {
+            attackTimer = 0f;
+            Attack();
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            HandleTowerSelection();
+        }
     }
 
     public void InitializeStats()
@@ -50,7 +75,7 @@ public class Tower : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"타워 스탯 초기화 실패: {gameObject.name}");
+            Debug.LogError($"tower stats: {gameObject.name}");
         }
     }
 
@@ -134,23 +159,6 @@ public class Tower : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (towerStats == null || objectPool == null) return;
-
-        attackTimer += Time.deltaTime;
-        if (attackTimer >= 1f / towerStats.attackSpeed)
-        {
-            attackTimer = 0f;
-            Attack();
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            HandleTowerSelection();
-        }
-    }
-
     private void HandleTowerSelection()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -214,10 +222,30 @@ public class Tower : MonoBehaviour
         GameObject target = FindNearestMonster();
         if (target != null)
         {
+            if (animator != null)
+            {
+                animator.SetTrigger("Attack");
+            }
+
+            // Attack 애니메이션이 끝나기 전에 Idle 상태로 복귀
+            Invoke(nameof(ResetToIdleAnimation), 0.3f / towerStats.attackSpeed);
+
             this.towerIndex = GetTowerTypeIndexFromString(towerType);
+
+            // 0.1초 후에 Fire 메서드를 호출
+            Invoke(nameof(DelayedFire), 0.15f);
+        }
+    }
+
+    private void DelayedFire()
+    {
+        GameObject target = FindNearestMonster();
+        if (target != null)
+        {
             Fire(target.transform);
         }
     }
+
 
     public void Fire(Transform target)
     {
@@ -276,7 +304,14 @@ public class Tower : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Projectile 스크립트가 할당되지 않음");
+            Debug.LogError("Projectile script is null");
+        }
+    }
+    private void ResetToIdleAnimation()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("Idle");
         }
     }
 

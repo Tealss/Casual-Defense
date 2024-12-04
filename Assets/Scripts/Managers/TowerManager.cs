@@ -72,7 +72,7 @@ public class TowerManager : MonoBehaviour
                     }
                 }
             }
-            else if (hit.collider.CompareTag("Tower"))
+            else if (hit.collider.GetComponent<Tower>() != null)
             {
                 selectedTower = hit.collider.GetComponent<Tower>();
                 if (selectedTower != null)
@@ -97,6 +97,7 @@ public class TowerManager : MonoBehaviour
         }
     }
 
+
     private void ShowBuildButton(Vector3 screenPosition)
     {
      
@@ -106,7 +107,7 @@ public class TowerManager : MonoBehaviour
             currentBuildButton.GetComponent<RectTransform>().SetParent(canvas.transform, false);
         }
 
-        currentBuildButton.GetComponent<RectTransform>().position = screenPosition + new Vector3(0, 8f, 0);
+        currentBuildButton.GetComponent<RectTransform>().position = screenPosition + new Vector3(0, 5f, 0);
         currentBuildButton.GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
         currentBuildButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => PlaceTower(selectedTile));
     }
@@ -129,7 +130,7 @@ public class TowerManager : MonoBehaviour
         }
 
         Vector3 towerScreenPosition = Camera.main.WorldToScreenPoint(tower.transform.position);
-        currentMergeButton.GetComponent<RectTransform>().position = towerScreenPosition + new Vector3(0, 8f, 0);
+        currentMergeButton.GetComponent<RectTransform>().position = towerScreenPosition + new Vector3(0, 5f, 0);
         currentMergeButton.GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
         currentMergeButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => MergeTower(tower));
     }
@@ -160,7 +161,7 @@ public class TowerManager : MonoBehaviour
         
         GameManager.I.SpendGold(300);
         //objectPool.towerPrefabs.Length
-        int randomTowerIndex = Random.Range(3, 3);
+        int randomTowerIndex = Random.Range(0, 0);
         GameObject towerGO = objectPool.GetFromPool($"Tower_{randomTowerIndex}", objectPool.towerPrefabs[randomTowerIndex]);
 
         if (towerGO != null)
@@ -176,7 +177,7 @@ public class TowerManager : MonoBehaviour
     private void SetupTowerOnTile(GameObject towerGO, Tiles tile, int towerIndex)
     {
         float tileHeight = tile.GetComponent<Collider>().bounds.size.y;
-        Vector3 towerPosition = tile.transform.position + new Vector3(0, tileHeight / 2 + 0.5f, 0); 
+        Vector3 towerPosition = tile.transform.position + new Vector3(0, tileHeight / 2f, 0); 
 
         Tower newTower = towerGO.GetComponent<Tower>() ?? towerGO.AddComponent<Tower>();
         newTower.level = 1;
@@ -283,7 +284,8 @@ public class TowerManager : MonoBehaviour
                 if (!activeEffects.ContainsKey(tower))
                 {
                     int effectIndex = Mathf.Max(0, tower.level - 1);
-                    GameObject effect = ShowMergeEffect(effectIndex, tower.transform.position);
+                    Vector3 effectPosition = tower.transform.position + new Vector3(0, 0.2f, 0);
+                    GameObject effect = ShowMergeEffect(effectIndex, effectPosition);
                     activeEffects[tower] = effect;
                 }
             }

@@ -119,7 +119,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecf2b854f1efa684aa37d25ec91e6f0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  level: 0
+  speed: 7
+  range: 0
+  goldEarn: 0
+  towerTransform: {fileID: 0}
+  maxChainHits: 3
+  slowAmount: 0
+  slowDuration: 3
 --- !u!54 &7346856973062490300
 Rigidbody:
   m_ObjectHideFlags: 0
