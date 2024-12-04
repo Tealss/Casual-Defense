@@ -19,23 +19,26 @@ public class Projectile : MonoBehaviour
 
     private int projectileTypeIndex;
     public Transform towerTransform;
-    private Vector3 startPosition;
+    private Transform firePoint;
     private Vector3 targetPosition;
 
     private ObjectPool objectPool;
     private IProjectileBehavior projectileBehavior;
 
-    //Lighting Tower
+    // Lighting Tower
     public int maxChainHits = 3;
     public HashSet<Monster> previousTargets = new HashSet<Monster>();
 
-    //Ice Tower
+    // Ice Tower
     public float slowAmount = 0;
     public float slowDuration = 3f;
+
+    private Rigidbody rb;
 
     private void Awake()
     {
         objectPool = FindObjectOfType<ObjectPool>();
+        rb = GetComponent<Rigidbody>();
     }
 
     private void OnEnable()
@@ -44,20 +47,23 @@ public class Projectile : MonoBehaviour
 
         if (towerTransform != null && target != null)
         {
-            CalculateFirePoint(target);
-            transform.position = startPosition;
-        }
-    }
+            // FirePoint를 찾고 발사 위치로 설정
+            if (firePoint == null)
+            {
+                firePoint = towerTransform.Find("FirePoint");
+                if (firePoint == null)
+                {
+                    Debug.LogError("FirePoint not found in tower prefab.");
+                    return;
+                }
+            }
 
-    private void CalculateFirePoint(Transform targetTransform)
-    {
-        Collider targetCollider = targetTransform.GetComponent<Collider>();
-        if (targetCollider != null)
-        {
-            Vector3 colliderCenter = targetCollider.bounds.center;
-
-            Vector3 firePoint = colliderCenter + targetTransform.up * 1f + targetTransform.forward * 0.5f;
-            startPosition = firePoint;
+            transform.position = firePoint.position;
+            if (rb != null)
+            {
+                rb.velocity = Vector3.zero;
+                rb.isKinematic = false; 
+            }
         }
     }
 
@@ -74,7 +80,7 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        if (isActive)
+        if (isActive && target != null)
         {
             MoveTowardsTarget();
         }
@@ -117,12 +123,7 @@ public class Projectile : MonoBehaviour
     {
         this.towerTransform = towerTransform;
         this.projectileTypeIndex = projectileTypeIndex;
-
-    }
-
-    public void SetProjectileBehavior(IProjectileBehavior behavior)
-    {
-        projectileBehavior = behavior;
+        firePoint = towerTransform.Find("FirePoint");
     }
 
     private void MoveTowardsTarget()
@@ -134,20 +135,12 @@ public class Projectile : MonoBehaviour
         }
 
         Vector3 direction = (target.position - transform.position).normalized;
-        float moveDistance = speed * Time.deltaTime;
+        Vector3 desiredVelocity = direction * speed;
 
-        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, moveDistance))
+        if (rb != null)
         {
-            Monster monster = hit.transform.GetComponent<Monster>();
-            if (monster != null && hit.transform == target)
-            {
-                DealDamageToTarget();
-                ReturnToPool();
-                return;
-            }
+            rb.velocity = desiredVelocity;
         }
-
-        transform.Translate(direction * moveDistance);
 
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
         if (distanceToTarget <= 0.5f)

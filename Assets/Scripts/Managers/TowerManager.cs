@@ -161,7 +161,7 @@ public class TowerManager : MonoBehaviour
         
         GameManager.I.SpendGold(300);
         //objectPool.towerPrefabs.Length
-        int randomTowerIndex = Random.Range(0, 0);
+        int randomTowerIndex = Random.Range(2, 2);
         GameObject towerGO = objectPool.GetFromPool($"Tower_{randomTowerIndex}", objectPool.towerPrefabs[randomTowerIndex]);
 
         if (towerGO != null)

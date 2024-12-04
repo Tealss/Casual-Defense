@@ -60,6 +60,16 @@ public class Tower : MonoBehaviour
             Attack();
         }
 
+        GameObject nearestMonster = FindNearestMonster();
+        if (nearestMonster != null)
+        {
+            float distanceToMonster = Vector3.Distance(transform.position, nearestMonster.transform.position);
+            if (distanceToMonster <= towerStats.attackRange)
+            {
+                LookAtTarget(nearestMonster);
+            }
+        }
+
         if (Input.GetMouseButtonDown(1))
         {
             HandleTowerSelection();
@@ -227,12 +237,9 @@ public class Tower : MonoBehaviour
                 animator.SetTrigger("Attack");
             }
 
-            // Attack 애니메이션이 끝나기 전에 Idle 상태로 복귀
             Invoke(nameof(ResetToIdleAnimation), 0.3f / towerStats.attackSpeed);
-
             this.towerIndex = GetTowerTypeIndexFromString(towerType);
 
-            // 0.1초 후에 Fire 메서드를 호출
             Invoke(nameof(DelayedFire), 0.15f);
         }
     }
@@ -320,6 +327,22 @@ public class Tower : MonoBehaviour
         isRangeVisible = false;
         rangeIndicator.positionCount = 0;
     }
+
+    private void LookAtTarget(GameObject target)
+    {
+        if (target == null) return;
+
+        Vector3 direction = target.transform.position - transform.position;
+        direction.y = 0;
+
+        if (direction != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
+        }
+    }
+
+
 
     private GameObject FindNearestMonster()
     {

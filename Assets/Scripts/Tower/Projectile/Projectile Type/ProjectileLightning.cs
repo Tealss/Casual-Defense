@@ -7,7 +7,7 @@ public class ProjectileLightning : IProjectileBehavior
         int remainingChains = projectile.maxChainHits;
         Transform currentTarget = target;
 
-        Vector3 towerPosition = projectile.towerTransform.position + new Vector3(0, 0.7f, 0);
+        Vector3 firePointPosition = GetFirePointPosition(projectile);
 
         while (remainingChains > 0 && currentTarget != null)
         {
@@ -16,7 +16,7 @@ public class ProjectileLightning : IProjectileBehavior
 
             foreach (var hitCollider in hitColliders)
             {
-                if (hitCollider.CompareTag("Monster") || hitCollider.CompareTag("Bounty")|| hitCollider.CompareTag("Boss"))
+                if (hitCollider.CompareTag("Monster") || hitCollider.CompareTag("Bounty") || hitCollider.CompareTag("Boss"))
                 {
                     Monster monster = hitCollider.GetComponent<Monster>();
                     if (monster != null && !projectile.previousTargets.Contains(monster))
@@ -28,7 +28,7 @@ public class ProjectileLightning : IProjectileBehavior
                         float finalDamage = isCriticalHit ? chainDamage * projectile.CriticalDamage : chainDamage;
                         monster.TakeDamage(finalDamage);
 
-                        CreateLightningEffect(towerPosition, monster.transform.position);
+                        CreateLightningEffect(firePointPosition, monster.transform.position);
 
                         EffectManager.I.SpawnHitEffect(2, monster.transform.position);
                         SoundManager.I.PlaySoundEffect(12);
@@ -50,6 +50,24 @@ public class ProjectileLightning : IProjectileBehavior
         }
     }
 
+    private Vector3 GetFirePointPosition(Projectile projectile)
+    {
+        if (projectile.towerTransform != null)
+        {
+            Transform firePoint = projectile.towerTransform.Find("FirePoint");
+            if (firePoint != null)
+            {
+                return firePoint.position;
+
+            }
+
+        }
+
+        return projectile.towerTransform != null
+            ? projectile.towerTransform.position + new Vector3(0, 0.7f, 0)
+            : Vector3.zero;
+    }
+
     private void CreateLightningEffect(Vector3 start, Vector3 end)
     {
         GameObject lightning = new GameObject("LightningEffect");
@@ -62,11 +80,10 @@ public class ProjectileLightning : IProjectileBehavior
         {
             float t = i / 4.0f;
 
-
             Vector3 randomOffset = new Vector3(
-                Random.Range(-0.4f, 0.5f), 
-                Random.Range(-0.4f, 0.5f),   
-                Random.Range(-0.3f, 0.3f)    
+                Random.Range(-0.4f, 0.5f),
+                Random.Range(-0.4f, 0.5f),
+                Random.Range(-0.3f, 0.3f)
             );
 
             lineRenderer.SetPosition(i, Vector3.Lerp(start, end, t) + randomOffset);
@@ -74,7 +91,7 @@ public class ProjectileLightning : IProjectileBehavior
 
         lineRenderer.SetPosition(4, end);
 
-        lineRenderer.startWidth = 0.085f;
+        lineRenderer.startWidth = 0.070f;
         lineRenderer.endWidth = 0.025f;
 
         Material lightningMaterial = new Material(Shader.Find("Unlit/Color"));
