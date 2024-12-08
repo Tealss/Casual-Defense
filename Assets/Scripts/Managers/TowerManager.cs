@@ -5,13 +5,16 @@ using System.Collections;
 
 public class TowerManager : MonoBehaviour
 {
+    [Header("Material / Tower Max Lv")]
+    // бщ The Length is the tower Max Merge Lv
+    public Material[] towerMaterial;
+
     private GameObject currentBuildButton;
     private GameObject currentMergeButton;
     private Canvas canvas;
     private ObjectPool objectPool;
     private Tiles selectedTile;
     private Tower selectedTower;
-    //public int[] towerTypes = new int[7];
 
     public static TowerManager I { get; private set; }
     private Dictionary<Tower, GameObject> activeEffects = new Dictionary<Tower, GameObject>();
@@ -38,9 +41,10 @@ public class TowerManager : MonoBehaviour
             HandleTileClick();
         }
     }
+
     public void Initialize()
     {
-        gameObject.SetActive(true);     
+        gameObject.SetActive(true);
     }
 
     private void HandleTileClick()
@@ -97,14 +101,12 @@ public class TowerManager : MonoBehaviour
         }
     }
 
-
     private void ShowBuildButton(Vector3 screenPosition)
     {
-     
         if (currentBuildButton == null)
         {
             currentBuildButton = objectPool.GetFromPool("TowerBuildButton", objectPool.towerBuildButtonPrefab);
-            currentBuildButton.GetComponent<RectTransform>().SetParent(canvas.transform, false);
+            currentBuildButton.GetComponent<RectTransform>().SetParent(BtnFolder.btnFolder.transform, false);
         }
 
         currentBuildButton.GetComponent<RectTransform>().position = screenPosition + new Vector3(0, 5f, 0);
@@ -123,10 +125,16 @@ public class TowerManager : MonoBehaviour
 
     private void ShowMergeButton(Tower tower)
     {
+        if (tower.level >= towerMaterial.Length)
+        {
+            HideMergeButton();
+            return;
+        }
+
         if (currentMergeButton == null)
         {
             currentMergeButton = objectPool.GetFromPool("TowerMergeButton", objectPool.towerMergeButtonPrefab);
-            currentMergeButton.GetComponent<RectTransform>().SetParent(canvas.transform, false);
+            currentMergeButton.GetComponent<RectTransform>().SetParent(BtnFolder.btnFolder.transform, false);
         }
 
         Vector3 towerScreenPosition = Camera.main.WorldToScreenPoint(tower.transform.position);
@@ -155,18 +163,17 @@ public class TowerManager : MonoBehaviour
             {
                 StartCoroutine(ShakeBuildButton(currentBuildButton, 0.3f, 7f));
             }
-            //HideBuildButton();
             return;
         }
-        
+
         GameManager.I.SpendGold(300);
-        //objectPool.towerPrefabs.Length
-        int randomTowerIndex = Random.Range(5, 5);
+
+        int randomTowerIndex = Random.Range(0, 0);
         GameObject towerGO = objectPool.GetFromPool($"Tower_{randomTowerIndex}", objectPool.towerPrefabs[randomTowerIndex]);
 
         if (towerGO != null)
         {
-            SetupTowerOnTile(towerGO, clickedTile, randomTowerIndex);
+            SetupTowerOnTile(towerGO, clickedTile, randomTowerIndex, 1);
             ShowGoldSpentMessage(clickedTile.transform.position, 300);
         }
 
@@ -174,17 +181,17 @@ public class TowerManager : MonoBehaviour
         HideBuildButton();
     }
 
-    private void SetupTowerOnTile(GameObject towerGO, Tiles tile, int towerIndex)
+    private void SetupTowerOnTile(GameObject towerGO, Tiles tile, int towerIndex, int level)
     {
         float tileHeight = tile.GetComponent<Collider>().bounds.size.y;
-        Vector3 towerPosition = tile.transform.position + new Vector3(0, tileHeight / 2f, 0); 
+        Vector3 towerPosition = tile.transform.position + new Vector3(0, tileHeight / 2f, 0);
 
         Tower newTower = towerGO.GetComponent<Tower>() ?? towerGO.AddComponent<Tower>();
-        newTower.level = 1;
+        newTower.level = level;
         newTower.towerType = $"Tower_{towerIndex}";
 
         towerGO.transform.position = towerPosition;
-        towerGO.transform.SetParent(tile.transform); 
+        towerGO.transform.SetParent(tile.transform);
         tile.HasTower = true;
     }
 
@@ -203,6 +210,7 @@ public class TowerManager : MonoBehaviour
         FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
         fadeOutTextSpawner?.SpawnFadeOutText(position + new Vector3(0.3f, 0.4f, 0), message, color);
     }
+
     private IEnumerator ShakeBuildButton(GameObject button, float duration = 0.5f, float magnitude = 10f)
     {
         if (button == null) yield break;
@@ -224,10 +232,10 @@ public class TowerManager : MonoBehaviour
         rectTransform.anchoredPosition = originalPosition;
     }
 
-    private void MergeTower(Tower tower)
+    private void MergeTower(Tower targetTower)
     {
         var sameTowers = FindObjectsOfType<Tower>()
-            .Where(t => t.towerType == tower.towerType && t.level == tower.level && t != tower)
+            .Where(t => t.towerType == targetTower.towerType && t.level == targetTower.level && t != targetTower)
             .ToList();
 
         if (sameTowers.Count > 0)
@@ -235,21 +243,40 @@ public class TowerManager : MonoBehaviour
             Tower mergingTower = sameTowers[0];
             RemoveMergeEffect(mergingTower);
 
-            tower.level++;
-            tower.ApplyMergeBonus();
-
             Tiles otherTile = mergingTower.GetComponentInParent<Tiles>();
             if (otherTile != null)
             {
                 otherTile.HasTower = false;
             }
-            objectPool.ReturnToPool($"Tower_{tower.level - 1}", mergingTower.gameObject);
+            objectPool.ReturnToPool($"Tower_{mergingTower.level - 1}", mergingTower.gameObject);
 
-            RemoveMergeEffect(tower);
+            targetTower.ApplyMergeBonus(targetTower.level + 1);
+            ApplyMaterialToTower(targetTower, targetTower.level);
+            RemoveMergeEffect(targetTower);
+
+            Debug.Log($"[MergeTower] Merged Tower: {targetTower.name}, Level: {targetTower.level}, AttackDamage: {targetTower.towerStats.attackDamage}");
+            SoundManager.I.PlaySoundEffect(8);
+            HideMergeButton();
+        }
+    }
+
+
+    private void ApplyMaterialToTower(Tower tower, int level)
+    {
+        if (towerMaterial == null || towerMaterial.Length == 0)
+        {
+            Debug.LogWarning("Tower materials are not set up properly.");
+            return;
         }
 
-        SoundManager.I.PlaySoundEffect(8);
-        HideMergeButton();
+        int materialIndex = Mathf.Clamp(level - 2, 0, towerMaterial.Length - 2);
+        Material newMaterial = towerMaterial[materialIndex];
+
+        Renderer[] renderers = tower.GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in renderers)
+        {
+            renderer.material = newMaterial;
+        }
     }
 
     private IEnumerator PeriodicEffectUpdate()
@@ -264,6 +291,7 @@ public class TowerManager : MonoBehaviour
     private void UpdateMergeEffects()
     {
         var groupedTowers = FindObjectsOfType<Tower>()
+            .Where(t => t.level < towerMaterial.Length)
             .GroupBy(t => new { t.towerType, t.level })
             .Where(g => g.Count() > 1);
 
@@ -292,6 +320,14 @@ public class TowerManager : MonoBehaviour
         }
     }
 
+    private bool CanMergeByTypeAndLevel(Tower tower)
+    {
+        if (tower.level >= towerMaterial.Length)
+            return false;
+
+        return FindObjectsOfType<Tower>().Count(t => t.towerType == tower.towerType && t.level == tower.level) > 1;
+    }
+
     private GameObject ShowMergeEffect(int effectIndex, Vector3 position)
     {
         effectIndex = Mathf.Clamp(effectIndex, 0, objectPool.mergeEftPrefabs.Length - 1);
@@ -306,6 +342,7 @@ public class TowerManager : MonoBehaviour
         return effect;
     }
 
+
     private void RemoveMergeEffect(Tower tower)
     {
         if (activeEffects.TryGetValue(tower, out GameObject effect))
@@ -313,10 +350,5 @@ public class TowerManager : MonoBehaviour
             objectPool.ReturnToPool($"MergeEffect_{tower.level - 1}", effect);
             activeEffects.Remove(tower);
         }
-    }
-
-    private bool CanMergeByTypeAndLevel(Tower tower)
-    {
-        return FindObjectsOfType<Tower>().Count(t => t.towerType == tower.towerType && t.level == tower.level) > 1;
     }
 }

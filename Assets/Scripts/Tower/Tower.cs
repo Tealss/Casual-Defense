@@ -26,15 +26,17 @@ public class Tower : MonoBehaviour
             return;
         }
 
-        attackTimer = 0f;
-        InitializeStats();
-
         animator = GetComponent<Animator>();
         if (animator == null)
         {
             Debug.LogError("Animator is null.");
         }
 
+        if (towerStats == null)
+        {
+            towerStats = ScriptableObject.CreateInstance<TowerStats>();
+        }
+        towerStats.InitializeStats();
 
         if (ItemManager.I != null)
             ItemManager.I.OnItemStatsChanged += UpdateTowerStats;
@@ -47,6 +49,7 @@ public class Tower : MonoBehaviour
         rangeIndicator.startColor = Color.red;
         rangeIndicator.endColor = Color.green;
 
+        attackTimer = 0f;
     }
 
     private void Update()
@@ -80,7 +83,7 @@ public class Tower : MonoBehaviour
     {
         if (towerStats != null)
         {
-            towerStats.ResetStats();
+            towerStats.InitializeStats();
             ApplyItemStats();
         }
         else
@@ -122,7 +125,6 @@ public class Tower : MonoBehaviour
                 case 3: towerStats.criticalChance += effect; break;
                 case 4: towerStats.criticalDamage += effect; break;
                 case 5: towerStats.goldEarnAmount += effect; break;
-
             }
         }
     }
@@ -142,32 +144,20 @@ public class Tower : MonoBehaviour
         }
     }
 
-    public void ApplyMergeBonus()
+    public void ApplyMergeBonus(int newLevel)
     {
-        towerStats.attackDamage *= 2.1f;
-        towerStats.level += 1;
-        switch (towerType)
-        {
-            case "Tower_0":
-                break;
-            case "Tower_1":
-                break;
-            case "Tower_2":
-                //Debug.Log("T3");
-                break;
-            case "Tower_3)":
-                towerStats.enemySlowAmount += 0.1f;
-                break;
-            case "Tower_4":
-                break;
-            case "Tower_5":
-                break;
-            case "Tower_6":
-                break;
-            default:
-                break;
-        }
+        level = newLevel;
+        towerStats.level = newLevel;
+
+        towerStats.attackDamage = towerStats.baseAttackDamage * Mathf.Pow(2.1f, newLevel - 1);
+        towerStats.attackSpeed = towerStats.baseAttackSpeed + (newLevel - 1) * 0.05f;
+        towerStats.attackRange = towerStats.baseAttackRange;
+        towerStats.criticalChance = towerStats.baseCriticalChance;
+        towerStats.criticalDamage = towerStats.baseCriticalDamage;
+        towerStats.goldEarnAmount = towerStats.baseGoldEarnAmount;
+        towerStats.enemySlowAmount = towerStats.baseEnemySlowAmount + (newLevel - 1) * 0.1f;
     }
+
 
     private void HandleTowerSelection()
     {
@@ -277,6 +267,7 @@ public class Tower : MonoBehaviour
             projectileScript.SetTarget(target);
             projectileScript.goldEarn = towerStats.goldEarnAmount;
             projectileScript.speed = towerStats.projectileSpeed;
+            //projectileScript.level = towerStats.level;
             //projectileScript.slowAmount = towerStats.enemySlowAmount;
             projectileScript.SetTowerTransform(transform, projectileTypeIndex);
             projectileScript.SetTowerStats(towerStats);

@@ -15,6 +15,7 @@ public class TowerStats : ScriptableObject
 
     [Header("Projectile")]
     public float projectileSpeed;
+
     [HideInInspector] public float level;
     [HideInInspector] public float attackDamage;
     [HideInInspector] public float attackSpeed;
@@ -24,8 +25,9 @@ public class TowerStats : ScriptableObject
     [HideInInspector] public float goldEarnAmount;
     [HideInInspector] public float enemySlowAmount;
 
-    public void ResetStats()
+    public void InitializeStats()
     {
+        // 기본 능력치 초기화
         level = baseLevel;
         attackDamage = baseAttackDamage;
         attackSpeed = baseAttackSpeed;
@@ -34,5 +36,17 @@ public class TowerStats : ScriptableObject
         criticalDamage = baseCriticalDamage;
         goldEarnAmount = baseGoldEarnAmount;
         enemySlowAmount = baseEnemySlowAmount;
+
+        //ApplyLevelBasedStats();
     }
+
+    //private void ApplyLevelBasedStats()
+    //{
+    //    if (level > 1)
+    //    {        
+    //        attackDamage *= Mathf.Pow(2.1f, level - 1);  // 예시: 레벨에 따라 공격력 증가
+    //        attackSpeed += (level - 1) * 0.05f;         // 예시: 레벨에 따라 공격속도 증가
+    //        enemySlowAmount += (level - 1) * 0.1f;      // 예시: 레벨에 따라 적 느리게 하는 효과 증가
+    //    }
+    //}
 }

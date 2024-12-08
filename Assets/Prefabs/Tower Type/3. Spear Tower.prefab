@@ -1289,6 +1289,7 @@ MonoBehaviour:
   level: 1
   towerIndex: 0
   towerType: 3
+  firePoint: {fileID: 1395173900619466575}
 --- !u!136 &-3725690851058786976
 CapsuleCollider:
   m_ObjectHideFlags: 0

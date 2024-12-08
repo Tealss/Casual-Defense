@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbdc8b2587741694fac39dfc3d0de68d, type: 3}
   m_Name: Tower T7
   m_EditorClassIdentifier: 
-  baseLevel: 0
+  baseLevel: 1
   baseAttackDamage: 15
   baseAttackSpeed: 0.5
-  baseAttackRange: 2
+  baseAttackRange: 3
   baseCriticalChance: 1
-  baseCriticalDamage: 0.1
+  baseCriticalDamage: 1.5
   baseGoldEarnAmount: 0
   baseEnemySlowAmount: 0
   projectileSpeed: 6

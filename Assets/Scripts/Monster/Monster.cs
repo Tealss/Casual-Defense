@@ -29,7 +29,7 @@ public class Monster : MonoBehaviour
     private List<Renderer> renderers = new List<Renderer>();
     private Dictionary<Renderer, Color> originalColors = new Dictionary<Renderer, Color>();
 
-    private bool isBountyMonster = false;  // Flag to check if this is a Bounty Monster
+    private bool isBountyMonster = false;
 
     private void Start()
     {
@@ -41,8 +41,7 @@ public class Monster : MonoBehaviour
             originalColors[renderer] = renderer.material.color;
         }
 
-        // Check if it's a Bounty Monster by the name or other condition
-        isBountyMonster = this.CompareTag("Bounty");  // Example: Check if it has the tag "BountyMonster"
+        isBountyMonster = this.CompareTag("Bounty");
     }
 
     public void SetMaxHealth(float value)
@@ -171,7 +170,6 @@ public class Monster : MonoBehaviour
         currentWaypointIndex = 0;
         isAlive = false;
 
-        // Check if this is a Bounty Monster and return both the monster and HP slider to the pool
         if (isBountyMonster)
         {
             if (hpSlider != null)
@@ -185,7 +183,6 @@ public class Monster : MonoBehaviour
         }
         else
         {
-            // Regular monster pool return
             if (hpSlider != null)
             {
                 string sliderPoolName = "HealthBar";
@@ -271,7 +268,6 @@ public class Monster : MonoBehaviour
     }
     public void ResetState()
     {
-        // Reset all monster states for reuse
         currentHealth = maxHealth;
         currentWaypointIndex = 0;
         speed = originalSpeed;
@@ -287,7 +283,7 @@ public class Monster : MonoBehaviour
 
         if (hpSliderComponent != null)
         {
-            hpSliderComponent.value = 1f; // Full HP
+            hpSliderComponent.value = 1f;
         }
 
         if (hpText != null)
@@ -295,7 +291,7 @@ public class Monster : MonoBehaviour
             hpText.text = $"{(int)maxHealth}";
         }
 
-        bountyIndex = -1; // Reset bounty index
+        bountyIndex = -1;
         Debug.Log("Monster state has been reset.");
     }
 }

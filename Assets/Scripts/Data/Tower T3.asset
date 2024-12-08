@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbdc8b2587741694fac39dfc3d0de68d, type: 3}
   m_Name: Tower T3
   m_EditorClassIdentifier: 
-  baseLevel: 0
+  baseLevel: 1
   baseAttackDamage: 10
   baseAttackSpeed: 0.5
   baseAttackRange: 2
   baseCriticalChance: 1
-  baseCriticalDamage: 0.1
+  baseCriticalDamage: 1.5
   baseGoldEarnAmount: 0
   baseEnemySlowAmount: 0
   projectileSpeed: 6
@@ -29,3 +29,11 @@ MonoBehaviour:
   criticalDamage: 0.1
   goldEarnAmount: 0
   enemySlowAmount: 0
+  mergelevel: 0
+  mergeAttackDamageBonus: 0
+  mergeAttackSpeedBonus: 0
+  mergeAttackRangeBonus: 0
+  mergeCriticalChanceBonus: 0
+  mergeCriticalDamageBonus: 0
+  mergeGoldEarnBonus: 0
+  mergeEnemySlowBonus: 0

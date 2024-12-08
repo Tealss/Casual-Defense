@@ -47,7 +47,6 @@ public class Projectile : MonoBehaviour
 
         if (towerTransform != null && target != null)
         {
-            // FirePoint를 찾고 발사 위치로 설정
             if (firePoint == null)
             {
                 firePoint = towerTransform.Find("FirePoint");
@@ -116,6 +115,10 @@ public class Projectile : MonoBehaviour
             slowAmount = towerStats.enemySlowAmount;
             goldEarn = towerStats.goldEarnAmount;
             range = towerStats.attackRange;
+
+            Debug.Log($"Tower Stats Set: Level = {level}, Damage = {damage}, Speed = {speed}, CriticalChance = {criticalChance}, " +
+                $"CriticalDamage = {criticalDamage}, SlowAmount = {slowAmount}, GoldEarn = {goldEarn}, Range = {range}");
+
         }
     }
 

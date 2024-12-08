@@ -6,25 +6,26 @@ using System.Collections;
 public class GameUiManager : MonoBehaviour
 {
     [Header("UI")]
-    [Space]
     public GameObject[] popupWindows;
     public Button[] popupWindowButtons;
-
     public Button[] bountyButtons;
 
     [Header("Text UI")]
-    [Space]
     public Text infoText;
     public Text itemInfoText;
 
-    public GameObject fadeOutTextPrefab; 
-    public Canvas parentCanvas; 
+    public GameObject fadeOutTextPrefab;
+    public Canvas parentCanvas;
 
     public Text waveText;
     public Text timerText;
     public Text lifeText;
     public Text totalLifeText;
     public Text goldText;
+
+    [Header("Player UI")]
+    public Text playerLevelText;
+    public Slider playerExpSlider;
 
     [Header("Game Over UI")]
     public GameObject gameOverPanel;
@@ -49,6 +50,7 @@ public class GameUiManager : MonoBehaviour
 
         UpdateGoldUI(GameManager.I.gold);
         UpdateLifePointsText(GameManager.I.lifePoints, GameManager.I.totalLifePoints);
+        UpdatePlayerUI(GameManager.I.playerLevel, GameManager.I.playerExperience, GameManager.I.experienceToNextLevel);
         gameOverPanel.SetActive(false);
         StartCoroutine(UpdateGoldCoroutine());
 
@@ -61,7 +63,7 @@ public class GameUiManager : MonoBehaviour
     {
         if (WaveManager.I != null)
         {
-            WaveManager.I.SpawnBountyMonster(index + 1); 
+            WaveManager.I.SpawnBountyMonster(index + 1);
         }
     }
 
@@ -85,8 +87,14 @@ public class GameUiManager : MonoBehaviour
             };
             pointerExitEntry.callback.AddListener((eventData) => OnPointerExit(index));
             eventTrigger.triggers.Add(pointerExitEntry);
-
         }
+    }
+
+    public void UpdatePlayerUI(int level, int currentExp, int expToNextLevel)
+    {
+        playerLevelText.text = $"Lv. {level}";
+        playerExpSlider.maxValue = expToNextLevel;
+        playerExpSlider.value = currentExp;
     }
 
     public void OnPointerEnter(int index)
