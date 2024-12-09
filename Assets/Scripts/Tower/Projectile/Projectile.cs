@@ -116,8 +116,8 @@ public class Projectile : MonoBehaviour
             goldEarn = towerStats.goldEarnAmount;
             range = towerStats.attackRange;
 
-            Debug.Log($"Tower Stats Set: Level = {level}, Damage = {damage}, Speed = {speed}, CriticalChance = {criticalChance}, " +
-                $"CriticalDamage = {criticalDamage}, SlowAmount = {slowAmount}, GoldEarn = {goldEarn}, Range = {range}");
+            //Debug.Log($"Tower Stats Set: Level = {level}, Damage = {damage}, Speed = {speed}, CriticalChance = {criticalChance}, " +
+            //    $"CriticalDamage = {criticalDamage}, SlowAmount = {slowAmount}, GoldEarn = {goldEarn}, Range = {range}");
 
         }
     }

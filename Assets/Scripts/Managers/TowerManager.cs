@@ -168,7 +168,7 @@ public class TowerManager : MonoBehaviour
 
         GameManager.I.SpendGold(300);
 
-        int randomTowerIndex = Random.Range(0, 0);
+        int randomTowerIndex = Random.Range(0, objectPool.towerPrefabs.Length);
         GameObject towerGO = objectPool.GetFromPool($"Tower_{randomTowerIndex}", objectPool.towerPrefabs[randomTowerIndex]);
 
         if (towerGO != null)
@@ -241,25 +241,45 @@ public class TowerManager : MonoBehaviour
         if (sameTowers.Count > 0)
         {
             Tower mergingTower = sameTowers[0];
-            RemoveMergeEffect(mergingTower);
 
             Tiles otherTile = mergingTower.GetComponentInParent<Tiles>();
             if (otherTile != null)
             {
                 otherTile.HasTower = false;
             }
-            objectPool.ReturnToPool($"Tower_{mergingTower.level - 1}", mergingTower.gameObject);
 
+
+            ResetTowerMaterial(mergingTower);
+
+            objectPool.ReturnToPool(mergingTower.towerType, mergingTower.gameObject);
             targetTower.ApplyMergeBonus(targetTower.level + 1);
             ApplyMaterialToTower(targetTower, targetTower.level);
             RemoveMergeEffect(targetTower);
 
-            Debug.Log($"[MergeTower] Merged Tower: {targetTower.name}, Level: {targetTower.level}, AttackDamage: {targetTower.towerStats.attackDamage}");
+            //Debug.Log($"[MergeTower] Merged Tower: {targetTower.name}, Level: {targetTower.level}, AttackDamage: {targetTower.towerStats.attackDamage}");
             SoundManager.I.PlaySoundEffect(8);
             HideMergeButton();
         }
     }
 
+
+    private void ResetTowerMaterial(Tower tower)
+    {
+        if (towerMaterial == null || towerMaterial.Length == 0)
+        {
+            Debug.LogWarning("Tower materials are not set up properly.");
+            return;
+        }
+
+        Material defaultMaterial = towerMaterial[0];
+        Renderer[] renderers = tower.GetComponentsInChildren<Renderer>();
+        foreach (Renderer renderer in renderers)
+        {
+            renderer.material = defaultMaterial;
+        }
+
+        //Debug.Log($"[ResetTowerMaterial] Tower '{tower.name}' material reset to default.");
+    }
 
     private void ApplyMaterialToTower(Tower tower, int level)
     {
@@ -269,7 +289,7 @@ public class TowerManager : MonoBehaviour
             return;
         }
 
-        int materialIndex = Mathf.Clamp(level - 2, 0, towerMaterial.Length - 2);
+        int materialIndex = Mathf.Clamp(level - 1, 0, towerMaterial.Length - 1);
         Material newMaterial = towerMaterial[materialIndex];
 
         Renderer[] renderers = tower.GetComponentsInChildren<Renderer>();
@@ -322,10 +342,8 @@ public class TowerManager : MonoBehaviour
 
     private bool CanMergeByTypeAndLevel(Tower tower)
     {
-        if (tower.level >= towerMaterial.Length)
-            return false;
-
-        return FindObjectsOfType<Tower>().Count(t => t.towerType == tower.towerType && t.level == tower.level) > 1;
+        return FindObjectsOfType<Tower>()
+            .Count(t => t.towerType == tower.towerType && t.level == tower.level) > 1;
     }
 
     private GameObject ShowMergeEffect(int effectIndex, Vector3 position)

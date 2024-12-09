@@ -32,10 +32,15 @@ public class Tower : MonoBehaviour
             Debug.LogError("Animator is null.");
         }
 
-        if (towerStats == null)
+        if (towerStats != null)
         {
-            towerStats = ScriptableObject.CreateInstance<TowerStats>();
+            towerStats = Instantiate(towerStats);
         }
+        else
+        {
+            Debug.LogError("TowerStats is null.");
+        }
+
         towerStats.InitializeStats();
 
         if (ItemManager.I != null)
@@ -51,6 +56,7 @@ public class Tower : MonoBehaviour
 
         attackTimer = 0f;
     }
+
 
     private void Update()
     {
