@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System;
 
 public class WaveManager : MonoBehaviour
 {
@@ -33,14 +32,14 @@ public class WaveManager : MonoBehaviour
             Destroy(gameObject);
     }
 
-    void Start()
+    private void Start()
     {
         gameUIManager = FindObjectOfType<GameUiManager>();
         objectPool = FindObjectOfType<ObjectPool>();
 
         if (hpSliderParent == null)
         {
-            Debug.LogError("HP Slider parent check");
+            Debug.LogError("HP Slider parent not assigned.");
         }
 
         StartCoroutine(StartWaveRoutineWithDelay());
@@ -55,95 +54,76 @@ public class WaveManager : MonoBehaviour
 
     public void SpawnBountyMonster(int index)
     {
-        if (index >= 0 && index < objectPool.bountyMonsterPrefabs.Length)
+        if (index < 0 || index >= objectPool.bountyMonsterPrefabs.Length)
         {
-            GameObject bountyMonster = Instantiate(objectPool.bountyMonsterPrefabs[index], transform.position, Quaternion.identity);
-            bountyMonster.transform.position = waypoints[0].position;
+            Debug.LogWarning($"Invalid bounty monster index: {index}");
+            return;
+        }
 
-            Monster monster = bountyMonster.GetComponent<Monster>();
-            if (monster != null)
-            {
-                monster.bountyIndex = index;
-                InitializeMonster(monster);
-                AttachHpSliderToMonster(bountyMonster);
-            }
-        }
-        else
-        {
-            //Debug.LogWarning("Invalid bounty monster index.");
-        }
+        GameObject bountyMonster = Instantiate(objectPool.bountyMonsterPrefabs[index], waypoints[0].position, Quaternion.identity);
+        InitializeMonsterWithHpSlider(bountyMonster, index);
     }
 
     private IEnumerator WaveRoutine()
     {
         while (currentWave <= maxWaveCount)
         {
-            currentWaveTimer = waveDuration;
-            gameUIManager.UpdateWaveText(currentWave);
+            SetupWave();
 
-            CalculateWaveHealthMultiplier();
+            if (IsBossWave(currentWave))
+                SpawnBossMonster();
+            else if (!isSpawning)
+                StartCoroutine(SpawnUnits());
 
-            if (!isSpawning)
-            {
-                isSpawning = true;
+            yield return ManageWaveTimer();
 
-                if (IsBossWave(currentWave))
-                {
-                    SpawnBossMonster();
-                }
-                else
-                {
-                    StartCoroutine(SpawnUnits());
-                }
-            }
-
-            while (currentWaveTimer > 0)
-            {
-                currentWaveTimer -= Time.deltaTime;
-                gameUIManager.UpdateTimerText(Mathf.CeilToInt(currentWaveTimer));
-                yield return null;
-            }
-
-            isSpawning = false;
-            currentWave++;
+            FinishWave();
         }
 
-        Debug.Log("All wave END!");
+        Debug.Log("All waves complete!");
     }
 
-    private bool IsBossWave(int waveNumber)
+    private void SetupWave()
     {
-        return waveNumber % 10 == 0;
+        currentWaveTimer = waveDuration;
+        gameUIManager.UpdateWaveText(currentWave);
+        CalculateWaveHealthMultiplier();
+        isSpawning = false;
     }
+
+    private IEnumerator ManageWaveTimer()
+    {
+        while (currentWaveTimer > 0)
+        {
+            currentWaveTimer -= Time.deltaTime;
+            gameUIManager.UpdateTimerText(Mathf.CeilToInt(currentWaveTimer));
+            yield return null;
+        }
+    }
+
+    private void FinishWave()
+    {
+        currentWave++;
+    }
+
+    private bool IsBossWave(int waveNumber) => waveNumber % 10 == 0;
 
     private void SpawnBossMonster()
     {
         int bossIndex = (currentWave / 10) - 1;
-        if (bossIndex >= 0 && bossIndex < objectPool.bossMonsterPrefabs.Length)
-        {
-            GameObject bossMonster = Instantiate(objectPool.bossMonsterPrefabs[bossIndex], transform.position, Quaternion.identity);
-            bossMonster.transform.position = waypoints[0].position;
-
-            Monster monster = bossMonster.GetComponent<Monster>();
-            if (monster != null)
-            {
-                InitializeMonster(monster);
-                AttachHpSliderToMonster(bossMonster);
-            }
-        }
-        else
+        if (bossIndex < 0 || bossIndex >= objectPool.bossMonsterPrefabs.Length)
         {
             Debug.LogWarning("Invalid boss index.");
+            return;
         }
+
+        GameObject bossMonster = Instantiate(objectPool.bossMonsterPrefabs[bossIndex], waypoints[0].position, Quaternion.identity);
+        InitializeMonsterWithHpSlider(bossMonster);
     }
 
     private void CalculateWaveHealthMultiplier()
     {
-        if (waveHealthMultiplier == 1f)
-        {
-            waveHealthMultiplier = Mathf.Pow(1.5f, Mathf.Max(currentWave - 1, 0));
-            //Debug.Log($"Wave {currentWave} - Health Multiplier: {waveHealthMultiplier}");
-        }
+        waveHealthMultiplier = Mathf.Pow(1.5f, Mathf.Max(currentWave - 1, 0));
     }
 
     private IEnumerator SpawnUnits()
@@ -157,8 +137,6 @@ public class WaveManager : MonoBehaviour
             unitsSpawned++;
             yield return new WaitForSeconds(spawnInterval);
         }
-
-        isSpawning = false;
     }
 
     private void SpawnSingleUnit()
@@ -166,18 +144,26 @@ public class WaveManager : MonoBehaviour
         GameObject unit = objectPool.GetFromPool("Monster", objectPool.monsterPrefab);
         if (unit == null)
         {
-            Debug.LogError("Can't get the monster from object pool");
+            Debug.LogError("Unable to get monster from object pool.");
             return;
         }
 
         unit.transform.SetParent(Folder.folder.transform, false);
         unit.transform.position = waypoints[0].position;
 
-        Monster monster = unit.GetComponent<Monster>();
+        InitializeMonsterWithHpSlider(unit);
+    }
+
+    private void InitializeMonsterWithHpSlider(GameObject monsterObject, int bountyIndex = -1)
+    {
+        Monster monster = monsterObject.GetComponent<Monster>();
         if (monster != null)
         {
+            if (bountyIndex != -1)
+                monster.bountyIndex = bountyIndex;
+
             InitializeMonster(monster);
-            AttachHpSliderToMonster(unit);
+            AttachHpSliderToMonster(monsterObject);
         }
     }
 
@@ -186,38 +172,24 @@ public class WaveManager : MonoBehaviour
         float calculatedMaxHealth = monster.maxHealth * waveHealthMultiplier;
         monster.SetMaxHealth(calculatedMaxHealth);
         monster.Initialize(waypoints, unitSpeed, objectPool);
-
-        //Debug.Log($"Wave {currentWave} - Initial Health: {monster.maxHealth}, Multiplier: {waveHealthMultiplier}, Calculated Max Health: {calculatedMaxHealth}");
     }
 
-    private void AttachHpSliderToMonster(GameObject unit)
+    private void AttachHpSliderToMonster(GameObject monsterObject)
     {
         GameObject hpSlider = objectPool.GetFromPool("HealthBar", objectPool.healthBarPrefab);
         if (hpSlider == null)
         {
-            Debug.LogError("Can't get the healthBar from object pool.");
+            Debug.LogError("Unable to get health bar from object pool.");
             return;
         }
 
         hpSlider.transform.SetParent(hpSliderParent, false);
+        hpSlider.transform.position = monsterObject.transform.position + Vector3.up * 2f;
 
-        Vector3 unitPosition = unit.transform.position;
-        hpSlider.transform.position = new Vector3(unitPosition.x, unitPosition.y + 2f, unitPosition.z);
+        if (hpSlider.TryGetComponent(out MonsterHPSlider hpSliderScript))
+            hpSliderScript.Initialize(monsterObject);
 
-        MonsterHPSlider hpSliderScript = hpSlider.GetComponent<MonsterHPSlider>();
-        if (hpSliderScript != null)
-        {
-            hpSliderScript.Initialize(unit);
-        }
-        else
-        {
-            Debug.LogError("Cant' find MonsterHPSlider.");
-        }
-
-        Monster monster = unit.GetComponent<Monster>();
-        if (monster != null)
-        {
+        if (monsterObject.TryGetComponent(out Monster monster))
             monster.SetHpSlider(hpSlider);
-        }
     }
 }
