@@ -20,16 +20,16 @@ public class ObjectPool : MonoBehaviour
     public GameObject[] bountyMonsterPrefabs;
 
     private Dictionary<string, Queue<GameObject>> pools = new Dictionary<string, Queue<GameObject>>();
+    private Dictionary<string, float> lastUsedTime = new Dictionary<string, float>();
     private int initialPoolSize = 1;
 
     void Start()
     {
-        // Initialize fixed pools
+        // 기존 초기화 코드
         RegisterPool("Monster", monsterPrefab);
         RegisterPool("HealthBar", healthBarPrefab);
         RegisterPool("TowerBuildButton", towerBuildButtonPrefab);
         RegisterPool("TowerMergeButton", towerMergeButtonPrefab);
-        // Initialize dynamic pools (arrays)
         for (int i = 0; i < towerPrefabs.Length; i++)
         {
             RegisterPool($"Bounty_{i}", bountyMonsterPrefabs[i]);
@@ -38,10 +38,12 @@ public class ObjectPool : MonoBehaviour
             RegisterPool($"Projectile_{i}", projectilePrefabs[i]);
             RegisterPool($"HitEffect_{i}", hitEftPrefabs[i]);
         }
-        for (int i = 0;i < bossMonsterPrefabs.Length;i++)
+        for (int i = 0; i < bossMonsterPrefabs.Length; i++)
         {
             RegisterPool($"Boss_{i}", bossMonsterPrefabs[i]);
         }
+
+        StartCoroutine(ClearUnusedPoolsRoutine());
     }
     private void RegisterPool(string poolName, GameObject prefab)
     {
@@ -76,25 +78,20 @@ public class ObjectPool : MonoBehaviour
             RegisterPool(poolName, prefab);
         }
 
+        lastUsedTime[poolName] = Time.time;
+
         Queue<GameObject> pool = pools[poolName];
         if (pool.Count > 0)
         {
             GameObject obj = pool.Dequeue();
             obj.SetActive(true);
-
-            if (Folder.folder != null)
-            {
-                obj.transform.SetParent(Folder.folder.transform, false);
-            }
-
             return obj;
-
-
         }
         else
         {
             GameObject newObj = Instantiate(prefab);
             newObj.SetActive(true);
+            //ReturnToPool(poolName, newObj);
             return newObj;
         }
     }
@@ -103,13 +100,34 @@ public class ObjectPool : MonoBehaviour
     {
         if (pools.ContainsKey(poolName))
         {
+            ResetObjectState(obj);
             obj.SetActive(false);
             pools[poolName].Enqueue(obj);
+
+            lastUsedTime[poolName] = Time.time;
         }
         else
         {
             Debug.LogWarning($"Pool {poolName} does not exist. Object will be destroyed.");
             Destroy(obj);
+        }
+    }
+    private void ResetObjectState(GameObject obj)
+    {
+        obj.transform.position = Vector3.zero;
+        obj.transform.rotation = Quaternion.identity;
+
+        var rigidbody = obj.GetComponent<Rigidbody>();
+        if (rigidbody != null)
+        {
+            rigidbody.velocity = Vector3.zero;
+            rigidbody.angularVelocity = Vector3.zero;
+        }
+
+        var monster = obj.GetComponent<Monster>();
+        if (monster != null)
+        {
+            monster.ResetState();
         }
     }
 
@@ -142,5 +160,47 @@ public class ObjectPool : MonoBehaviour
     public void ReturnProjectile(int index, GameObject projectile)
     {
         ReturnToPool($"Projectile_{index}", projectile);
+    }
+
+    private IEnumerator ClearUnusedPoolsRoutine()
+    {
+        float checkInterval = 60f;
+        float unusedDuration = 600f;
+
+        while (true)
+        {
+            yield return new WaitForSeconds(checkInterval);
+
+            float currentTime = Time.time;
+            List<string> poolsToClear = new List<string>();
+
+            foreach (var pool in lastUsedTime)
+            {
+                if (currentTime - pool.Value > unusedDuration)
+                {
+                    poolsToClear.Add(pool.Key);
+                }
+            }
+
+            foreach (string poolName in poolsToClear)
+            {
+                Debug.Log($"Clearing unused pool: {poolName}");
+                ClearPool(poolName);
+                lastUsedTime.Remove(poolName);
+            }
+        }
+    }
+
+    public void ClearPool(string poolName)
+    {
+        if (pools.ContainsKey(poolName))
+        {
+            Queue<GameObject> pool = pools[poolName];
+            while (pool.Count > 0)
+            {
+                GameObject obj = pool.Dequeue();
+                Destroy(obj);
+            }
+        }
     }
 }

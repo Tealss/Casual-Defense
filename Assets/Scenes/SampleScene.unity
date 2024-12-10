@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5152368, g: 0.70169014, b: 0.8392369, a: 1}
+  m_IndirectSpecularColor: {r: 0.5153751, g: 0.7016788, b: 0.83919954, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -68365,7 +68365,7 @@ MonoBehaviour:
   maxWaveCount: 100
   unitCountPerWave: 30
   spawnInterval: 1
-  waveDuration: 60
+  waveDuration: 40
   spawnDuration: 30
   waypoints:
   - {fileID: 829291736}

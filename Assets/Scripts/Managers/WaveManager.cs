@@ -15,13 +15,14 @@ public class WaveManager : MonoBehaviour
 
     [SerializeField] private Transform[] waypoints;
     [SerializeField] private Transform hpSliderParent;
+    [SerializeField] private float initialMonsterHealth = 50f;
+    [SerializeField] private float healthIncreasePerWavePercentage = 30f;
+    private float currentWaveMonsterHealth;
 
     public int currentWave = 1;
     private bool isSpawning = false;
     private float currentWaveTimer;
-    private float waveHealthMultiplier = 1f;
 
-    private GameUiManager gameUIManager;
     private ObjectPool objectPool;
 
     private void Awake()
@@ -34,7 +35,6 @@ public class WaveManager : MonoBehaviour
 
     private void Start()
     {
-        gameUIManager = FindObjectOfType<GameUiManager>();
         objectPool = FindObjectOfType<ObjectPool>();
 
         if (hpSliderParent == null)
@@ -86,9 +86,11 @@ public class WaveManager : MonoBehaviour
     private void SetupWave()
     {
         currentWaveTimer = waveDuration;
-        gameUIManager.UpdateWaveText(currentWave);
-        CalculateWaveHealthMultiplier();
+        GameUiManager.I.UpdateWaveText(currentWave);
         isSpawning = false;
+
+        currentWaveMonsterHealth = initialMonsterHealth * Mathf.Pow(1 + healthIncreasePerWavePercentage / 100f, currentWave - 1);
+        Debug.Log($"Wave {currentWave} - Monster Health: {currentWaveMonsterHealth}");
     }
 
     private IEnumerator ManageWaveTimer()
@@ -96,7 +98,7 @@ public class WaveManager : MonoBehaviour
         while (currentWaveTimer > 0)
         {
             currentWaveTimer -= Time.deltaTime;
-            gameUIManager.UpdateTimerText(Mathf.CeilToInt(currentWaveTimer));
+            GameUiManager.I.UpdateTimerText(Mathf.CeilToInt(currentWaveTimer));
             yield return null;
         }
     }
@@ -119,11 +121,6 @@ public class WaveManager : MonoBehaviour
 
         GameObject bossMonster = Instantiate(objectPool.bossMonsterPrefabs[bossIndex], waypoints[0].position, Quaternion.identity);
         InitializeMonsterWithHpSlider(bossMonster);
-    }
-
-    private void CalculateWaveHealthMultiplier()
-    {
-        waveHealthMultiplier = Mathf.Pow(1.5f, Mathf.Max(currentWave - 1, 0));
     }
 
     private IEnumerator SpawnUnits()
@@ -169,8 +166,7 @@ public class WaveManager : MonoBehaviour
 
     private void InitializeMonster(Monster monster)
     {
-        float calculatedMaxHealth = monster.maxHealth * waveHealthMultiplier;
-        monster.SetMaxHealth(calculatedMaxHealth);
+        monster.SetMaxHealth(currentWaveMonsterHealth);
         monster.Initialize(waypoints, unitSpeed, objectPool);
     }
 

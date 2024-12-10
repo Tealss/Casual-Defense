@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class Monster : MonoBehaviour
 {
-    public float maxHealth = 0f;
+    public float maxHealth;
+    public float addHealth;
     public float currentHealth;
     public float addGold;
 
@@ -13,7 +14,6 @@ public class Monster : MonoBehaviour
     private int currentWaypointIndex = 0;
     private float speed;
     private float originalSpeed;
-    private GameManager gameManager;
     public int bountyIndex;
     private ObjectPool objectPool;
     private GameObject hpSlider;
@@ -60,7 +60,6 @@ public class Monster : MonoBehaviour
         this.currentWaypointIndex = 0;
         isAlive = true;
 
-        gameManager = FindObjectOfType<GameManager>();
     }
 
     void Update()
@@ -85,9 +84,7 @@ public class Monster : MonoBehaviour
 
             if (currentWaypointIndex >= waypoints.Length)
             {
-                if (gameManager != null)
-                    gameManager.DecreaseLifePoints(1);
-
+                GameManager.I.DecreaseLifePoints(1);
                 ReturnToPool();
                 return;
             }
@@ -119,7 +116,7 @@ public class Monster : MonoBehaviour
             {
                 fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, addGoldText, textColor);
             }
-            //sad
+
             GameManager.I.AddGold(killGold);
         }
 
@@ -174,8 +171,7 @@ public class Monster : MonoBehaviour
         {
             if (hpSlider != null)
             {
-                string sliderPoolName = "HealthBar";
-                objectPool.ReturnToPool(sliderPoolName, hpSlider);
+                objectPool.ReturnToPool("HealthBar", hpSlider);
                 hpSlider = null;
             }
 
@@ -185,13 +181,11 @@ public class Monster : MonoBehaviour
         {
             if (hpSlider != null)
             {
-                string sliderPoolName = "HealthBar";
-                objectPool.ReturnToPool(sliderPoolName, hpSlider);
+                objectPool.ReturnToPool("HealthBar", hpSlider);
                 hpSlider = null;
             }
 
-            string monsterPoolName = "Monster"; // Regular monster pool
-            objectPool.ReturnToPool(monsterPoolName, gameObject);
+            objectPool.ReturnToPool("Monster", gameObject);
         }
     }
 
@@ -215,7 +209,7 @@ public class Monster : MonoBehaviour
 
     public void ApplySlow(float slowAmount, float duration)
     {
-        if (!isAlive) return;
+        if (!isAlive || !gameObject.activeInHierarchy) return;
 
         if (isSlowed)
         {
@@ -228,13 +222,13 @@ public class Monster : MonoBehaviour
 
         slowCoroutine = StartCoroutine(SlowCoroutine(duration));
     }
-
     private IEnumerator SlowCoroutine(float duration)
     {
         ChangeColor(Color.cyan);
         float elapsed = 0f;
         while (elapsed < duration)
         {
+            if (!isAlive || !gameObject.activeInHierarchy) yield break;
             elapsed += Time.deltaTime;
             yield return null;
         }
@@ -268,8 +262,7 @@ public class Monster : MonoBehaviour
     }
     public void ResetState()
     {
-        currentHealth = maxHealth;
-        currentWaypointIndex = 0;
+        maxHealth = currentHealth = maxHealth;
         speed = originalSpeed;
         isAlive = true;
 
@@ -292,6 +285,5 @@ public class Monster : MonoBehaviour
         }
 
         bountyIndex = -1;
-        Debug.Log("Monster state has been reset.");
     }
 }
