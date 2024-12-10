@@ -3,31 +3,39 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TowerStats", menuName = "Tower/TowerStats")]
 public class TowerStats : ScriptableObject
 {
-    [Header("Base Stats")]
-    public float baseLevel;
-    public float baseAttackDamage;
-    public float baseAttackSpeed;
-    public float baseAttackRange;
-    public float baseCriticalChance;
-    public float baseCriticalDamage;
-    public float baseGoldEarnAmount;
-    public float baseEnemySlowAmount;
+    [Header("Stats")]
+    public float level;
+    public float attackDamage;
+    public float attackSpeed;
+    public float attackRange;
+    public float criticalChance;
+    public float criticalDamage;
+    public float goldEarnAmount;
+    public float enemySlowAmount;
 
-    [Header("Projectile")]
     public float projectileSpeed;
 
-    [HideInInspector] public float level;
-    [HideInInspector] public float attackDamage;
-    [HideInInspector] public float attackSpeed;
-    [HideInInspector] public float attackRange;
-    [HideInInspector] public float criticalChance;
-    [HideInInspector] public float criticalDamage;
-    [HideInInspector] public float goldEarnAmount;
-    [HideInInspector] public float enemySlowAmount;
+    [Header("Base Stats")]
+    [HideInInspector] public float baseLevel;
+    [HideInInspector] public float baseAttackDamage;
+    [HideInInspector] public float baseAttackSpeed;
+    [HideInInspector] public float baseAttackRange;
+    [HideInInspector] public float baseCriticalChance;
+    [HideInInspector] public float baseCriticalDamage;
+    [HideInInspector] public float baseGoldEarnAmount;
+    [HideInInspector] public float baseEnemySlowAmount;
 
-    public void InitializeStats()
+    [Header("Item Stats")]
+    [HideInInspector] public float itemAttackDamage;
+    [HideInInspector] public float itemAttackSpeed;
+    [HideInInspector] public float itemAttackRange;
+    [HideInInspector] public float itemCriticalChance;
+    [HideInInspector] public float itemCriticalDamage;
+    [HideInInspector] public float itemGoldEarnAmount;
+    [HideInInspector] public float itemEnemySlowAmount;
+
+    public void InitializeBaseStats()
     {
-        // 기본 능력치 초기화
         level = baseLevel;
         attackDamage = baseAttackDamage;
         attackSpeed = baseAttackSpeed;
@@ -36,7 +44,50 @@ public class TowerStats : ScriptableObject
         criticalDamage = baseCriticalDamage;
         goldEarnAmount = baseGoldEarnAmount;
         enemySlowAmount = baseEnemySlowAmount;
-
     }
 
+    public void ApplyItemBonuses()
+    {
+        attackDamage += itemAttackDamage;
+        attackSpeed += itemAttackSpeed;
+        attackRange += itemAttackRange;
+        criticalChance += itemCriticalChance;
+        criticalDamage += itemCriticalDamage;
+        goldEarnAmount += itemGoldEarnAmount;
+        enemySlowAmount += itemEnemySlowAmount;
+    }
+
+    public void InitializeStats()
+    {
+        InitializeBaseStats();
+        ApplyItemBonuses();
+    }
+
+    public void AddItemBonus(int itemType, float effect)
+    {
+        switch (itemType)
+        {
+            case 0: itemAttackDamage += effect; break;
+            case 1: itemAttackSpeed += effect; break;
+            case 2: itemAttackRange += effect; break;
+            case 3: itemCriticalChance += effect; break;
+            case 4: itemCriticalDamage += effect; break;
+            case 5: itemGoldEarnAmount += effect; break;
+            case 6: itemEnemySlowAmount += effect; break;
+        }
+    }
+
+    public void RemoveItemBonus(int itemType, float effect)
+    {
+        switch (itemType)
+        {
+            case 0: itemAttackDamage -= effect; break;
+            case 1: itemAttackSpeed -= effect; break;
+            case 2: itemAttackRange -= effect; break;
+            case 3: itemCriticalChance -= effect; break;
+            case 4: itemCriticalDamage -= effect; break;
+            case 5: itemGoldEarnAmount -= effect; break;
+            case 6: itemEnemySlowAmount -= effect; break;
+        }
+    }
 }

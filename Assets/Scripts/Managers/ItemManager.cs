@@ -70,7 +70,8 @@ public class ItemManager : MonoBehaviour
             return;
         }
 
-        int itemTypeIndex = UnityEngine.Random.Range(0, itemPrefabs.Length);
+        //itemPrefabs.Length
+        int itemTypeIndex = UnityEngine.Random.Range(0, 0);
 
         if (itemTypeIndex < 0 || itemTypeIndex >= itemPrefabs.Length)
         {

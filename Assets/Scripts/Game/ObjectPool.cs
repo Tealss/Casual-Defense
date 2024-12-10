@@ -114,15 +114,15 @@ public class ObjectPool : MonoBehaviour
     }
     private void ResetObjectState(GameObject obj)
     {
-        obj.transform.position = Vector3.zero;
-        obj.transform.rotation = Quaternion.identity;
+        //obj.transform.position = Vector3.zero;
+        //obj.transform.rotation = Quaternion.identity;
 
-        var rigidbody = obj.GetComponent<Rigidbody>();
-        if (rigidbody != null)
-        {
-            rigidbody.velocity = Vector3.zero;
-            rigidbody.angularVelocity = Vector3.zero;
-        }
+        //var rigidbody = obj.GetComponent<Rigidbody>();
+        //if (rigidbody != null)
+        //{
+        //    rigidbody.velocity = Vector3.zero;
+        //    rigidbody.angularVelocity = Vector3.zero;
+        //}
 
         var monster = obj.GetComponent<Monster>();
         if (monster != null)

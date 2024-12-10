@@ -123,15 +123,10 @@ public class Tower : MonoBehaviour
 
             float effect = ItemManager.I.GetItemTypeEffect(itemType, level, grade);
 
-            switch (itemType)
-            {
-                case 0: towerStats.attackDamage += effect; break;
-                case 1: towerStats.attackSpeed += effect; break;
-                case 2: towerStats.attackRange += effect; break;
-                case 3: towerStats.criticalChance += effect; break;
-                case 4: towerStats.criticalDamage += effect; break;
-                case 5: towerStats.goldEarnAmount += effect; break;
-            }
+            towerStats.InitializeBaseStats();
+            towerStats.AddItemBonus(itemType, effect);
+            towerStats.ApplyItemBonuses();
+
         }
     }
 
@@ -139,15 +134,9 @@ public class Tower : MonoBehaviour
     {
         float effect = ItemManager.I.GetItemTypeEffect(itemType, itemLevel, itemGrade);
 
-        switch (itemType)
-        {
-            case 0: towerStats.attackDamage -= effect; break;
-            case 1: towerStats.attackSpeed -= effect; break;
-            case 2: towerStats.attackRange -= effect; break;
-            case 3: towerStats.criticalChance -= effect; break;
-            case 4: towerStats.criticalDamage -= effect; break;
-            case 5: towerStats.goldEarnAmount -= effect; break;
-        }
+        towerStats.InitializeBaseStats();
+        towerStats.RemoveItemBonus(itemType, effect);
+        towerStats.ApplyItemBonuses();
     }
 
     public void ApplyMergeBonus(int newLevel)
@@ -162,6 +151,8 @@ public class Tower : MonoBehaviour
         towerStats.criticalDamage = towerStats.baseCriticalDamage;
         towerStats.goldEarnAmount = towerStats.baseGoldEarnAmount;
         towerStats.enemySlowAmount = towerStats.baseEnemySlowAmount + (newLevel - 1) * 0.1f;
+
+
     }
 
 
@@ -252,8 +243,6 @@ public class Tower : MonoBehaviour
 
     public void Fire(Transform target)
     {
-        //Debug.Log($"Tower Type: {towerType}, Projectile Type Index: {towerIndex}");
-
         GameObject projectile = objectPool.GetFromPool($"Projectile_{towerIndex}", objectPool.projectilePrefabs[towerIndex]);
         if (projectile == null)
         {

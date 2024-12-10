@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tower T4
   m_EditorClassIdentifier: 
   baseLevel: 1
-  baseAttackDamage: 10
+  baseAttackDamage: 20
   baseAttackSpeed: 0.5
   baseAttackRange: 2
   baseCriticalChance: 1
@@ -29,11 +29,3 @@ MonoBehaviour:
   criticalDamage: 0.1
   goldEarnAmount: 12
   enemySlowAmount: 0.4
-  mergelevel: 0
-  mergeAttackDamageBonus: 0
-  mergeAttackSpeedBonus: 0
-  mergeAttackRangeBonus: 0
-  mergeCriticalChanceBonus: 0
-  mergeCriticalDamageBonus: 0
-  mergeGoldEarnBonus: 0
-  mergeEnemySlowBonus: 0
