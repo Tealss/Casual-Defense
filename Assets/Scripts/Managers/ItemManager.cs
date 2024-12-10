@@ -18,7 +18,7 @@ public class ItemManager : MonoBehaviour
     [SerializeField] private Toggle[] gradeToggles = new Toggle[6];
     [SerializeField] private GameObject[] itemPrefabs = new GameObject[6];
 
-    public TowerStats towerStats;
+    //private TowerStats towerStats;
     public int[] itemTypesInSlots = new int[6];
     public int[] currentLevels = new int[6];
     public int[] itemGrades = new int[6];
@@ -301,22 +301,14 @@ public class ItemManager : MonoBehaviour
     {
         switch (itemType)
         {
-            case 0:
-                return "Attack Damage";
-            case 1:
-                return "Attack Speed";
-            case 2:
-                return "Attack Range";
-            case 3:
-                return "Critical Chance";
-            case 4:
-                return "Critical Damage";
-            case 5:
-                return "Add Gold";
-            case 6:
-                return "7";
-            default:
-                return "Unknown";
+            case 0: return "Attack Damage";
+            case 1: return "Attack Speed";
+            case 2: return "Attack Range";
+            case 3: return "Critical Chance";
+            case 4: return "Critical Damage";
+            case 5: return "Add Gold";
+            case 6: return "7";
+            default: return "Unknown";
         }
     }
 
@@ -324,22 +316,15 @@ public class ItemManager : MonoBehaviour
     {
         switch (itemType)
         {
-            case 0:
-                return $" + {level * grade * 10}"; // 공격력
-            case 1:
-                return $" + {level * grade * 0.05}"; // 스피드
-            case 2:
-                return $" + {level * grade * 0.1}"; // 범위
-            case 3:
-                return $" + {level * grade * 0.5}%"; // 크확
-            case 4:
-                return $" + {level * grade * 0.5}%"; // 크뎀
-            case 5:
-                return $" + {level * grade * 3}"; // 골드
-            case 6:
-                return $" + {level * grade * 5}%"; // 임시
-            default:
-                return "None";
+            case 0: return $" + {level * grade * 10}"; // 공격력
+            case 1: return $" + {level * grade * 0.05}"; // 스피드
+            case 2: return $" + {level * grade * 0.1}"; // 범위
+            case 3: return $" + {level * grade * 0.5}%"; // 크확
+            case 4: return $" + {level * grade * 0.5}%"; // 크뎀
+            case 5: return $" + {level * grade * 3}"; // 골드
+            case 6: return $" + {level * grade * 5}%"; // 임시
+
+            default: return "None";
         }
     }
 
@@ -354,6 +339,7 @@ public class ItemManager : MonoBehaviour
             case 4: return level * grade * 0.5f;
             case 5: return level * grade * 3f;
             case 6: return level * grade * 5f;
+
             default: return 0f;
         }
     }
@@ -383,12 +369,6 @@ public class ItemManager : MonoBehaviour
         int sellPrice = sellPrices[itemGrade - 1];
         GameManager.I.AddGold(sellPrice);
 
-        Tower tower = FindObjectOfType<Tower>();
-        if (tower != null)
-        {
-            tower.RemoveItemStats(itemType, itemLevel, itemGrade);
-        }
-
         if (instantiatedItems[index] != null)
         {
             Destroy(instantiatedItems[index]);
@@ -417,9 +397,6 @@ public class ItemManager : MonoBehaviour
         }
 
     }
-
-
-
 
     private void NotifyItemStatsChanged()
     {

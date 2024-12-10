@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5153751, g: 0.7016788, b: 0.83919954, a: 1}
+  m_IndirectSpecularColor: {r: 0.51626694, g: 0.70182705, b: 0.83908695, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -17117,7 +17117,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1257434074}
   - {fileID: 1604964002}
   - {fileID: 575753036}
   - {fileID: 2033099287}
@@ -59031,7 +59030,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &1257434071
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -59113,11 +59112,11 @@ Transform:
   m_GameObject: {fileID: 1257434070}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -2, y: -3, z: 2.125}
+  m_LocalPosition: {x: 0, y: -3, z: 0}
   m_LocalScale: {x: 60, y: 45, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 292176240}
+  m_Father: {fileID: 1637175406}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &1263482292
 GameObject:
@@ -68381,6 +68380,8 @@ MonoBehaviour:
   - {fileID: 502800061}
   - {fileID: 821941501}
   hpSliderParent: {fileID: 242555413}
+  initialMonsterHealth: 50
+  healthIncreasePerWavePercentage: 30
   currentWave: 1
 --- !u!1 &1453453650
 GameObject:
@@ -77503,6 +77504,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1257434074}
   - {fileID: 1883673826}
   - {fileID: 1760072276}
   - {fileID: 1823719795}

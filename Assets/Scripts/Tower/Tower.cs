@@ -35,13 +35,12 @@ public class Tower : MonoBehaviour
         if (towerStats != null)
         {
             towerStats = Instantiate(towerStats);
+            towerStats.InitializeStats();
         }
         else
         {
             Debug.LogError("TowerStats is null.");
         }
-
-        towerStats.InitializeStats();
 
         if (ItemManager.I != null)
             ItemManager.I.OnItemStatsChanged += UpdateTowerStats;
@@ -56,7 +55,6 @@ public class Tower : MonoBehaviour
 
         attackTimer = 0f;
     }
-
 
     private void Update()
     {
@@ -89,8 +87,8 @@ public class Tower : MonoBehaviour
     {
         if (towerStats != null)
         {
-            towerStats.InitializeStats();
-            ApplyItemStats();
+            towerStats.InitializeBaseStats();
+            //ApplyItemStats();
         }
         else
         {
@@ -109,35 +107,44 @@ public class Tower : MonoBehaviour
         InitializeStats();
     }
 
-    private void ApplyItemStats()
-    {
-        if (ItemManager.I == null) return;
+    //private void ApplyItemStats()
+    //{
+    //    if (ItemManager.I == null) return;
 
-        for (int slotIndex = 0; slotIndex < ItemManager.I.itemTypesInSlots.Length; slotIndex++)
-        {
-            if (!ItemManager.I.slotOccupied[slotIndex]) continue;
+    //    for (int slotIndex = 0; slotIndex < ItemManager.I.itemTypesInSlots.Length; slotIndex++)
+    //    {
+    //        if (!ItemManager.I.slotOccupied[slotIndex]) continue;
 
-            int itemType = ItemManager.I.itemTypesInSlots[slotIndex];
-            int level = ItemManager.I.currentLevels[slotIndex];
-            int grade = ItemManager.I.itemGrades[slotIndex];
+    //        int itemType = ItemManager.I.itemTypesInSlots[slotIndex];
+    //        int level = ItemManager.I.currentLevels[slotIndex];
+    //        int grade = ItemManager.I.itemGrades[slotIndex];
 
-            float effect = ItemManager.I.GetItemTypeEffect(itemType, level, grade);
+    //        float effect = ItemManager.I.GetItemTypeEffect(itemType, level, grade);
 
-            towerStats.InitializeBaseStats();
-            towerStats.AddItemBonus(itemType, effect);
-            towerStats.ApplyItemBonuses();
+    //        towerStats.InitializeBaseStats();
+    //        towerStats.AddItemBonus(itemType, effect);
+    //        switch (itemType)
+    //        {
+    //            case 0: towerStats.itemAttackDamageBonus += effect; break;
+    //            case 1: towerStats.itemAttackSpeedBonus += effect; break;
+    //            case 2: towerStats.itemAttackRangeBonus += effect; break;
+    //            case 3: towerStats.itemCriticalChanceBonus += effect; break;
+    //            case 4: towerStats.itemCriticalDamageBonus += effect; break;
+    //            case 5: towerStats.itemGoldEarnAmountBonus += effect; break;
+    //            case 6: towerStats.itemEnemySlowAmountBonus += effect; break;
+    //        }
+    //        Debug.Log($"At: {towerStats.attackDamage},{towerStats.baseAttackDamage},{towerStats.itemAttackDamageBonus},{effect}");
+    //    }
+    //}
 
-        }
-    }
+    //public void RemoveItemStats(int itemType, int itemLevel, int itemGrade)
+    //{
+    //    float effect = ItemManager.I.GetItemTypeEffect(itemType, itemLevel, itemGrade);
 
-    public void RemoveItemStats(int itemType, int itemLevel, int itemGrade)
-    {
-        float effect = ItemManager.I.GetItemTypeEffect(itemType, itemLevel, itemGrade);
-
-        towerStats.InitializeBaseStats();
-        towerStats.RemoveItemBonus(itemType, effect);
-        towerStats.ApplyItemBonuses();
-    }
+    //    towerStats.InitializeBaseStats();
+    //    towerStats.RemoveItemBonus(itemType, effect);
+    //    //towerStats.ApplyItemBonuses();
+    //}
 
     public void ApplyMergeBonus(int newLevel)
     {
@@ -151,10 +158,7 @@ public class Tower : MonoBehaviour
         towerStats.criticalDamage = towerStats.baseCriticalDamage;
         towerStats.goldEarnAmount = towerStats.baseGoldEarnAmount;
         towerStats.enemySlowAmount = towerStats.baseEnemySlowAmount + (newLevel - 1) * 0.1f;
-
-
     }
-
 
     private void HandleTowerSelection()
     {
@@ -240,7 +244,6 @@ public class Tower : MonoBehaviour
         }
     }
 
-
     public void Fire(Transform target)
     {
         GameObject projectile = objectPool.GetFromPool($"Projectile_{towerIndex}", objectPool.projectilePrefabs[towerIndex]);
@@ -300,6 +303,7 @@ public class Tower : MonoBehaviour
             Debug.LogError("Projectile script is null");
         }
     }
+
     private void ResetToIdleAnimation()
     {
         if (animator != null)
@@ -314,53 +318,29 @@ public class Tower : MonoBehaviour
         rangeIndicator.positionCount = 0;
     }
 
-    private void LookAtTarget(GameObject target)
-    {
-        if (target == null) return;
-
-        Vector3 direction = target.transform.position - transform.position;
-        direction.y = 0;
-
-        if (direction != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 5f * Time.deltaTime);
-        }
-    }
-
-
-
     private GameObject FindNearestMonster()
     {
-        GameObject[] monsters = CombineArrays(
-            GameObject.FindGameObjectsWithTag("Monster"),
-            GameObject.FindGameObjectsWithTag("Bounty"),
-            GameObject.FindGameObjectsWithTag("Boss")
-        );
-
-        GameObject nearestMonster = null;
+        GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
+        GameObject nearest = null;
         float minDistance = Mathf.Infinity;
 
         foreach (GameObject monster in monsters)
         {
             float distance = Vector3.Distance(transform.position, monster.transform.position);
-
-            if (distance < minDistance && distance <= towerStats.attackRange)
+            if (distance < minDistance)
             {
                 minDistance = distance;
-                nearestMonster = monster;
+                nearest = monster;
             }
         }
 
-        return nearestMonster;
+        return nearest;
     }
 
-    private GameObject[] CombineArrays(GameObject[] array1, GameObject[] array2, GameObject[] array3)
+    private void LookAtTarget(GameObject target)
     {
-        List<GameObject> combinedList = new List<GameObject>();
-        combinedList.AddRange(array1);
-        combinedList.AddRange(array2);
-        combinedList.AddRange(array3);
-        return combinedList.ToArray();
+        Vector3 direction = target.transform.position - transform.position;
+        direction.y = 0;
+        transform.forward = direction.normalized;
     }
 }
