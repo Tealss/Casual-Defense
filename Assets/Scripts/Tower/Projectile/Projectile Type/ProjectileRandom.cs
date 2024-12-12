@@ -10,8 +10,6 @@ public class ProjectileRandom : IProjectileBehavior
             if (target == null || !target.gameObject.activeInHierarchy)
                 return;
 
-            EffectManager.I.SpawnAttackEffect(4, projectile.transform.position);
-
             Monster monster = target.GetComponent<Monster>();
             if (monster != null)
             {

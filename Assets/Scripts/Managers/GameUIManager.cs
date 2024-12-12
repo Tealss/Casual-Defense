@@ -26,9 +26,17 @@ public class GameUiManager : MonoBehaviour
     [Header("Player UI")]
     public Text playerLevelText;
     public Slider playerExpSlider;
+    public Slider playerExpSlider2;
 
     [Header("Game Over UI")]
     public GameObject gameOverPanel;
+    public GameObject newRecord;
+
+    public Text overLevelText;
+    public Text overPlayTime;
+    public Text overBestWave;
+    public Text overcurrentWave;
+    public Text overExp;
 
     public static GameUiManager I;
 
@@ -57,6 +65,7 @@ public class GameUiManager : MonoBehaviour
         AddEventTriggerToPopupWindowButtons();
         UpdateProbabilityText();
         StartCoroutine(RefreshProbabilityText());
+
     }
 
     public void OnBountyButtonClicked(int index)
@@ -95,6 +104,8 @@ public class GameUiManager : MonoBehaviour
         playerLevelText.text = $"Lv. {level}";
         playerExpSlider.maxValue = expToNextLevel;
         playerExpSlider.value = currentExp;
+
+        playerExpSlider = playerExpSlider2;
     }
 
     public void OnPointerEnter(int index)
@@ -174,6 +185,7 @@ public class GameUiManager : MonoBehaviour
         int minutes = secondsLeft / 60;
         int seconds = secondsLeft % 60;
         timerText.text = $"{minutes:00} : {seconds:00}";
+        overPlayTime.text = $"Play Time : {minutes:00} : {seconds:00}";
     }
 
     public void UpdateLifePointsText(int lifePoints, int totalLifePoints)
@@ -190,8 +202,18 @@ public class GameUiManager : MonoBehaviour
 
     public void ShowGameOverPanel()
     {
+        int exp = GameManager.I.expScore;
         gameOverPanel.SetActive(true);
+
+        overLevelText.text = ($"{GameManager.I.playerLevel}");
+        overBestWave.text = ($"Best Wave : {GameManager.I.bestWave}");
+        overcurrentWave.text = ($"Wave : {WaveManager.I.currentWave}");
+        overExp.text = ($"{GameManager.I.playerExperience}/{GameManager.I.experienceToNextLevel} <color=#FFFF00> Exp + {exp}</color>");
+
+        UpdatePlayerUI(GameManager.I.playerLevel, GameManager.I.playerExperience, GameManager.I.experienceToNextLevel);
+
     }
+
 
     private IEnumerator UpdateGoldCoroutine()
     {

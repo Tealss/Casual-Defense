@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Tower T1
   m_EditorClassIdentifier: 
   level: 0
-  attackDamage: 15
+  attackDamage: 30
   attackSpeed: 0.5
   attackRange: 2
   criticalChance: 1
