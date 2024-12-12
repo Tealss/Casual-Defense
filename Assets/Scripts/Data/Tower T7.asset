@@ -12,6 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbdc8b2587741694fac39dfc3d0de68d, type: 3}
   m_Name: Tower T7
   m_EditorClassIdentifier: 
+  level: 0
+  attackDamage: 15
+  attackSpeed: 0.5
+  attackRange: 2
+  criticalChance: 1
+  criticalDamage: 0.1
+  goldEarnAmount: 0
+  enemySlowAmount: 0
+  projectileSpeed: 7.5
   baseLevel: 1
   baseAttackDamage: 30
   baseAttackSpeed: 0.5
@@ -20,12 +29,10 @@ MonoBehaviour:
   baseCriticalDamage: 1.5
   baseGoldEarnAmount: 0
   baseEnemySlowAmount: 0
-  projectileSpeed: 6
-  level: 0
-  attackDamage: 15
-  attackSpeed: 1
-  attackRange: 2
-  criticalChance: 1
-  criticalDamage: 0.1
-  goldEarnAmount: 0
-  enemySlowAmount: 0
+  itemAttackDamageBonus: 0
+  itemAttackSpeedBonus: 0
+  itemAttackRangeBonus: 0
+  itemCriticalChanceBonus: 0
+  itemCriticalDamageBonus: 0
+  itemGoldEarnAmountBonus: 0
+  itemEnemySlowAmountBonus: 0

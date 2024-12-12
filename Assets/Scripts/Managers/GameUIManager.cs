@@ -30,7 +30,7 @@ public class GameUiManager : MonoBehaviour
     [Header("Game Over UI")]
     public GameObject gameOverPanel;
 
-    public static GameUiManager I { get; private set; }
+    public static GameUiManager I;
 
     private void Awake()
     {

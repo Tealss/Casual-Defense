@@ -3,13 +3,12 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 
-public class ItemManager : MonoBehaviour
+public class Temp : MonoBehaviour
 {
-    public static ItemManager I;
+    public static Temp I;
 
     [Header("Item Configuration")]
     [SerializeField] private int maxLevel = 20;
-    [SerializeField] private const int itemCost = 200;
     [SerializeField] private Button buyButton;
     [SerializeField] private Text quantityText;
     [SerializeField] private Text[] levelTexts = new Text[6];
@@ -17,14 +16,15 @@ public class ItemManager : MonoBehaviour
     [SerializeField] private Button[] itemSlotButtons = new Button[6];
     [SerializeField] private Toggle[] gradeToggles = new Toggle[6];
     [SerializeField] private GameObject[] itemPrefabs = new GameObject[6];
-    [SerializeField] private TowerStats itemStats;
+
+    private TowerStats towerStats;
 
     private int buyQuantity = 1;
     private GameObject[] instantiatedItems = new GameObject[6];
     private readonly int[] itemTypesInSlots = new int[6];
-    public readonly int[] currentLevels = new int[6];
-    public readonly int[] itemGrades = new int[6];
-    public readonly bool[] slotOccupied = new bool[6];
+    private readonly int[] currentLevels = new int[6];
+    private readonly int[] itemGrades = new int[6];
+    private readonly bool[] slotOccupied = new bool[6];
 
     public event Action OnItemStatsChanged;
 
@@ -44,7 +44,6 @@ public class ItemManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
     }
 
     private void Start()
@@ -123,12 +122,13 @@ public class ItemManager : MonoBehaviour
         GameUiManager.I.UpdateItemInfo(index, itemDescription);
 
         levelTexts[index].text = $"$ {enhancementCost}";
-        UpdateItemStats();
+        //NotifyItemStatsChanged();
         UpdateUIForSlot(index);
     }
 
     private void PurchaseItem()
     {
+        const int itemCost = 200;
         int totalCost = itemCost * buyQuantity;
 
         if (GameManager.I.gold < totalCost) return;
@@ -154,9 +154,6 @@ public class ItemManager : MonoBehaviour
             CreateItemInSlot(emptySlot, itemGrade);
             ShowGoldDeductionFeedback(itemCost);
         }
-
-        UpdateItemStats();
-
     }
 
     private int FindEmptySlot()
@@ -198,8 +195,7 @@ public class ItemManager : MonoBehaviour
     {
         if (slotIndex < 0 || slotIndex >= instantiatedItems.Length) return;
 
-        //юс╫ц
-        int itemTypeIndex = UnityEngine.Random.Range(0, 0);
+        int itemTypeIndex = UnityEngine.Random.Range(0, itemPrefabs.Length);
         GameObject selectedItemPrefab = itemPrefabs[itemTypeIndex];
 
         Transform itemFolder = itemSlotButtons[slotIndex].transform.Find("Item");
@@ -212,6 +208,7 @@ public class ItemManager : MonoBehaviour
 
         UpdateSlotAppearance(slotIndex, itemGrade);
         UpdateSlotInfo(slotIndex, itemTypeIndex, itemGrade);
+        NotifyItemStatsChanged();
     }
 
     private void SetupItemTransform(RectTransform itemRect)
@@ -249,7 +246,7 @@ public class ItemManager : MonoBehaviour
 
     private void UpdateBuyButtonState()
     {
-        buyButton.interactable = GameManager.I.gold >= itemCost;
+        buyButton.interactable = GameManager.I.gold >= 200;
     }
 
     private void UpdateBuyQuantity()
@@ -276,6 +273,10 @@ public class ItemManager : MonoBehaviour
         fadeOutTextSpawner?.SpawnFadeOutText(position, text, color, true);
     }
 
+    private void NotifyItemStatsChanged()
+    {
+        OnItemStatsChanged?.Invoke();
+    }
 
     public string GetItemDescription(int slotIndex, int grade, int level)
     {
@@ -286,7 +287,7 @@ public class ItemManager : MonoBehaviour
 
         return $"Grade : {FormatColoredText(gradeColors[grade - 1], gradeName)}\n" +
                $"Type : {FormatColoredText(gradeColors[grade - 1], typeDescription)}\n" +
-               $"Option : {FormatColoredText(gradeColors[grade - 1], optionDescription)}\n\n" +
+               $"Option : {FormatColoredText(gradeColors[grade - 1], optionDescription)}\n" +
                $"Upgrade % : {successRates[level - 1]}\nSell Price : $ {sellPrices[grade - 1]}";
     }
 
@@ -294,10 +295,6 @@ public class ItemManager : MonoBehaviour
     {
         string[] descriptions = { "Attack Damage", "Attack Speed", "Attack Range", "Critical Chance", "Critical Damage", "Add Gold" };
         return itemType < descriptions.Length ? descriptions[itemType] : "Unknown";
-    }
-    private string FormatColoredText(Color color, string text)
-    {
-        return $"<color=#{ColorUtility.ToHtmlStringRGBA(color)}>{text}</color>";
     }
 
     private string GetItemOptionDescription(int itemType, int level, int grade)
@@ -315,73 +312,10 @@ public class ItemManager : MonoBehaviour
         };
     }
 
-    public float GetItemTypeEffect(int itemType, int level, int grade)
+    private string FormatColoredText(Color color, string text)
     {
-        switch (itemType)
-        {
-            case 0: return level * grade * 10f;
-            case 1: return level * grade * 0.05f;
-            case 2: return level * grade * 0.1f;
-            case 3: return level * grade * 0.5f;
-            case 4: return level * grade * 0.5f;
-            case 5: return level * grade * 3f;
-            case 6: return level * grade * 5f;
-
-            default: return 0f;
-
-
-        }
-
+        return $"<color=#{ColorUtility.ToHtmlStringRGBA(color)}>{text}</color>";
     }
-    public float GetTotalItemEffect(int itemType)
-    {
-        float totalEffect = 0f;
-
-        for (int i = 0; i < itemTypesInSlots.Length; i++)
-        {
-            if (slotOccupied[i] && itemTypesInSlots[i] == itemType)
-            {
-                totalEffect += GetItemTypeEffect(itemType, currentLevels[i], itemGrades[i]);
-            }
-        }
-
-        return totalEffect;
-    }
-
-    private void UpdateItemStats()
-    {
-        string logMessage = "Updated Total Item Effects:\n";
-
-        itemStats.itemAttackDamageBonus = 0f;
-        itemStats.itemAttackSpeedBonus = 0f;
-        itemStats.itemAttackRangeBonus = 0f;
-        itemStats.itemCriticalChanceBonus = 0f;
-        itemStats.itemCriticalDamageBonus = 0f;
-        itemStats.itemEnemySlowAmountBonus = 0f;
-
-        for (int itemType = 0; itemType <= 5; itemType++)
-        {
-            float totalEffect = GetTotalItemEffect(itemType);
-
-            switch (itemType)
-            {
-                case 0: itemStats.itemAttackDamageBonus += totalEffect; break;
-                case 1: itemStats.itemAttackSpeedBonus += totalEffect; break;
-                case 2: itemStats.itemAttackRangeBonus += totalEffect; break;
-                case 3: itemStats.itemCriticalChanceBonus += totalEffect; break;
-                case 4: itemStats.itemCriticalDamageBonus += totalEffect; break;
-                case 5: itemStats.itemEnemySlowAmountBonus += totalEffect; break;
-            }
-
-            logMessage += $"{GetItemTypeDescription(itemType)}: Total Effect: {totalEffect}\n";
-        }
-
-        itemStats.InitializeBaseStats();
-        Debug.Log(logMessage);
-        OnItemStatsChanged?.Invoke();
-    }
-
-
 
     private void SellItem(int index)
     {
@@ -408,6 +342,7 @@ public class ItemManager : MonoBehaviour
         levelTexts[index].text = "Empty";
         itemSlotButtons[index].image.color = Color.white;
 
+        //NotifyItemStatsChanged();
         UpdateUIForSlot(index);
 
         Vector3 spawnPosition = GetButtonPositionInCanvas(itemSlotButtons[index]);
@@ -420,7 +355,6 @@ public class ItemManager : MonoBehaviour
             fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, sellText, textColor, true);
         }
 
-        UpdateItemStats();
     }
 
     private Vector3 GetButtonPositionInCanvas(Button button)
@@ -429,7 +363,4 @@ public class ItemManager : MonoBehaviour
         Vector2 anchoredPosition = rectTransform.anchoredPosition;
         return anchoredPosition;
     }
-
-
-
 }

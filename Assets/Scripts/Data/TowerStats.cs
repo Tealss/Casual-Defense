@@ -37,7 +37,7 @@ public class TowerStats : ScriptableObject
     public void InitializeBaseStats()
     {
         baseLevel = level;
-        baseAttackDamage = attackDamage;
+        baseAttackDamage = attackDamage + itemAttackDamageBonus;
         baseAttackSpeed = attackSpeed;
         baseAttackRange = attackRange;
         baseCriticalChance = criticalChance;
@@ -58,52 +58,19 @@ public class TowerStats : ScriptableObject
         itemEnemySlowAmountBonus = 0;
     }
 
-    //public void ApplyItemBonuses()
-    //{
-    //    attackDamage = baseAttackDamage + itemAttackDamageBonus;
-    //    attackSpeed = baseAttackSpeed + itemAttackSpeedBonus;
-    //    attackRange = baseAttackRange + itemAttackRangeBonus;
-    //    criticalChance = baseCriticalChance + itemCriticalChanceBonus;
-    //    criticalDamage = baseCriticalDamage + itemCriticalDamageBonus;
-    //    goldEarnAmount = baseGoldEarnAmount + itemGoldEarnAmountBonus;
-    //    enemySlowAmount = baseEnemySlowAmount + itemEnemySlowAmountBonus;
-
-    //    //Debug.Log($"Attack Damage After Items: {attackDamage},{baseAttackDamage},{itemAttackDamageBonus}");
-    //}
-
-    public void InitializeStats()
+    public void InitializeItemStats()
     {
-        InitializeBaseStats();
-        //ApplyItemBonuses();
-    }
+        // 아이템 보너스를 스탯에 적용
+        baseAttackDamage = attackDamage + itemAttackDamageBonus;
+        baseAttackSpeed = attackSpeed;
+        baseAttackRange = attackRange;
+        baseCriticalChance = criticalChance;
+        baseCriticalDamage = criticalDamage;
+        baseGoldEarnAmount = goldEarnAmount;
+        baseEnemySlowAmount = enemySlowAmount;
 
-    public void AddItemBonus(int itemType, float effect)
-    {
-        switch (itemType)
-        {
-            case 0: itemAttackDamageBonus += effect; break;
-            case 1: itemAttackSpeedBonus += effect; break;
-            case 2: itemAttackRangeBonus += effect; break;
-            case 3: itemCriticalChanceBonus += effect; break;
-            case 4: itemCriticalDamageBonus += effect; break;
-            case 5: itemGoldEarnAmountBonus += effect; break;
-            case 6: itemEnemySlowAmountBonus += effect; break;
-        }
-        Debug.Log($"At: {attackDamage},{baseAttackDamage},{itemAttackDamageBonus},{effect}");
-    }
+        Debug.Log($"{itemAttackDamageBonus}");
 
-    public void RemoveItemBonus(int itemType, float effect)
-    {
-        switch (itemType)
-        {
-            case 0: itemAttackDamageBonus -= effect; break;
-            case 1: itemAttackSpeedBonus -= effect; break;
-            case 2: itemAttackRangeBonus -= effect; break;
-            case 3: itemCriticalChanceBonus -= effect; break;
-            case 4: itemCriticalDamageBonus -= effect; break;
-            case 5: itemGoldEarnAmountBonus -= effect; break;
-            case 6: itemEnemySlowAmountBonus -= effect; break;
-        }
-        Debug.Log($"At: {attackDamage},{baseAttackDamage},{itemAttackDamageBonus},{effect}");
+        //Debug.Log($"Item Stats Applied. Attack Damage: {attackDamage}, Bonus: {itemAttackDamageBonus}");
     }
 }

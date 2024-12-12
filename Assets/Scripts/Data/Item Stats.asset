@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dbdc8b2587741694fac39dfc3d0de68d, type: 3}
-  m_Name: Tower T6
+  m_Name: Item Stats
   m_EditorClassIdentifier: 
   level: 0
-  attackDamage: 10
-  attackSpeed: 0.5
-  attackRange: 2
-  criticalChance: 1
-  criticalDamage: 0.1
+  attackDamage: 0
+  attackSpeed: 0
+  attackRange: 0
+  criticalChance: 0
+  criticalDamage: 0
   goldEarnAmount: 0
   enemySlowAmount: 0
-  projectileSpeed: 7.5
+  projectileSpeed: 0
   baseLevel: 1
-  baseAttackDamage: 20
+  baseAttackDamage: 30
   baseAttackSpeed: 0.5
-  baseAttackRange: 2
+  baseAttackRange: 3
   baseCriticalChance: 1
   baseCriticalDamage: 1.5
   baseGoldEarnAmount: 0

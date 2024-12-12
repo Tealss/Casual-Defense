@@ -35,15 +35,13 @@ public class Tower : MonoBehaviour
         if (towerStats != null)
         {
             towerStats = Instantiate(towerStats);
-            towerStats.InitializeStats();
+            towerStats.ResetItemBonuses();
+            //towerStats.InitializeBaseStats();
         }
         else
         {
             Debug.LogError("TowerStats is null.");
         }
-
-        if (ItemManager.I != null)
-            ItemManager.I.OnItemStatsChanged += UpdateTowerStats;
 
         rangeIndicator = gameObject.AddComponent<LineRenderer>();
         rangeIndicator.positionCount = 0;
@@ -55,17 +53,9 @@ public class Tower : MonoBehaviour
 
         attackTimer = 0f;
     }
-
     private void Update()
     {
         if (towerStats == null || objectPool == null) return;
-
-        attackTimer += Time.deltaTime;
-        if (attackTimer >= 1f / towerStats.attackSpeed)
-        {
-            attackTimer = 0f;
-            Attack();
-        }
 
         GameObject nearestMonster = FindNearestMonster();
         if (nearestMonster != null)
@@ -74,6 +64,13 @@ public class Tower : MonoBehaviour
             if (distanceToMonster <= towerStats.attackRange)
             {
                 LookAtTarget(nearestMonster);
+
+                attackTimer += Time.deltaTime;
+                if (attackTimer >= 1f / towerStats.attackSpeed)
+                {
+                    attackTimer = 0f;
+                    Attack();
+                }
             }
         }
 
@@ -83,68 +80,26 @@ public class Tower : MonoBehaviour
         }
     }
 
+    public void itemEffect() 
+    { 
+
+    }
+
     public void InitializeStats()
     {
         if (towerStats != null)
         {
             towerStats.InitializeBaseStats();
-            //ApplyItemStats();
         }
         else
         {
             Debug.LogError($"tower stats: {gameObject.name}");
         }
     }
-
-    private void OnDestroy()
-    {
-        if (ItemManager.I != null)
-            ItemManager.I.OnItemStatsChanged -= UpdateTowerStats;
-    }
-
     private void UpdateTowerStats()
     {
         InitializeStats();
     }
-
-    //private void ApplyItemStats()
-    //{
-    //    if (ItemManager.I == null) return;
-
-    //    for (int slotIndex = 0; slotIndex < ItemManager.I.itemTypesInSlots.Length; slotIndex++)
-    //    {
-    //        if (!ItemManager.I.slotOccupied[slotIndex]) continue;
-
-    //        int itemType = ItemManager.I.itemTypesInSlots[slotIndex];
-    //        int level = ItemManager.I.currentLevels[slotIndex];
-    //        int grade = ItemManager.I.itemGrades[slotIndex];
-
-    //        float effect = ItemManager.I.GetItemTypeEffect(itemType, level, grade);
-
-    //        towerStats.InitializeBaseStats();
-    //        towerStats.AddItemBonus(itemType, effect);
-    //        switch (itemType)
-    //        {
-    //            case 0: towerStats.itemAttackDamageBonus += effect; break;
-    //            case 1: towerStats.itemAttackSpeedBonus += effect; break;
-    //            case 2: towerStats.itemAttackRangeBonus += effect; break;
-    //            case 3: towerStats.itemCriticalChanceBonus += effect; break;
-    //            case 4: towerStats.itemCriticalDamageBonus += effect; break;
-    //            case 5: towerStats.itemGoldEarnAmountBonus += effect; break;
-    //            case 6: towerStats.itemEnemySlowAmountBonus += effect; break;
-    //        }
-    //        Debug.Log($"At: {towerStats.attackDamage},{towerStats.baseAttackDamage},{towerStats.itemAttackDamageBonus},{effect}");
-    //    }
-    //}
-
-    //public void RemoveItemStats(int itemType, int itemLevel, int itemGrade)
-    //{
-    //    float effect = ItemManager.I.GetItemTypeEffect(itemType, itemLevel, itemGrade);
-
-    //    towerStats.InitializeBaseStats();
-    //    towerStats.RemoveItemBonus(itemType, effect);
-    //    //towerStats.ApplyItemBonuses();
-    //}
 
     public void ApplyMergeBonus(int newLevel)
     {
@@ -201,6 +156,8 @@ public class Tower : MonoBehaviour
             Invoke("HideAttackRange", 1f);
         }
     }
+
+
 
     private int GetTowerTypeIndexFromString(string towerType)
     {
@@ -264,11 +221,11 @@ public class Tower : MonoBehaviour
             projectileScript.Initialize();
             projectileScript.SetTarget(target);
             projectileScript.goldEarn = towerStats.goldEarnAmount;
-            projectileScript.speed = towerStats.projectileSpeed;
-            //projectileScript.level = towerStats.level;
-            //projectileScript.slowAmount = towerStats.enemySlowAmount;
+            projectileScript.projectileSpeed = towerStats.projectileSpeed;
             projectileScript.SetTowerTransform(transform, projectileTypeIndex);
             projectileScript.SetTowerStats(towerStats);
+
+            Debug.Log($"{towerStats.itemAttackDamageBonus}");
 
             switch (towerType)
             {

@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public Tower[] towers;
+
     public static GameManager I;
 
-    public int gold { get; private set; }
-    public int lifePoints { get; private set; } = 50;
-    public int totalLifePoints { get; private set; } = 50;
+    public Tower[] towers;
+    public int gold;
+    public int lifePoints = 50;
+    public int totalLifePoints  = 50;
 
-    public int playerLevel { get; private set; } = 1;
-    public int playerExperience { get; private set; } = 0;
-    public int experienceToNextLevel { get; private set; } = 100;
+    public int playerLevel = 1;
+    public int playerExperience = 0;
+    public int experienceToNextLevel = 100;
 
     private bool isGameOver = false;
 

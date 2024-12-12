@@ -4,8 +4,8 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     public float level;
-    public float speed = 0;
-    public float damage { get; private set; }
+    public float projectileSpeed = 0;
+    public float damage = 0;
     public float CriticalChance => criticalChance;
     public float CriticalDamage => criticalDamage;
     public float range = 0;
@@ -109,17 +109,20 @@ public class Projectile : MonoBehaviour
         {
             level = towerStats.level;
             damage = towerStats.attackDamage;
-            speed = towerStats.projectileSpeed;
             criticalChance = towerStats.criticalChance;
             criticalDamage = towerStats.criticalDamage;
             slowAmount = towerStats.enemySlowAmount;
             goldEarn = towerStats.goldEarnAmount;
             range = towerStats.attackRange;
 
+            projectileSpeed = towerStats.projectileSpeed;
+
+            //Debug.Log($"{ towerStats.itemAttackDamageBonus}");
             //Debug.Log($"Tower Stats Set: Level = {level}, Damage = {damage}, Speed = {speed}, CriticalChance = {criticalChance}, " +
             //    $"CriticalDamage = {criticalDamage}, SlowAmount = {slowAmount}, GoldEarn = {goldEarn}, Range = {range}");
-
         }
+
+
     }
 
     public void SetTowerTransform(Transform towerTransform, int projectileTypeIndex)
@@ -138,7 +141,7 @@ public class Projectile : MonoBehaviour
         }
 
         Vector3 direction = (target.position - transform.position).normalized;
-        Vector3 desiredVelocity = direction * speed;
+        Vector3 desiredVelocity = direction * projectileSpeed;
 
         if (rb != null)
         {

@@ -5,6 +5,8 @@ using System.Collections;
 
 public class TowerManager : MonoBehaviour
 {
+    public static TowerManager I;
+
     [Header("Material / Tower Max Lv")]
     // бщ The Length is the tower Max Merge Lv
     public Material[] towerMaterial;
@@ -16,8 +18,7 @@ public class TowerManager : MonoBehaviour
     private Tiles selectedTile;
     private Tower selectedTower;
 
-    public static TowerManager I { get; private set; }
-    private Dictionary<Tower, GameObject> activeEffects = new Dictionary<Tower, GameObject>();
+    private Dictionary<Tower, List<GameObject>> activeEffects = new Dictionary<Tower, List<GameObject>>();
 
     private void Awake()
     {
@@ -308,6 +309,12 @@ public class TowerManager : MonoBehaviour
         }
     }
 
+    private bool CanMergeByTypeAndLevel(Tower tower)
+    {
+        return FindObjectsOfType<Tower>()
+            .Count(t => t.towerType == tower.towerType && t.level == tower.level) > 1;
+    }
+
     private void UpdateMergeEffects()
     {
         var groupedTowers = FindObjectsOfType<Tower>()
@@ -334,39 +341,35 @@ public class TowerManager : MonoBehaviour
                     int effectIndex = Mathf.Max(0, tower.level - 1);
                     Vector3 effectPosition = tower.transform.position + new Vector3(0, 0.2f, 0);
                     GameObject effect = ShowMergeEffect(effectIndex, effectPosition);
-                    activeEffects[tower] = effect;
+                    if (!activeEffects.ContainsKey(tower))
+                    {
+                        activeEffects[tower] = new List<GameObject>();
+                    }
+                    activeEffects[tower].Add(effect);
                 }
             }
         }
     }
 
-    private bool CanMergeByTypeAndLevel(Tower tower)
-    {
-        return FindObjectsOfType<Tower>()
-            .Count(t => t.towerType == tower.towerType && t.level == tower.level) > 1;
-    }
-
     private GameObject ShowMergeEffect(int effectIndex, Vector3 position)
     {
         effectIndex = Mathf.Clamp(effectIndex, 0, objectPool.mergeEftPrefabs.Length - 1);
-
-        // Log the index and prefab being requested
-        //Debug.Log($"index: {effectIndex}");
-
         GameObject effect = objectPool.GetFromPool($"MergeEffect_{effectIndex}", objectPool.mergeEftPrefabs[effectIndex]);
-
-
         effect.transform.position = position;
         return effect;
     }
 
-
     private void RemoveMergeEffect(Tower tower)
     {
-        if (activeEffects.TryGetValue(tower, out GameObject effect))
+        if (activeEffects.TryGetValue(tower, out List<GameObject> effects))
         {
-            objectPool.ReturnToPool($"MergeEffect_{tower.level - 1}", effect);
+            foreach (var effect in effects)
+            {
+                objectPool.ReturnToPool($"MergeEffect_{tower.level - 1}", effect);
+            }
+            effects.Clear();
             activeEffects.Remove(tower);
         }
     }
 }
+

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.51626694, g: 0.70182705, b: 0.83908695, a: 1}
+  m_IndirectSpecularColor: {r: 0.5149473, g: 0.7014725, b: 0.8391839, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -25731,6 +25731,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towers: []
+  gold: 0
+  lifePoints: 50
+  totalLifePoints: 50
+  playerLevel: 1
+  playerExperience: 0
+  experienceToNextLevel: 100
 --- !u!114 &615211670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -49237,8 +49243,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0, y: -14.6467}
-  m_SizeDelta: {x: 165, y: 185}
+  m_AnchoredPosition: {x: -0.5288, y: -14.6467}
+  m_SizeDelta: {x: 187.2086, y: 185}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1026778406
 MonoBehaviour:
@@ -56038,11 +56044,7 @@ MonoBehaviour:
   - {fileID: 7419703772706310042, guid: 6163fa27de16158409876002be132d9a, type: 3}
   - {fileID: 3772313498385724574, guid: 47e903bcc2dc31f428edfcafab621703, type: 3}
   - {fileID: 2976405532308679975, guid: 39e1b8faa86608d4ab03d28c64a6764d, type: 3}
-  towerStats: {fileID: 0}
-  itemTypesInSlots: 000000000000000000000000000000000000000000000000
-  currentLevels: 000000000000000000000000000000000000000000000000
-  itemGrades: 000000000000000000000000000000000000000000000000
-  slotOccupied: 000000000000
+  itemStats: {fileID: 11400000, guid: 74709eae613e4c9439081bb0288a1c35, type: 2}
 --- !u!1001 &1116413489
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -59112,7 +59114,7 @@ Transform:
   m_GameObject: {fileID: 1257434070}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: -3, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 60, y: 45, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   level: 0
   attackDamage: 10
-  attackSpeed: 1
+  attackSpeed: 0.5
   attackRange: 2
   criticalChance: 1
   criticalDamage: 0.1
   goldEarnAmount: 0
   enemySlowAmount: 0.4
-  projectileSpeed: 6
+  projectileSpeed: 7.5
   baseLevel: 1
   baseAttackDamage: 20
   baseAttackSpeed: 0.5
@@ -29,10 +29,10 @@ MonoBehaviour:
   baseCriticalDamage: 1.5
   baseGoldEarnAmount: 0
   baseEnemySlowAmount: 0.4
-  itemAttackDamage: 0
-  itemAttackSpeed: 0
-  itemAttackRange: 0
-  itemCriticalChance: 0
-  itemCriticalDamage: 0
-  itemGoldEarnAmount: 0
-  itemEnemySlowAmount: 0
+  itemAttackDamageBonus: 0
+  itemAttackSpeedBonus: 0
+  itemAttackRangeBonus: 0
+  itemCriticalChanceBonus: 0
+  itemCriticalDamageBonus: 0
+  itemGoldEarnAmountBonus: 0
+  itemEnemySlowAmountBonus: 0
