@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using static UnityEditor.Progress;
 
 public class ItemManager : MonoBehaviour
 {
@@ -17,17 +18,18 @@ public class ItemManager : MonoBehaviour
     [SerializeField] private Button[] itemSlotButtons = new Button[6];
     [SerializeField] private Toggle[] gradeToggles = new Toggle[6];
     [SerializeField] private GameObject[] itemPrefabs = new GameObject[6];
-    [SerializeField] private TowerStats itemStats;
 
-    private int buyQuantity = 1;
-    private GameObject[] instantiatedItems = new GameObject[6];
-    private readonly int[] itemTypesInSlots = new int[6];
+    public ItemStats itemStats;
     public readonly int[] currentLevels = new int[6];
     public readonly int[] itemGrades = new int[6];
     public readonly bool[] slotOccupied = new bool[6];
 
-    public event Action OnItemStatsChanged;
+    private int buyQuantity = 1;
+    private GameObject[] instantiatedItems = new GameObject[6];
+    private readonly int[] itemTypesInSlots = new int[6];
 
+
+    public event Action OnItemStatsChanged;
     public readonly float[] successRates = { 95f, 90f, 85f, 80f, 75f, 70f, 65f, 60f, 55f, 50f, 45f, 40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f, 3f };
     public readonly float[] probabilities = { 83.894f, 10f, 3f, 1.2f, 0.7f, 0.2f, 0.007f };
     public readonly int[] sellPrices = { 30, 200, 500, 1000, 3000, 5000, 20000 };
@@ -51,6 +53,7 @@ public class ItemManager : MonoBehaviour
     {
         InitializeItemSlotButtons();
         SetupBuyButtonEvents();
+        itemStats.itemReset();
         InvokeRepeating(nameof(UpdateBuyButtonState), 0f, 0.1f);
     }
 
@@ -198,8 +201,7 @@ public class ItemManager : MonoBehaviour
     {
         if (slotIndex < 0 || slotIndex >= instantiatedItems.Length) return;
 
-        //юс╫ц
-        int itemTypeIndex = UnityEngine.Random.Range(0, 0);
+        int itemTypeIndex = UnityEngine.Random.Range(0, itemPrefabs.Length);
         GameObject selectedItemPrefab = itemPrefabs[itemTypeIndex];
 
         Transform itemFolder = itemSlotButtons[slotIndex].transform.Find("Item");
@@ -352,12 +354,12 @@ public class ItemManager : MonoBehaviour
     {
         string logMessage = "Updated Total Item Effects:\n";
 
-        itemStats.itemAttackDamageBonus = 0f;
-        itemStats.itemAttackSpeedBonus = 0f;
-        itemStats.itemAttackRangeBonus = 0f;
-        itemStats.itemCriticalChanceBonus = 0f;
-        itemStats.itemCriticalDamageBonus = 0f;
-        itemStats.itemEnemySlowAmountBonus = 0f;
+        itemStats.itemAttackDamage = 0f;
+        itemStats.itemAttackSpeed = 0f;
+        itemStats.itemAttackRange = 0f;
+        itemStats.itemCriticalChance = 0f;
+        itemStats.itemCriticalDamage = 0f;
+        itemStats.itemEnemySlowAmount = 0f;
 
         for (int itemType = 0; itemType <= 5; itemType++)
         {
@@ -365,12 +367,12 @@ public class ItemManager : MonoBehaviour
 
             switch (itemType)
             {
-                case 0: itemStats.itemAttackDamageBonus += totalEffect; break;
-                case 1: itemStats.itemAttackSpeedBonus += totalEffect; break;
-                case 2: itemStats.itemAttackRangeBonus += totalEffect; break;
-                case 3: itemStats.itemCriticalChanceBonus += totalEffect; break;
-                case 4: itemStats.itemCriticalDamageBonus += totalEffect; break;
-                case 5: itemStats.itemEnemySlowAmountBonus += totalEffect; break;
+                case 0: itemStats.itemAttackDamage += totalEffect; break;
+                case 1: itemStats.itemAttackSpeed += totalEffect; break;
+                case 2: itemStats.itemAttackRange += totalEffect; break;
+                case 3: itemStats.itemCriticalChance += totalEffect; break;
+                case 4: itemStats.itemCriticalDamage += totalEffect; break;
+                case 5: itemStats.itemEnemySlowAmount += totalEffect; break;
             }
 
             logMessage += $"{GetItemTypeDescription(itemType)}: Total Effect: {totalEffect}\n";
@@ -380,8 +382,6 @@ public class ItemManager : MonoBehaviour
         Debug.Log(logMessage);
         OnItemStatsChanged?.Invoke();
     }
-
-
 
     private void SellItem(int index)
     {

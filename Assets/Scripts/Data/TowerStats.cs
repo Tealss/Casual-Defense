@@ -25,19 +25,10 @@ public class TowerStats : ScriptableObject
     [HideInInspector] public float baseGoldEarnAmount;
     [HideInInspector] public float baseEnemySlowAmount;
 
-    [Header("Item Stats")]
-    [HideInInspector] public float itemAttackDamageBonus;
-    [HideInInspector] public float itemAttackSpeedBonus;
-    [HideInInspector] public float itemAttackRangeBonus;
-    [HideInInspector] public float itemCriticalChanceBonus;
-    [HideInInspector] public float itemCriticalDamageBonus;
-    [HideInInspector] public float itemGoldEarnAmountBonus;
-    [HideInInspector] public float itemEnemySlowAmountBonus;
-
     public void InitializeBaseStats()
     {
         baseLevel = level;
-        baseAttackDamage = attackDamage + itemAttackDamageBonus;
+        baseAttackDamage = attackDamage;
         baseAttackSpeed = attackSpeed;
         baseAttackRange = attackRange;
         baseCriticalChance = criticalChance;
@@ -45,32 +36,19 @@ public class TowerStats : ScriptableObject
         baseGoldEarnAmount = goldEarnAmount;
         baseEnemySlowAmount = enemySlowAmount;
 
+        //Debug.Log($"{itemAttackDamageBonus}");
+
     }
 
-    public void ResetItemBonuses()
-    {
-        itemAttackDamageBonus = 0;
-        itemAttackSpeedBonus = 0;
-        itemAttackRangeBonus = 0;
-        itemCriticalChanceBonus = 0;
-        itemCriticalDamageBonus = 0;
-        itemGoldEarnAmountBonus = 0;
-        itemEnemySlowAmountBonus = 0;
-    }
+    //public void ResetItemBonuses()
+    //{
+    //    itemAttackDamageBonus = 0;
+    //    itemAttackSpeedBonus = 0;
+    //    itemAttackRangeBonus = 0;
+    //    itemCriticalChanceBonus = 0;
+    //    itemCriticalDamageBonus = 0;
+    //    itemGoldEarnAmountBonus = 0;
+    //    itemEnemySlowAmountBonus = 0;
+    //}
 
-    public void InitializeItemStats()
-    {
-        // 아이템 보너스를 스탯에 적용
-        baseAttackDamage = attackDamage + itemAttackDamageBonus;
-        baseAttackSpeed = attackSpeed;
-        baseAttackRange = attackRange;
-        baseCriticalChance = criticalChance;
-        baseCriticalDamage = criticalDamage;
-        baseGoldEarnAmount = goldEarnAmount;
-        baseEnemySlowAmount = enemySlowAmount;
-
-        Debug.Log($"{itemAttackDamageBonus}");
-
-        //Debug.Log($"Item Stats Applied. Attack Damage: {attackDamage}, Bonus: {itemAttackDamageBonus}");
-    }
 }

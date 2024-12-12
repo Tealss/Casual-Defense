@@ -10,6 +10,7 @@ public class TowerManager : MonoBehaviour
     [Header("Material / Tower Max Lv")]
     // бщ The Length is the tower Max Merge Lv
     public Material[] towerMaterial;
+    public ItemStats itemStats;
 
     private GameObject currentBuildButton;
     private GameObject currentMergeButton;
@@ -168,8 +169,11 @@ public class TowerManager : MonoBehaviour
         }
 
         GameManager.I.SpendGold(300);
-        //objectPool.towerPrefabs.Length
-        int randomTowerIndex = Random.Range(0, 0);
+
+        //--------------------------------------------------------------------------------------------------objectPool.towerPrefabs.Length
+        int randomTowerIndex = Random.Range(3, 3);
+        //--------------------------------------------------------------------------------------------------------------------------------
+
         GameObject towerGO = objectPool.GetFromPool($"Tower_{randomTowerIndex}", objectPool.towerPrefabs[randomTowerIndex]);
 
         if (towerGO != null)
@@ -184,7 +188,26 @@ public class TowerManager : MonoBehaviour
 
     private void SetupTowerOnTile(GameObject towerGO, Tiles tile, int towerIndex, int level)
     {
-        float tileHeight = tile.GetComponent<Collider>().bounds.size.y;
+        if (tile == null)
+        {
+            Debug.LogError("[SetupTowerOnTile] Tile is null. Cannot place tower.");
+            return;
+        }
+
+        Collider tileCollider = tile.GetComponent<Collider>();
+        if (tileCollider == null)
+        {
+            Debug.LogError("[SetupTowerOnTile] Tile does not have a Collider component.");
+            return;
+        }
+
+        if (towerGO == null)
+        {
+            Debug.LogError("[SetupTowerOnTile] Tower GameObject is null. Cannot place tower.");
+            return;
+        }
+
+        float tileHeight = tileCollider.bounds.size.y;
         Vector3 towerPosition = tile.transform.position + new Vector3(0, tileHeight / 2f, 0);
 
         Tower newTower = towerGO.GetComponent<Tower>() ?? towerGO.AddComponent<Tower>();
@@ -194,6 +217,14 @@ public class TowerManager : MonoBehaviour
         towerGO.transform.position = towerPosition;
         towerGO.transform.SetParent(tile.transform);
         tile.HasTower = true;
+
+        if (itemStats == null)
+        {
+            Debug.LogError("[SetupTowerOnTile] ItemStats is null. Ensure it is properly assigned.");
+            return;
+        }
+
+        itemStats.InitializeBaseStats();
     }
 
     private void ShowNotEnoughGoldMessage(Vector3 position)

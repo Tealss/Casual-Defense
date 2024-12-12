@@ -37,6 +37,28 @@ public class EffectManager : MonoBehaviour
         }
     }
 
+    public void SpawnAttackEffect(int towerTypeIndex, Vector3 position)
+    {
+        if (objectPool != null)
+        {
+            string poolName = $"attackEffect_{towerTypeIndex}";
+            GameObject attackEffect = objectPool.GetFromPool(poolName, objectPool.attackEftPrefabs[towerTypeIndex]);
+            if (attackEffect != null)
+            {
+                if (towerTypeIndex == 2 || towerTypeIndex == 4 || towerTypeIndex == 5)
+                {
+                    position.y += 0.5f;
+                }
+
+                attackEffect.transform.SetParent(Folder.folder.transform, false);
+                attackEffect.transform.position = position;
+                attackEffect.SetActive(true);
+
+                StartCoroutine(ReturnEffectToPoolAfterDelay(attackEffect, poolName, 0.5f));
+            }
+        }
+    }
+
     private IEnumerator ReturnEffectToPoolAfterDelay(GameObject effect, string poolName, float delay)
     {
         if (effect == null || !effect.activeInHierarchy)

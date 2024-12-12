@@ -5487,9 +5487,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerStats: {fileID: 11400000, guid: 68b8b51bab3a73e4c8c7933e6c6a2d8d, type: 2}
+  itemStats: {fileID: 11400000, guid: 733f57e0a76510444a11075914a1b9cd, type: 2}
   level: 1
   towerIndex: 0
   towerType: 1
+  firePoint: {fileID: 8514720863556021707}
 --- !u!135 &2435386152204362877
 SphereCollider:
   m_ObjectHideFlags: 0

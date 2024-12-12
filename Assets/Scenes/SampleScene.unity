@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5149473, g: 0.7014725, b: 0.8391839, a: 1}
+  m_IndirectSpecularColor: {r: 0.5154132, g: 0.7015743, b: 0.83919954, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -14999,6 +14999,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 238f17d1ccea7814193e0621045f91eb, type: 2}
   - {fileID: 2100000, guid: fc0b1b52541e95d48a934d140f5fb08c, type: 2}
   - {fileID: 2100000, guid: 626c0833d8febdb4b9bdeed9ffdf83ce, type: 2}
+  itemStats: {fileID: 11400000, guid: 733f57e0a76510444a11075914a1b9cd, type: 2}
 --- !u!1 &230605910
 GameObject:
   m_ObjectHideFlags: 0
@@ -25731,6 +25732,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towers: []
+  itemStats: {fileID: 11400000, guid: 733f57e0a76510444a11075914a1b9cd, type: 2}
   gold: 0
   lifePoints: 50
   totalLifePoints: 50
@@ -25785,6 +25787,14 @@ MonoBehaviour:
   - {fileID: 9070474633162843459, guid: 356cf4dca1465b54fabbb8cd9b1cd190, type: 3}
   - {fileID: 4924508274929071776, guid: 0edef91621bb6b34384ccc9dbb98729c, type: 3}
   - {fileID: 4535006216103734310, guid: 98c4704d0fd7211449bcf5c451095a60, type: 3}
+  attackEftPrefabs:
+  - {fileID: 308199293590206455, guid: e671a5efcbe51f946b99542a55703301, type: 3}
+  - {fileID: 118888189414232766, guid: ee39e28dd4eeab84b8491f844267f1a7, type: 3}
+  - {fileID: 7656310211363978064, guid: 511b94f8798820745a3bb43b182d45cf, type: 3}
+  - {fileID: 118888189414232766, guid: ea2808b8007ef014c818f95cca4a49d0, type: 3}
+  - {fileID: 308199293590206455, guid: e671a5efcbe51f946b99542a55703301, type: 3}
+  - {fileID: 5883428938756105042, guid: 258b6b098434cd341b5949fe96cfbf48, type: 3}
+  - {fileID: 5883428938756105042, guid: 258b6b098434cd341b5949fe96cfbf48, type: 3}
   towerStatsArray:
   - {fileID: 11400000, guid: 68b8b51bab3a73e4c8c7933e6c6a2d8d, type: 2}
   - {fileID: 11400000, guid: 890250a8ab9c90241b103fe04da4e8bd, type: 2}
@@ -56044,7 +56054,7 @@ MonoBehaviour:
   - {fileID: 7419703772706310042, guid: 6163fa27de16158409876002be132d9a, type: 3}
   - {fileID: 3772313498385724574, guid: 47e903bcc2dc31f428edfcafab621703, type: 3}
   - {fileID: 2976405532308679975, guid: 39e1b8faa86608d4ab03d28c64a6764d, type: 3}
-  itemStats: {fileID: 11400000, guid: 74709eae613e4c9439081bb0288a1c35, type: 2}
+  itemStats: {fileID: 11400000, guid: 733f57e0a76510444a11075914a1b9cd, type: 2}
 --- !u!1001 &1116413489
 PrefabInstance:
   m_ObjectHideFlags: 0

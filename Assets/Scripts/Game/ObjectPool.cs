@@ -14,6 +14,7 @@ public class ObjectPool : MonoBehaviour
     public GameObject[] mergeEftPrefabs = new GameObject[7];
     public GameObject[] projectilePrefabs = new GameObject[7];
     public GameObject[] hitEftPrefabs = new GameObject[7];
+    public GameObject[] attackEftPrefabs = new GameObject[7];
     public TowerStats[] towerStatsArray = new TowerStats[7];
 
     public GameObject[] bossMonsterPrefabs;
@@ -37,6 +38,7 @@ public class ObjectPool : MonoBehaviour
             RegisterPool($"MergeEffect_{i}", mergeEftPrefabs[i]);
             RegisterPool($"Projectile_{i}", projectilePrefabs[i]);
             RegisterPool($"HitEffect_{i}", hitEftPrefabs[i]);
+            RegisterPool($"attackEffect_{i}", attackEftPrefabs[i]);
         }
         for (int i = 0; i < bossMonsterPrefabs.Length; i++)
         {

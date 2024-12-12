@@ -5,10 +5,12 @@ using static UnityEditor.Progress;
 public class Tower : MonoBehaviour
 {
     public TowerStats towerStats;
+    public ItemStats itemStats;
+
     public int level;
     public int towerIndex;
     public string towerType;
-    public List<Item> items;
+    public Transform firePoint;
 
     private Animator animator;
     private float attackTimer;
@@ -31,16 +33,22 @@ public class Tower : MonoBehaviour
         {
             Debug.LogError("Animator is null.");
         }
-
         if (towerStats != null)
         {
             towerStats = Instantiate(towerStats);
-            towerStats.ResetItemBonuses();
-            //towerStats.InitializeBaseStats();
+            towerStats.InitializeBaseStats();
         }
         else
         {
             Debug.LogError("TowerStats is null.");
+        }
+        if (itemStats != null)
+        {
+            itemStats.InitializeBaseStats();
+        }
+        else
+        {
+            Debug.LogError("itemStats is null.");
         }
 
         rangeIndicator = gameObject.AddComponent<LineRenderer>();
@@ -56,12 +64,12 @@ public class Tower : MonoBehaviour
     private void Update()
     {
         if (towerStats == null || objectPool == null) return;
-
+                    towerStats.InitializeBaseStats();
         GameObject nearestMonster = FindNearestMonster();
         if (nearestMonster != null)
         {
             float distanceToMonster = Vector3.Distance(transform.position, nearestMonster.transform.position);
-            if (distanceToMonster <= towerStats.attackRange)
+            if (distanceToMonster <= towerStats.attackRange + itemStats.itemAttackRange)
             {
                 LookAtTarget(nearestMonster);
 
@@ -143,7 +151,7 @@ public class Tower : MonoBehaviour
         {
             isRangeVisible = true;
             rangeIndicator.positionCount = 100;
-            float radius = towerStats.attackRange;
+            float radius = towerStats.attackRange + itemStats.itemAttackRange;
 
             for (int i = 0; i < rangeIndicator.positionCount; i++)
             {
@@ -185,7 +193,7 @@ public class Tower : MonoBehaviour
                 animator.SetTrigger("Attack");
             }
 
-            Invoke(nameof(ResetToIdleAnimation), 0.3f / towerStats.attackSpeed);
+            Invoke(nameof(ResetToIdleAnimation), 0.3f / towerStats.attackSpeed + itemStats.itemAttackSpeed);
             this.towerIndex = GetTowerTypeIndexFromString(towerType);
 
             Invoke(nameof(DelayedFire), 0.15f);
@@ -213,7 +221,7 @@ public class Tower : MonoBehaviour
         int projectileTypeIndex = towerIndex;
 
         //projectile.transform.SetParent(Folder.folder.transform, false);
-        projectile.transform.position = transform.position;
+        projectile.transform.position = firePoint.position;
 
         Projectile projectileScript = projectile.GetComponent<Projectile>();
         if (projectileScript != null)
@@ -223,9 +231,9 @@ public class Tower : MonoBehaviour
             projectileScript.goldEarn = towerStats.goldEarnAmount;
             projectileScript.projectileSpeed = towerStats.projectileSpeed;
             projectileScript.SetTowerTransform(transform, projectileTypeIndex);
-            projectileScript.SetTowerStats(towerStats);
+            projectileScript.SetTowerStats(towerStats,itemStats);
 
-            Debug.Log($"{towerStats.itemAttackDamageBonus}");
+            //Debug.Log($"{towerStats.itemAttackDamageBonus}");
 
             switch (towerType)
             {
@@ -234,18 +242,23 @@ public class Tower : MonoBehaviour
                     break;
                 case "Tower_1":
                     projectileScript.SetBehavior(new ProjectileExplosive());
+                    EffectManager.I.SpawnAttackEffect(1, transform.position);
                     break;
                 case "Tower_2":
                     projectileScript.SetBehavior(new ProjectileLightning());
+                    EffectManager.I.SpawnAttackEffect(2, transform.position);
                     break;
                 case "Tower_3":
                     projectileScript.SetBehavior(new ProjectileIce());
+                    EffectManager.I.SpawnAttackEffect(3, transform.position);
                     break;
                 case "Tower_4":
                     projectileScript.SetBehavior(new ProjectileRandom());
+                    EffectManager.I.SpawnAttackEffect(4, transform.position);
                     break;
                 case "Tower_5":
                     projectileScript.SetBehavior(new ProjectileGold());
+                    EffectManager.I.SpawnAttackEffect(5, transform.position);
                     break;
                 case "Tower_6":
                     projectileScript.SetBehavior(new ProjectileBoss());
@@ -298,6 +311,8 @@ public class Tower : MonoBehaviour
     {
         Vector3 direction = target.transform.position - transform.position;
         direction.y = 0;
-        transform.forward = direction.normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(direction.normalized);
+
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 5f);
     }
 }

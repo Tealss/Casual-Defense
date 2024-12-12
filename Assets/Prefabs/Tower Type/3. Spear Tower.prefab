@@ -1286,6 +1286,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerStats: {fileID: 11400000, guid: 3c7bd1fbe3dca3444a4c85221ec986cc, type: 2}
+  itemStats: {fileID: 11400000, guid: 733f57e0a76510444a11075914a1b9cd, type: 2}
   level: 1
   towerIndex: 0
   towerType: 3

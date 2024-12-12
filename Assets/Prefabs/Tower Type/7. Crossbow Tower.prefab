@@ -56,8 +56,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 85093278575927503}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.08485524, y: -0.0013409255, z: 0.8798}
+  m_LocalRotation: {x: -0.00000008009372, y: -0, z: 0.00000002793967, w: 1}
+  m_LocalPosition: {x: 0.10000022, y: 1.3263103, z: -0.44001293}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1552,9 +1552,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerStats: {fileID: 11400000, guid: e63ee942dcf76c04db14d58d43ff2940, type: 2}
+  itemStats: {fileID: 11400000, guid: 733f57e0a76510444a11075914a1b9cd, type: 2}
   level: 1
   towerIndex: 0
   towerType: 7
+  firePoint: {fileID: 8822074190697333907}
 --- !u!1 &8410303506272304300
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,7 +19,7 @@ public class Projectile : MonoBehaviour
 
     private int projectileTypeIndex;
     public Transform towerTransform;
-    private Transform firePoint;
+    //private Transform firePoint;
     private Vector3 targetPosition;
 
     private ObjectPool objectPool;
@@ -47,17 +47,8 @@ public class Projectile : MonoBehaviour
 
         if (towerTransform != null && target != null)
         {
-            if (firePoint == null)
-            {
-                firePoint = towerTransform.Find("FirePoint");
-                if (firePoint == null)
-                {
-                    Debug.LogError("FirePoint not found in tower prefab.");
-                    return;
-                }
-            }
 
-            transform.position = firePoint.position;
+            //transform.position = firePoint.position;
             if (rb != null)
             {
                 rb.velocity = Vector3.zero;
@@ -103,33 +94,27 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void SetTowerStats(TowerStats towerStats)
+    public void SetTowerStats(TowerStats towerStats, ItemStats itemStats)
     {
         if (towerStats != null)
         {
             level = towerStats.level;
-            damage = towerStats.attackDamage;
-            criticalChance = towerStats.criticalChance;
-            criticalDamage = towerStats.criticalDamage;
-            slowAmount = towerStats.enemySlowAmount;
-            goldEarn = towerStats.goldEarnAmount;
-            range = towerStats.attackRange;
+            damage = towerStats.attackDamage + itemStats.itemAttackDamage;
+            criticalChance = towerStats.criticalChance + itemStats.itemCriticalChance;
+            criticalDamage = towerStats.criticalDamage + itemStats.itemCriticalDamage;
+            slowAmount = towerStats.enemySlowAmount + itemStats.itemEnemySlowAmount;
+            goldEarn = towerStats.goldEarnAmount + itemStats.itemGoldEarnAmount;
+            range = towerStats.attackRange + itemStats.itemAttackRange;
 
-            projectileSpeed = towerStats.projectileSpeed;
-
-            //Debug.Log($"{ towerStats.itemAttackDamageBonus}");
-            //Debug.Log($"Tower Stats Set: Level = {level}, Damage = {damage}, Speed = {speed}, CriticalChance = {criticalChance}, " +
-            //    $"CriticalDamage = {criticalDamage}, SlowAmount = {slowAmount}, GoldEarn = {goldEarn}, Range = {range}");
+            projectileSpeed = towerStats.projectileSpeed  + towerStats.attackSpeed + itemStats.itemAttackSpeed ;
         }
-
-
     }
 
     public void SetTowerTransform(Transform towerTransform, int projectileTypeIndex)
     {
         this.towerTransform = towerTransform;
         this.projectileTypeIndex = projectileTypeIndex;
-        firePoint = towerTransform.Find("FirePoint");
+        //firePoint = towerTransform.Find("FirePoint");
     }
 
     private void MoveTowardsTarget()
@@ -173,4 +158,5 @@ public class Projectile : MonoBehaviour
         }
         gameObject.SetActive(false);
     }
+
 }

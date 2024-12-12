@@ -1084,9 +1084,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerStats: {fileID: 11400000, guid: dda8d2dbc45495d4e945a7fd15d41c6c, type: 2}
+  itemStats: {fileID: 11400000, guid: 733f57e0a76510444a11075914a1b9cd, type: 2}
   level: 1
   towerIndex: 0
   towerType: 6
+  firePoint: {fileID: 6428084287338926299}
 --- !u!136 &915016656785422856
 CapsuleCollider:
   m_ObjectHideFlags: 0
