@@ -250,7 +250,9 @@ public class ItemManager : MonoBehaviour
 
     private void UpdateBuyButtonState()
     {
-        buyButton.interactable = GameManager.I.gold >= itemCost;
+        int totalCost = itemCost * buyQuantity;
+
+        buyButton.interactable = GameManager.I.gold >= totalCost;
     }
 
     private void UpdateBuyQuantity()
@@ -351,7 +353,7 @@ public class ItemManager : MonoBehaviour
 
     private void UpdateItemStats()
     {
-        string logMessage = "Updated Total Item Effects:\n";
+        //string logMessage = "Updated Total Item Effects:\n";
 
         itemStats.itemAttackDamage = 0f;
         itemStats.itemAttackSpeed = 0f;
@@ -374,12 +376,12 @@ public class ItemManager : MonoBehaviour
                 case 5: itemStats.itemEnemySlowAmount += totalEffect; break;
             }
 
-            logMessage += $"{GetItemTypeDescription(itemType)}: Total Effect: {totalEffect}\n";
+            //logMessage += $"{GetItemTypeDescription(itemType)}: Total Effect: {totalEffect}\n";
         }
 
         itemStats.InitializeBaseStats();
-        Debug.Log(logMessage);
         OnItemStatsChanged?.Invoke();
+        //Debug.Log(logMessage);
     }
 
     private void SellItem(int index)

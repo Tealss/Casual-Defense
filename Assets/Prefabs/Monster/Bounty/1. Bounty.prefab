@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 2101643463660051765}
   - component: {fileID: -5291973788374326993}
   m_Layer: 0
-  m_Name: B1
+  m_Name: 1. Bounty
   m_TagString: Bounty
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

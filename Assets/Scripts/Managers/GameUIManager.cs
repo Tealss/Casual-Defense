@@ -99,6 +99,10 @@ public class GameUiManager : MonoBehaviour
         {
             optionPanel.SetActive(!optionPanel.activeSelf);
         }
+        else
+        {
+            Debug.LogWarning("Option Panel is not assigned.");
+        }
     }
 
     public void OnBountyButtonClicked(int index)

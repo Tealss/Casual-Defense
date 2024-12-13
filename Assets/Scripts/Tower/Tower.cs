@@ -114,7 +114,7 @@ public class Tower : MonoBehaviour
 
         towerStats.attackDamage = towerStats.baseAttackDamage * Mathf.Pow(2.1f, newLevel - 1);
         towerStats.attackSpeed = towerStats.baseAttackSpeed + (newLevel - 1) * 0.05f;
-        towerStats.attackRange = towerStats.baseAttackRange;
+        towerStats.attackRange = towerStats.baseAttackRange + (newLevel - 1) * 0.05f;
         towerStats.criticalChance = towerStats.baseCriticalChance;
         towerStats.criticalDamage = towerStats.baseCriticalDamage;
         towerStats.goldEarnAmount = towerStats.baseGoldEarnAmount;
@@ -289,16 +289,24 @@ public class Tower : MonoBehaviour
     private GameObject FindNearestMonster()
     {
         GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
+        GameObject[] bountyMonsters = GameObject.FindGameObjectsWithTag("Bounty");
+        GameObject[] bossMonsters = GameObject.FindGameObjectsWithTag("Boss");
+
+        GameObject[] allUnits = new GameObject[monsters.Length + bountyMonsters.Length + bossMonsters.Length];
+        monsters.CopyTo(allUnits, 0);
+        bountyMonsters.CopyTo(allUnits, monsters.Length);
+        bossMonsters.CopyTo(allUnits, monsters.Length + bountyMonsters.Length);
+
         GameObject nearest = null;
         float minDistance = Mathf.Infinity;
 
-        foreach (GameObject monster in monsters)
+        foreach (GameObject unit in allUnits)
         {
-            float distance = Vector3.Distance(transform.position, monster.transform.position);
+            float distance = Vector3.Distance(transform.position, unit.transform.position);
             if (distance < minDistance)
             {
                 minDistance = distance;
-                nearest = monster;
+                nearest = unit;
             }
         }
 

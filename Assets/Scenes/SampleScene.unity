@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5152786, g: 0.70165575, b: 0.8391855, a: 1}
+  m_IndirectSpecularColor: {r: 0.51484674, g: 0.7014976, b: 0.83915925, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -15668,7 +15668,7 @@ RectTransform:
   m_Father: {fileID: 1058806402}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: -2.6169, y: 0}
   m_SizeDelta: {x: 5.2338, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -18823,7 +18823,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &303529122
 RectTransform:
   m_ObjectHideFlags: 0
@@ -19922,7 +19922,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &337350917
 RectTransform:
   m_ObjectHideFlags: 0
@@ -27684,14 +27684,19 @@ MonoBehaviour:
   - {fileID: 6285209290496832306, guid: 62d98236123bf814eb70bec8db4cd764, type: 3}
   - {fileID: 6285209290496832306, guid: 62d98236123bf814eb70bec8db4cd764, type: 3}
   - {fileID: 6285209290496832306, guid: 62d98236123bf814eb70bec8db4cd764, type: 3}
+  - {fileID: 6285209290496832306, guid: 62d98236123bf814eb70bec8db4cd764, type: 3}
+  - {fileID: 6285209290496832306, guid: 62d98236123bf814eb70bec8db4cd764, type: 3}
+  - {fileID: 6285209290496832306, guid: 62d98236123bf814eb70bec8db4cd764, type: 3}
+  - {fileID: 6285209290496832306, guid: 62d98236123bf814eb70bec8db4cd764, type: 3}
+  - {fileID: 6285209290496832306, guid: 62d98236123bf814eb70bec8db4cd764, type: 3}
   bountyMonsterPrefabs:
   - {fileID: 552193965727723018, guid: f2aa10bc6a31c69418d398b967efb2db, type: 3}
-  - {fileID: 552193965727723018, guid: 48118067b255f21499de31b98b1e3934, type: 3}
-  - {fileID: 552193965727723018, guid: c26b3c9db93f68a4a852dca7333a0f56, type: 3}
-  - {fileID: 6285209290496832306, guid: 550e8cf8f451fb44b8fef0b5856df92e, type: 3}
-  - {fileID: 6285209290496832306, guid: 550e8cf8f451fb44b8fef0b5856df92e, type: 3}
-  - {fileID: 6285209290496832306, guid: 550e8cf8f451fb44b8fef0b5856df92e, type: 3}
-  - {fileID: 6285209290496832306, guid: 550e8cf8f451fb44b8fef0b5856df92e, type: 3}
+  - {fileID: 552193965727723018, guid: f2aa10bc6a31c69418d398b967efb2db, type: 3}
+  - {fileID: 552193965727723018, guid: f2aa10bc6a31c69418d398b967efb2db, type: 3}
+  - {fileID: 552193965727723018, guid: f2aa10bc6a31c69418d398b967efb2db, type: 3}
+  - {fileID: 552193965727723018, guid: f2aa10bc6a31c69418d398b967efb2db, type: 3}
+  - {fileID: 552193965727723018, guid: f2aa10bc6a31c69418d398b967efb2db, type: 3}
+  - {fileID: 552193965727723018, guid: f2aa10bc6a31c69418d398b967efb2db, type: 3}
 --- !u!1001 &624494652
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -69936,12 +69941,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ad9d5ccfd2128a419cd47492b7506d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitSpeed: 1.5
   maxWaveCount: 100
   unitCountPerWave: 30
+  unitSpeed: 1.5
   spawnInterval: 1
   waveDuration: 40
   spawnDuration: 30
+  initialMonsterHealth: 50
+  healthIncreasePerWavePercentage: 30
   waypoints:
   - {fileID: 829291736}
   - {fileID: 882848586}
@@ -69956,8 +69963,6 @@ MonoBehaviour:
   - {fileID: 502800061}
   - {fileID: 821941501}
   hpSliderParent: {fileID: 242555413}
-  initialMonsterHealth: 50
-  healthIncreasePerWavePercentage: 30
   currentWave: 1
 --- !u!1 &1453453650
 GameObject:
@@ -71517,7 +71522,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1508862852}
   - component: {fileID: 1508862853}
-  - component: {fileID: 1508862854}
   - component: {fileID: 1508862855}
   - component: {fileID: 1508862856}
   m_Layer: 0
@@ -71555,7 +71559,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionBtn: {fileID: 1726736839}
-  optionPanel: {fileID: 2120597320}
+  optionPanel: {fileID: 303529121}
   popupWindows:
   - {fileID: 2099381923}
   - {fileID: 273259326}
@@ -71600,20 +71604,6 @@ MonoBehaviour:
   overBestWave: {fileID: 1799305950}
   overcurrentWave: {fileID: 1718549360}
   overExp: {fileID: 343931212}
---- !u!114 &1508862854
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1508862851}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d0d18a5ea7aa3e4ca159495dbbabf33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiPanel: {fileID: 303529122}
-  duration: 0.5
 --- !u!114 &1508862855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81700,7 +81690,6 @@ GameObject:
   - component: {fileID: 1726736838}
   - component: {fileID: 1726736837}
   - component: {fileID: 1726736839}
-  - component: {fileID: 1726736840}
   m_Layer: 5
   m_Name: Setting Btn
   m_TagString: Untagged
@@ -81821,32 +81810,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1726736840}
-        m_TargetAssemblyTypeName: UIUnrollEffect, Assembly-CSharp
-        m_MethodName: ShowUI
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 0
---- !u!114 &1726736840
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1726736835}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d0d18a5ea7aa3e4ca159495dbbabf33, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  uiPanel: {fileID: 303529122}
-  duration: 0.1
 --- !u!1 &1727871249
 GameObject:
   m_ObjectHideFlags: 0
@@ -91565,7 +91528,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2120597321
 RectTransform:
   m_ObjectHideFlags: 0

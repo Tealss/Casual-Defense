@@ -30,8 +30,8 @@ public class WaveManager : MonoBehaviour
     private ObjectPool objectPool;
 
     [Header("Custom Health Settings")]
-    public int[] bountyHp = { 3000, 15000, 50000, 200000, 500000, 2500000, 10000000 };
-    public int[] bossHp = { 5000, 20000, 50000, 100000, 150000, 300000, 500000, 1000000, 3000000, 10000000 };
+    private int[] bountyHp = { 3000, 15000, 50000, 200000, 500000, 2500000, 10000000 };
+    private int[] bossHp = { 5000, 20000, 50000, 100000, 150000, 300000, 500000, 1000000, 3000000, 10000000 };
 
     private void Awake()
     {
@@ -55,7 +55,7 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator StartWaveRoutineWithDelay()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(300f);
         SoundManager.I.PlaySoundEffect(11);
         StartCoroutine(WaveRoutine());
     }
@@ -128,9 +128,11 @@ public class WaveManager : MonoBehaviour
             Debug.LogError($"Unable to get Monster_{prefabIndex} from object pool.");
             return;
         }
-
-        monster.monsterIndex = prefabIndex;
-
+        Monster monster = unit.GetComponent<Monster>();
+        if (monster != null) 
+        {
+            monster.monsterIndex = prefabIndex;
+        }
         unit.transform.SetParent(Folder.folder.transform, false);
         unit.transform.position = waypoints[0].position;
 
@@ -193,8 +195,11 @@ public class WaveManager : MonoBehaviour
         int bossHealth = (bossIndex < bossHp.Length) ? bossHp[bossIndex] : 100000; // 기본값 설정
         InitializeMonsterWithHpSlider(bossMonster, bossHealth);
 
-        monster.bossIndex = bossIndex;
-
+        Monster monster = bossMonster.GetComponent<Monster>();
+        if (monster != null)
+        {
+            monster.bossIndex = bossIndex;
+        }
     }
 
     public void SpawnBountyMonster(int index)
@@ -209,7 +214,11 @@ public class WaveManager : MonoBehaviour
         int bountyHealth = (index < bountyHp.Length) ? bountyHp[index] : 1000; // 기본값 설정
         InitializeMonsterWithHpSlider(bountyMonster, bountyHealth);
 
-        monster.monsterIndex = index;
+        Monster monster = bountyMonster.GetComponent<Monster>();
+        if (monster != null)
+        {
+            monster.bountyIndex = index;
+        }
 
     }
 
