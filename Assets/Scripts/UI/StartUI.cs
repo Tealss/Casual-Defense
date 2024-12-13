@@ -9,9 +9,6 @@ public class StartUI : MonoBehaviour
     public GameObject[] setTrueObject;
     public GameObject[] gameManagers;
 
-    private bool isBlinking = true;
-    private bool hasTransitioned = false;
-
     void Start()
     {
         StartCoroutine(BlinkText());
@@ -19,9 +16,9 @@ public class StartUI : MonoBehaviour
 
     void Update()
     {
-        if (Input.anyKeyDown && !hasTransitioned)
+        if (Input.anyKeyDown && ! GameManager.I.hasTransitioned)
         {
-            hasTransitioned = true;
+            GameManager.I.hasTransitioned = true;
 
             if (setFalseObject != null)
             {
@@ -36,7 +33,7 @@ public class StartUI : MonoBehaviour
                 StartCoroutine(ActivateObjectsSequentially());
             }
 
-            isBlinking = false;
+            GameManager.I.isBlinking = false;
             blinkingText.enabled = true;
 
             SoundManager.I.PlaySoundEffect(10);
@@ -46,7 +43,7 @@ public class StartUI : MonoBehaviour
 
     private IEnumerator BlinkText()
     {
-        while (isBlinking)
+        while (GameManager.I.isBlinking)
         {
             blinkingText.enabled = !blinkingText.enabled;
             yield return new WaitForSeconds(0.3f);

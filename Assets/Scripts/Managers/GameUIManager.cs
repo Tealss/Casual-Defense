@@ -6,9 +6,16 @@ using System.Collections;
 public class GameUiManager : MonoBehaviour
 {
     [Header("UI")]
+    public Button optionBtn;
+    public GameObject optionPanel;
+
     public GameObject[] popupWindows;
     public Button[] popupWindowButtons;
     public Button[] bountyButtons;
+
+    [Header("Game Control Buttons")]
+    public Button[] gameOverButtons;
+    public Button[] gameRestartButtons;
 
     [Header("Text UI")]
     public Text infoText;
@@ -50,11 +57,24 @@ public class GameUiManager : MonoBehaviour
 
     void Start()
     {
+        // 기존 로직
         for (int i = 0; i < bountyButtons.Length; i++)
         {
             int index = i;
             bountyButtons[index].onClick.AddListener(() => OnBountyButtonClicked(index));
         }
+
+        foreach (Button button in gameOverButtons)
+        {
+            button.onClick.AddListener(GameOver);
+        }
+
+        foreach (Button button in gameRestartButtons)
+        {
+            button.onClick.AddListener(RestartGame);
+        }
+
+        optionBtn.onClick.AddListener(ToggleOptionPanel);
 
         UpdateGoldUI(GameManager.I.gold);
         UpdateLifePointsText(GameManager.I.lifePoints, GameManager.I.totalLifePoints);
@@ -65,14 +85,27 @@ public class GameUiManager : MonoBehaviour
         AddEventTriggerToPopupWindowButtons();
         UpdateProbabilityText();
         StartCoroutine(RefreshProbabilityText());
-
+    }
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            ToggleOptionPanel();
+        }
+    }
+    private void ToggleOptionPanel()
+    {
+        if (optionPanel != null)
+        {
+            optionPanel.SetActive(!optionPanel.activeSelf);
+        }
     }
 
     public void OnBountyButtonClicked(int index)
     {
         if (WaveManager.I != null)
         {
-            WaveManager.I.SpawnBountyMonster(index + 1);
+            WaveManager.I.SpawnBountyMonster(index);
         }
     }
 
@@ -214,6 +247,23 @@ public class GameUiManager : MonoBehaviour
 
     }
 
+    private void GameOver()
+    {
+        Debug.Log("Game Over triggered.");
+        Application.Quit();
+    }
+
+    private void RestartGame()
+    {
+        Debug.Log("Restarting Game...");
+
+        GameManager.I.isBlinking = true;
+        GameManager.I.hasTransitioned = false;
+
+        Time.timeScale = 1;
+
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+    }
 
     private IEnumerator UpdateGoldCoroutine()
     {

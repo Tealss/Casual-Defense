@@ -1,6 +1,4 @@
-using UnityEditor.VersionControl;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class ProjectileBasic : IProjectileBehavior
 {

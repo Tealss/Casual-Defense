@@ -1,29 +1,37 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 public class WaveManager : MonoBehaviour
 {
     public static WaveManager I;
 
-    [Header("Wave Set")]
-    [SerializeField] private float unitSpeed = 5f;
+    [Header("Wave Settings")]
+
     [SerializeField] private int maxWaveCount = 100;
     [SerializeField] private int unitCountPerWave = 30;
+
+    [SerializeField] private float unitSpeed = 5f;
     [SerializeField] private float spawnInterval = 1f;
     [SerializeField] private float waveDuration = 50f;
     [SerializeField] private float spawnDuration = 30f;
+    [SerializeField] private float initialMonsterHealth = 50f;
+    [SerializeField] private float healthIncreasePerWavePercentage = 30f;
 
     [SerializeField] private Transform[] waypoints;
     [SerializeField] private Transform hpSliderParent;
-    [SerializeField] private float initialMonsterHealth = 50f;
-    [SerializeField] private float healthIncreasePerWavePercentage = 30f;
-    private float currentWaveMonsterHealth;
 
     public int currentWave = 1;
     private bool isSpawning = false;
+    private float currentWaveMonsterHealth;
     private float currentWaveTimer;
 
+    private Monster monster;
     private ObjectPool objectPool;
+
+    [Header("Custom Health Settings")]
+    public int[] bountyHp = { 3000, 15000, 50000, 200000, 500000, 2500000, 10000000 };
+    public int[] bossHp = { 5000, 20000, 50000, 100000, 150000, 300000, 500000, 1000000, 3000000, 10000000 };
 
     private void Awake()
     {
@@ -52,18 +60,6 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(WaveRoutine());
     }
 
-    public void SpawnBountyMonster(int index)
-    {
-        if (index < 0 || index >= objectPool.bountyMonsterPrefabs.Length)
-        {
-            Debug.LogWarning($"Invalid bounty monster index: {index}");
-            return;
-        }
-
-        GameObject bountyMonster = Instantiate(objectPool.bountyMonsterPrefabs[index], waypoints[0].position, Quaternion.identity);
-        InitializeMonsterWithHpSlider(bountyMonster, index);
-    }
-
     private IEnumerator WaveRoutine()
     {
         while (currentWave <= maxWaveCount)
@@ -90,7 +86,6 @@ public class WaveManager : MonoBehaviour
         isSpawning = false;
 
         currentWaveMonsterHealth = initialMonsterHealth * Mathf.Pow(1 + healthIncreasePerWavePercentage / 100f, currentWave - 1);
-        Debug.Log($"Wave {currentWave} - Monster Health: {currentWaveMonsterHealth}");
     }
 
     private IEnumerator ManageWaveTimer()
@@ -110,19 +105,6 @@ public class WaveManager : MonoBehaviour
 
     private bool IsBossWave(int waveNumber) => waveNumber % 10 == 0;
 
-    private void SpawnBossMonster()
-    {
-        int bossIndex = (currentWave / 10) - 1;
-        if (bossIndex < 0 || bossIndex >= objectPool.bossMonsterPrefabs.Length)
-        {
-            Debug.LogWarning("Invalid boss index.");
-            return;
-        }
-
-        GameObject bossMonster = Instantiate(objectPool.bossMonsterPrefabs[bossIndex], waypoints[0].position, Quaternion.identity);
-        InitializeMonsterWithHpSlider(bossMonster);
-    }
-
     private IEnumerator SpawnUnits()
     {
         int unitsSpawned = 0;
@@ -138,12 +120,16 @@ public class WaveManager : MonoBehaviour
 
     private void SpawnSingleUnit()
     {
-        GameObject unit = objectPool.GetFromPool("Monster", objectPool.monsterPrefab);
+        int prefabIndex = (currentWave % 7 == 0) ? 1 : 0;
+
+        GameObject unit = objectPool.GetFromPool($"Monster_{prefabIndex}", objectPool.monsterPrefabs[prefabIndex]);
         if (unit == null)
         {
-            Debug.LogError("Unable to get monster from object pool.");
+            Debug.LogError($"Unable to get Monster_{prefabIndex} from object pool.");
             return;
         }
+
+        monster.monsterIndex = prefabIndex;
 
         unit.transform.SetParent(Folder.folder.transform, false);
         unit.transform.position = waypoints[0].position;
@@ -151,22 +137,27 @@ public class WaveManager : MonoBehaviour
         InitializeMonsterWithHpSlider(unit);
     }
 
-    private void InitializeMonsterWithHpSlider(GameObject monsterObject, int bountyIndex = -1)
+    private void InitializeMonsterWithHpSlider(GameObject monsterObject, int customHealth = -1)
     {
         Monster monster = monsterObject.GetComponent<Monster>();
         if (monster != null)
         {
-            if (bountyIndex != -1)
-                monster.bountyIndex = bountyIndex;
-
-            InitializeMonster(monster);
+            InitializeMonster(monster, customHealth);
             AttachHpSliderToMonster(monsterObject);
+        }
+        else
+        {
+            Debug.LogError("Monster component missing from monster object.");
         }
     }
 
-    private void InitializeMonster(Monster monster)
+    private void InitializeMonster(Monster monster, int customHealth = -1)
     {
-        monster.SetMaxHealth(currentWaveMonsterHealth);
+        if (customHealth > 0)
+            monster.SetMaxHealth(customHealth);
+        else
+            monster.SetMaxHealth(currentWaveMonsterHealth);
+
         monster.Initialize(waypoints, unitSpeed, objectPool);
     }
 
@@ -188,4 +179,39 @@ public class WaveManager : MonoBehaviour
         if (monsterObject.TryGetComponent(out Monster monster))
             monster.SetHpSlider(hpSlider);
     }
+
+    private void SpawnBossMonster()
+    {
+        int bossIndex = (currentWave / 10) - 1;
+        if (bossIndex < 0 || bossIndex >= objectPool.bossMonsterPrefabs.Length)
+        {
+            Debug.LogWarning("Invalid boss index.");
+            return;
+        }
+
+        GameObject bossMonster = Instantiate(objectPool.bossMonsterPrefabs[bossIndex], waypoints[0].position, Quaternion.identity);
+        int bossHealth = (bossIndex < bossHp.Length) ? bossHp[bossIndex] : 100000; // 기본값 설정
+        InitializeMonsterWithHpSlider(bossMonster, bossHealth);
+
+        monster.bossIndex = bossIndex;
+
+    }
+
+    public void SpawnBountyMonster(int index)
+    {
+        if (index < 0 || index >= objectPool.bountyMonsterPrefabs.Length)
+        {
+            Debug.LogWarning($"Invalid bounty monster index: {index}");
+            return;
+        }
+
+        GameObject bountyMonster = Instantiate(objectPool.bountyMonsterPrefabs[index], waypoints[0].position, Quaternion.identity);
+        int bountyHealth = (index < bountyHp.Length) ? bountyHp[index] : 1000; // 기본값 설정
+        InitializeMonsterWithHpSlider(bountyMonster, bountyHealth);
+
+        monster.monsterIndex = index;
+
+    }
+
+
 }

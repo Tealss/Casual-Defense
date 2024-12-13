@@ -5,11 +5,11 @@ using UnityEngine;
 public class ObjectPool : MonoBehaviour
 {
     [Header("Prefab References")]
-    public GameObject monsterPrefab;
     public GameObject healthBarPrefab;
     public GameObject towerBuildButtonPrefab;
     public GameObject towerMergeButtonPrefab;
 
+    public GameObject[] monsterPrefabs;
     public GameObject[] towerPrefabs = new GameObject[7];
     public GameObject[] mergeEftPrefabs = new GameObject[7];
     public GameObject[] projectilePrefabs = new GameObject[7];
@@ -27,10 +27,14 @@ public class ObjectPool : MonoBehaviour
     void Start()
     {
         // 기존 초기화 코드
-        RegisterPool("Monster", monsterPrefab);
+
         RegisterPool("HealthBar", healthBarPrefab);
         RegisterPool("TowerBuildButton", towerBuildButtonPrefab);
         RegisterPool("TowerMergeButton", towerMergeButtonPrefab);
+        for (int i = 0; i < monsterPrefabs.Length; i++)
+        {
+            RegisterPool($"Monster_{i}", monsterPrefabs[i]);
+        }
         for (int i = 0; i < towerPrefabs.Length; i++)
         {
             RegisterPool($"Bounty_{i}", bountyMonsterPrefabs[i]);

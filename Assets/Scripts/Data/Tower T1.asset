@@ -17,7 +17,7 @@ MonoBehaviour:
   attackSpeed: 0.5
   attackRange: 2
   criticalChance: 1
-  criticalDamage: 1.5
+  criticalDamage: 1
   goldEarnAmount: 0
   enemySlowAmount: 0
   projectileSpeed: 7

@@ -9,12 +9,14 @@ public class Monster : MonoBehaviour
     public float addHealth;
     public float currentHealth;
     public float addGold;
+    public int bountyIndex;
+    public int bossIndex;
+    public int monsterIndex;
 
     private Transform[] waypoints;
     private int currentWaypointIndex = 0;
     private float speed;
     private float originalSpeed;
-    public int bountyIndex;
     private ObjectPool objectPool;
     private GameObject hpSlider;
 
@@ -98,15 +100,9 @@ public class Monster : MonoBehaviour
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
-            currentHealth = 0;
-            isAlive = false;
-            ReturnToPool();
 
             Vector3 spawnPosition = transform.position + new Vector3(0.5f, 1.5f, 0);
-
-            int goldMultiplier = GetGoldMultiplierForBounty(bountyIndex);
-
-            int killGold = 50  * goldMultiplier;
+            int killGold = CalculateKillGold(gameObject.tag);
 
             string addGoldText = $"+ {killGold}";
             Color textColor = Color.yellow;
@@ -117,28 +113,51 @@ public class Monster : MonoBehaviour
                 fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, addGoldText, textColor);
             }
 
+            currentHealth = 0;
+            isAlive = false;
+            ReturnToPool();
             GameManager.I.AddGold(killGold);
         }
 
         UpdateHpUI();
     }
 
-    private int GetGoldMultiplierForBounty(int bountyIndex)
+    private int CalculateKillGold(string tag)
     {
-        switch (bountyIndex)
+        switch (tag)
         {
-            case 0: return 1;
-            case 1: return 10;
-            case 2: return 20;
-            case 3: return 30;
-            case 4: return 40;
-            case 5: return 50;
-            case 6: return 60;
-            case 7: return 70;
-            default: return 1;
+            case "Monster":
+                return GetGoldMultiplierForMonster(monsterIndex);
+            case "BountyMonster":
+                return GetGoldMultiplierForBounty(bountyIndex);
+            case "Boss":
+                return GetGoldMultiplierForBoss(bossIndex);
+            default:
+                return 1;
         }
     }
 
+    private int GetGoldMultiplierForMonster(int monsterIndex)
+    {
+        switch (monsterIndex)
+        {
+            case 0: return 50;
+            case 1: return 100;
+            default: return 0;
+        }
+    }
+
+    private int GetGoldMultiplierForBounty(int bountyIndex)
+    {
+        int[] goldMultipliers = { 1000, 2000, 3000, 4000, 5000, 6000, 7000 };
+        return (bountyIndex >= 0 && bountyIndex < goldMultipliers.Length) ? goldMultipliers[bountyIndex] : 1;
+    }
+
+    private int GetGoldMultiplierForBoss(int bossIndex)
+    {
+        int[] goldMultipliers = { 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000 };
+        return (bossIndex >= 0 && bossIndex < goldMultipliers.Length) ? goldMultipliers[bossIndex] : 1;
+    }
     private void UpdateHpUI()
     {
         if (hpSliderComponent != null)
@@ -167,26 +186,29 @@ public class Monster : MonoBehaviour
         currentWaypointIndex = 0;
         isAlive = false;
 
+        if (hpSlider != null)
+        {
+            objectPool.ReturnToPool("HealthBar", hpSlider);
+            hpSlider = null;
+        }
+
+        string poolName;
+
         if (isBountyMonster)
         {
-            if (hpSlider != null)
-            {
-                objectPool.ReturnToPool("HealthBar", hpSlider);
-                hpSlider = null;
-            }
-
+            Destroy(gameObject);
+        }
+        else if (gameObject.CompareTag("Boss"))
+        {
             Destroy(gameObject);
         }
         else
         {
-            if (hpSlider != null)
-            {
-                objectPool.ReturnToPool("HealthBar", hpSlider);
-                hpSlider = null;
-            }
-
-            objectPool.ReturnToPool("Monster", gameObject);
+            poolName = $"Monster_{monsterIndex}";
+            objectPool.ReturnToPool(poolName, gameObject);
         }
+
+        //objectPool.ReturnToPool(poolName, gameObject);
     }
 
     public void SetHpSlider(GameObject slider)

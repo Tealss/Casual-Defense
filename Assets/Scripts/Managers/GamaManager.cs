@@ -21,14 +21,21 @@ public class GameManager : MonoBehaviour
     public int currentWave;
     public int playTime;
 
+
     private bool isGameOver = false;
+    public bool isBlinking = true;
+    public bool hasTransitioned = false;
 
     private void Awake()
     {
         if (I == null)
         {
             I = this;
-            DontDestroyOnLoad(gameObject); // GameManager가 씬 전환 시에도 유지되도록 설정
+            //if (transform.parent != null)
+            //{
+            //    transform.SetParent(null);
+            //}
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -57,7 +64,8 @@ public class GameManager : MonoBehaviour
 
     private void UpdateStartingGold()
     {
-        gold = 2000 * playerLevel + 100;
+        int lvBonus = playerLevel * 100;
+        gold = 2000 + lvBonus;
     }
 
     public void AddExperience(int amount)
@@ -101,8 +109,8 @@ public class GameManager : MonoBehaviour
 
             if (GameUiManager.I != null)
             {
-                GameUiManager.I.ShowGameOverPanel();
                 Time.timeScale = 0;
+                GameUiManager.I.ShowGameOverPanel();
             }
         }
     }
@@ -152,12 +160,10 @@ public class GameManager : MonoBehaviour
 
     private void UpdateBestWave(int wave)
     {
-        Debug.Log("작동");
         if (wave >= bestWave)
         {
             bestWave = wave;
             SavePlayerProgress();
-            Debug.Log("작동");
             if (bestWave > WaveManager.I.currentWave)
             {
                 GameUiManager.I.newRecord.SetActive(false);
@@ -169,6 +175,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("PlayerLevel", playerLevel);
         PlayerPrefs.SetInt("PlayerExperience", playerExperience);
+        PlayerPrefs.SetInt("ExperienceToNextLevel", experienceToNextLevel); // 경험치 요구량 저장
         PlayerPrefs.SetInt("BestWave", bestWave);
         PlayerPrefs.Save();
         Debug.Log("Player progress saved.");
@@ -176,10 +183,14 @@ public class GameManager : MonoBehaviour
 
     private void LoadPlayerProgress()
     {
-        if (PlayerPrefs.HasKey("PlayerLevel") && PlayerPrefs.HasKey("PlayerExperience") && PlayerPrefs.HasKey("BestWave"))
+        if (PlayerPrefs.HasKey("PlayerLevel") && 
+            PlayerPrefs.HasKey("PlayerExperience") &&
+            PlayerPrefs.HasKey("ExperienceToNextLevel") && 
+            PlayerPrefs.HasKey("BestWave"))
         {
             playerLevel = PlayerPrefs.GetInt("PlayerLevel");
             playerExperience = PlayerPrefs.GetInt("PlayerExperience");
+            experienceToNextLevel = PlayerPrefs.GetInt("ExperienceToNextLevel"); // 저장된 값 로드
             bestWave = PlayerPrefs.GetInt("BestWave");
             Debug.Log("Player progress loaded.");
         }
