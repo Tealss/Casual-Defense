@@ -62,7 +62,7 @@ public class Tower : MonoBehaviour
     private void Update()
     {
         if (towerStats == null || objectPool == null) return;
-                    towerStats.InitializeBaseStats();
+
         GameObject nearestMonster = FindNearestMonster();
         if (nearestMonster != null)
         {
@@ -106,19 +106,21 @@ public class Tower : MonoBehaviour
     {
         InitializeStats();
     }
-
     public void ApplyMergeBonus(int newLevel)
     {
         level = newLevel;
         towerStats.level = newLevel;
 
-        towerStats.attackDamage = towerStats.baseAttackDamage * Mathf.Pow(2.1f, newLevel - 1);
-        towerStats.attackSpeed = towerStats.baseAttackSpeed + (newLevel - 1) * 0.05f;
-        towerStats.attackRange = towerStats.baseAttackRange + (newLevel - 1) * 0.05f;
+
+        towerStats.attackDamage = towerStats.baseAttackDamage * Mathf.Pow(2, newLevel - 1);
+        towerStats.attackSpeed = towerStats.baseAttackSpeed + 0.05f * (newLevel - 1);
+        towerStats.attackRange = towerStats.baseAttackRange;
         towerStats.criticalChance = towerStats.baseCriticalChance;
         towerStats.criticalDamage = towerStats.baseCriticalDamage;
         towerStats.goldEarnAmount = towerStats.baseGoldEarnAmount;
-        towerStats.enemySlowAmount = towerStats.baseEnemySlowAmount + (newLevel - 1) * 0.1f;
+        towerStats.enemySlowAmount = towerStats.baseEnemySlowAmount + 0.1f * (newLevel - 1);
+
+        Debug.Log($"Attack Damage: {towerStats.attackDamage}, Level: {newLevel}");
     }
 
     private void HandleTowerSelection()

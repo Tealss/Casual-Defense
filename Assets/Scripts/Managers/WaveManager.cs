@@ -55,7 +55,7 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator StartWaveRoutineWithDelay()
     {
-        yield return new WaitForSeconds(300f);
+        yield return new WaitForSeconds(3.5f);
         SoundManager.I.PlaySoundEffect(11);
         StartCoroutine(WaveRoutine());
     }

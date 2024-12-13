@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        LoadPlayerProgress(); // 플레이어 진행 데이터 로드
+        LoadPlayerProgress();
         InitializeAllTowers();
         UpdateStartingGold();
         StartCoroutine(IncrementPlayTime());
@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
     private void UpdateStartingGold()
     {
         int lvBonus = playerLevel * 100;
-        gold = 2000 + lvBonus;
+        gold = 1500 + lvBonus;
     }
 
     public void AddExperience(int amount)
@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour
             LevelUp();
         }
 
-        SavePlayerProgress(); // 경험치 변경 시 진행 데이터 저장
+        SavePlayerProgress();
     }
 
     private void LevelUp()
@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Level Up! New Level: {playerLevel}, Next Level Requires: {experienceToNextLevel} EXP");
 
         UpdateStartingGold();
-        SavePlayerProgress(); // 레벨 변경 시 진행 데이터 저장
+        SavePlayerProgress();
     }
 
     public void DecreaseLifePoints(int amount)
@@ -175,7 +175,7 @@ public class GameManager : MonoBehaviour
     {
         PlayerPrefs.SetInt("PlayerLevel", playerLevel);
         PlayerPrefs.SetInt("PlayerExperience", playerExperience);
-        PlayerPrefs.SetInt("ExperienceToNextLevel", experienceToNextLevel); // 경험치 요구량 저장
+        PlayerPrefs.SetInt("ExperienceToNextLevel", experienceToNextLevel);
         PlayerPrefs.SetInt("BestWave", bestWave);
         PlayerPrefs.Save();
         Debug.Log("Player progress saved.");
@@ -190,7 +190,7 @@ public class GameManager : MonoBehaviour
         {
             playerLevel = PlayerPrefs.GetInt("PlayerLevel");
             playerExperience = PlayerPrefs.GetInt("PlayerExperience");
-            experienceToNextLevel = PlayerPrefs.GetInt("ExperienceToNextLevel"); // 저장된 값 로드
+            experienceToNextLevel = PlayerPrefs.GetInt("ExperienceToNextLevel");
             bestWave = PlayerPrefs.GetInt("BestWave");
             Debug.Log("Player progress loaded.");
         }

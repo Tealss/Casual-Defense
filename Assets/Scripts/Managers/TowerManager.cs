@@ -280,20 +280,17 @@ public class TowerManager : MonoBehaviour
                 otherTile.HasTower = false;
             }
 
-
             ResetTowerMaterial(mergingTower);
-
             objectPool.ReturnToPool(mergingTower.towerType, mergingTower.gameObject);
             targetTower.ApplyMergeBonus(targetTower.level + 1);
             ApplyMaterialToTower(targetTower, targetTower.level);
             RemoveMergeEffect(targetTower);
 
-            //Debug.Log($"[MergeTower] Merged Tower: {targetTower.name}, Level: {targetTower.level}, AttackDamage: {targetTower.towerStats.attackDamage}");
+            Debug.Log($"[MergeTower] Merged Tower: {targetTower.name}, Level: {targetTower.level}");
             SoundManager.I.PlaySoundEffect(8);
             HideMergeButton();
         }
     }
-
 
     private void ResetTowerMaterial(Tower tower)
     {
@@ -348,6 +345,7 @@ public class TowerManager : MonoBehaviour
 
     private void UpdateMergeEffects()
     {
+
         var groupedTowers = FindObjectsOfType<Tower>()
             .Where(t => t.level < towerMaterial.Length)
             .GroupBy(t => new { t.towerType, t.level })
