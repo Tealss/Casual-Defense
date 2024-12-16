@@ -120,7 +120,7 @@ public class WaveManager : MonoBehaviour
 
     private void SpawnSingleUnit()
     {
-        int prefabIndex = (currentWave % 7 == 0) ? 1 : 0;
+        int prefabIndex = (currentWave % 10 == 7) ? 1 : 0;
 
         GameObject unit = objectPool.GetFromPool($"Monster_{prefabIndex}", objectPool.monsterPrefabs[prefabIndex]);
         if (unit == null)
@@ -129,7 +129,7 @@ public class WaveManager : MonoBehaviour
             return;
         }
         Monster monster = unit.GetComponent<Monster>();
-        if (monster != null) 
+        if (monster != null)
         {
             monster.monsterIndex = prefabIndex;
         }

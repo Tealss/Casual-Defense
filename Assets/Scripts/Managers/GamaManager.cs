@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
     private void UpdateStartingGold()
     {
         int lvBonus = playerLevel * 100;
-        gold = 1500 + lvBonus;
+        gold = 1800 + lvBonus;
     }
 
     public void AddExperience(int amount)

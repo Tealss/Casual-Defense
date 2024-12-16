@@ -592,7 +592,7 @@ GameObject:
   - component: {fileID: 5299033605554283902}
   m_Layer: 0
   m_Name: BossTest
-  m_TagString: Bounty
+  m_TagString: Boss
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -607,7 +607,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6285209290496798478}
@@ -648,9 +648,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 1
+  addHealth: 0
   currentHealth: 0
   addGold: 0
   bountyIndex: 0
+  bossIndex: 0
+  monsterIndex: 0
 --- !u!136 &5299033605554283902
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -671,9 +674,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 1
+  m_Height: 2.079132
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: -0, y: 0.7496097, z: -0}
 --- !u!1 &6285209290496832308
 GameObject:
   m_ObjectHideFlags: 0

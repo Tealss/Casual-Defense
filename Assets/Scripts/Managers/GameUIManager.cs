@@ -222,7 +222,6 @@ public class GameUiManager : MonoBehaviour
         int minutes = secondsLeft / 60;
         int seconds = secondsLeft % 60;
         timerText.text = $"{minutes:00} : {seconds:00}";
-        overPlayTime.text = $"Play Time : {minutes:00} : {seconds:00}";
     }
 
     public void UpdateLifePointsText(int lifePoints, int totalLifePoints)
@@ -246,6 +245,14 @@ public class GameUiManager : MonoBehaviour
         overBestWave.text = ($"Best Wave : {GameManager.I.bestWave}");
         overcurrentWave.text = ($"Wave : {WaveManager.I.currentWave}");
         overExp.text = ($"{GameManager.I.playerExperience}/{GameManager.I.experienceToNextLevel} <color=#FFFF00> Exp + {exp}</color>");
+
+        int playTimeInSeconds = GameManager.I.playTime;
+        int minutes = playTimeInSeconds / 60;
+        int seconds = playTimeInSeconds % 60;
+        string formattedPlayTime = string.Format(" Play time - {0:00} : {1:00}", minutes, seconds);
+
+        overPlayTime.text = formattedPlayTime;
+
 
         UpdatePlayerUI(GameManager.I.playerLevel, GameManager.I.playerExperience, GameManager.I.experienceToNextLevel);
 
