@@ -2,16 +2,19 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GameUiManager : MonoBehaviour
 {
     [Header("UI")]
-    public Button optionBtn;
-    public GameObject optionPanel;
+    public List<Button> optionButtons = new List<Button>();
+    public List<GameObject> optionPanels = new List<GameObject>();
 
     public GameObject[] popupWindows;
     public Button[] popupWindowButtons;
     public Button[] bountyButtons;
+    [Header("Mission")]
+    public GameObject[] mission;
 
     [Header("Game Control Buttons")]
     public Button[] gameOverButtons;
@@ -57,7 +60,12 @@ public class GameUiManager : MonoBehaviour
 
     void Start()
     {
-        // 기존 로직
+        for (int i = 0; i < optionButtons.Count; i++)
+        {
+            int index = i;
+            optionButtons[index].onClick.AddListener(() => ToggleOptionPanel(index));
+        }
+
         for (int i = 0; i < bountyButtons.Length; i++)
         {
             int index = i;
@@ -74,8 +82,6 @@ public class GameUiManager : MonoBehaviour
             button.onClick.AddListener(RestartGame);
         }
 
-        optionBtn.onClick.AddListener(ToggleOptionPanel);
-
         UpdateGoldUI(GameManager.I.gold);
         UpdateLifePointsText(GameManager.I.lifePoints, GameManager.I.totalLifePoints);
         UpdatePlayerUI(GameManager.I.playerLevel, GameManager.I.playerExperience, GameManager.I.experienceToNextLevel);
@@ -90,18 +96,38 @@ public class GameUiManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            ToggleOptionPanel();
+            SoundManager.I.PlaySoundEffect(0);
+            ToggleEscapePanel();
         }
     }
-    private void ToggleOptionPanel()
+
+    public void ToggleEscapePanel()
     {
-        if (optionPanel != null)
+        if (optionPanels.Count > 0 && optionPanels[0] != null)
         {
-            optionPanel.SetActive(!optionPanel.activeSelf);
+            optionPanels[0].SetActive(!optionPanels[0].activeSelf);
         }
         else
         {
-            Debug.LogWarning("Option Panel is not assigned.");
+            Debug.LogWarning("Option Panel 0 is not assigned.");
+        }
+    }
+
+    public void ToggleOptionPanel(int index)
+    {
+        if (index < 0 || index >= optionPanels.Count)
+        {
+            Debug.LogWarning("Invalid panel index.");
+            return;
+        }
+
+        if (optionPanels[index] != null)
+        {
+            optionPanels[index].SetActive(!optionPanels[index].activeSelf);
+        }
+        else
+        {
+            Debug.LogWarning($"Option Panel at index {index} is not assigned.");
         }
     }
 
@@ -260,12 +286,14 @@ public class GameUiManager : MonoBehaviour
 
     private void GameOver()
     {
+        SoundManager.I.PlaySoundEffect(0);
         Debug.Log("Game Over triggered.");
         Application.Quit();
     }
 
     private void RestartGame()
     {
+        SoundManager.I.PlaySoundEffect(0);
         Debug.Log("Restarting Game...");
 
         GameManager.I.isBlinking = true;

@@ -103,7 +103,7 @@ public class ItemManager : MonoBehaviour
     {
         if (!slotOccupied[index] || currentLevels[index] >= maxLevel) return;
 
-        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index]));
+        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index] + 1));
         float successRate = successRates[currentLevels[index]];
 
         if (GameManager.I.gold < enhancementCost) return;
@@ -153,6 +153,7 @@ public class ItemManager : MonoBehaviour
                 continue;
             }
 
+           
             CreateItemInSlot(emptySlot, itemGrade);
             ShowGoldDeductionFeedback(itemCost);
         }
@@ -360,7 +361,7 @@ public class ItemManager : MonoBehaviour
         itemStats.itemAttackRange = 0f;
         itemStats.itemCriticalChance = 0f;
         itemStats.itemCriticalDamage = 0f;
-        itemStats.itemEnemySlowAmount = 0f;
+        itemStats.itemGoldEarnAmount = 0f;
 
         for (int itemType = 0; itemType <= 5; itemType++)
         {
@@ -373,7 +374,7 @@ public class ItemManager : MonoBehaviour
                 case 2: itemStats.itemAttackRange += totalEffect; break;
                 case 3: itemStats.itemCriticalChance += totalEffect; break;
                 case 4: itemStats.itemCriticalDamage += totalEffect; break;
-                case 5: itemStats.itemEnemySlowAmount += totalEffect; break;
+                case 5: itemStats.itemGoldEarnAmount += totalEffect; break;
             }
 
             //logMessage += $"{GetItemTypeDescription(itemType)}: Total Effect: {totalEffect}\n";

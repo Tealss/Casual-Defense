@@ -101,9 +101,9 @@ public class Monster : MonoBehaviour
         if (currentHealth <= 0)
         {
 
-            Vector3 spawnPosition = transform.position + new Vector3(0.5f, 1.5f, 0);
             int killGold = CalculateKillGold(gameObject.tag);
 
+            Vector3 spawnPosition = transform.position + new Vector3(0, 2f, 0);
             string addGoldText = $"+ {killGold}";
             Color textColor = Color.yellow;
 
@@ -116,6 +116,7 @@ public class Monster : MonoBehaviour
             currentHealth = 0;
             isAlive = false;
             ReturnToPool();
+            //GameUiManager.I.KillgoldText(killGold);
             GameManager.I.AddGold(killGold);
         }
 

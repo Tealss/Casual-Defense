@@ -20,6 +20,7 @@ public class TowerManager : MonoBehaviour
     private Tower selectedTower;
 
     private Dictionary<Tower, List<GameObject>> activeEffects = new Dictionary<Tower, List<GameObject>>();
+    private List<Tower> activeTowers = new List<Tower>();
 
     private void Awake()
     {
@@ -171,19 +172,27 @@ public class TowerManager : MonoBehaviour
         GameManager.I.SpendGold(300);
 
         //--------------------------------------------------------------------------------------------------objectPool.towerPrefabs.Length
-        int randomTowerIndex = Random.Range(0, objectPool.towerPrefabs.Length);
+        int randomTowerIndex = Random.Range(3, 3);
         //--------------------------------------------------------------------------------------------------------------------------------
-
         GameObject towerGO = objectPool.GetFromPool($"Tower_{randomTowerIndex}", objectPool.towerPrefabs[randomTowerIndex]);
 
         if (towerGO != null)
         {
             SetupTowerOnTile(towerGO, clickedTile, randomTowerIndex, 1);
+
+            Tower newTower = towerGO.GetComponent<Tower>();
+            if (newTower != null)
+            {
+                activeTowers.Add(newTower);
+            }
+
             ShowGoldSpentMessage(clickedTile.transform.position, 300);
         }
 
         SoundManager.I.PlaySoundEffect(7);
         HideBuildButton();
+
+        MissionManager.I.CheckMissionCompletion(activeTowers);
     }
 
     private void SetupTowerOnTile(GameObject towerGO, Tiles tile, int towerIndex, int level)
@@ -282,13 +291,18 @@ public class TowerManager : MonoBehaviour
 
             ResetTowerMaterial(mergingTower);
             objectPool.ReturnToPool(mergingTower.towerType, mergingTower.gameObject);
+
+            activeTowers.Remove(mergingTower); 
             targetTower.ApplyMergeBonus(targetTower.level + 1);
             ApplyMaterialToTower(targetTower, targetTower.level);
+
             RemoveMergeEffect(targetTower);
 
-            Debug.Log($"[MergeTower] Merged Tower: {targetTower.name}, Level: {targetTower.level}");
+            //Debug.Log($"[MergeTower] Merged Tower: {targetTower.name}, Level: {targetTower.level}");
             SoundManager.I.PlaySoundEffect(8);
             HideMergeButton();
+
+            MissionManager.I.CheckMissionCompletion(activeTowers);
         }
     }
 

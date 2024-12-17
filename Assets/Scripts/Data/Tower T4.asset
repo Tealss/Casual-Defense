@@ -19,7 +19,7 @@ MonoBehaviour:
   criticalChance: 1
   criticalDamage: 1
   goldEarnAmount: 0
-  enemySlowAmount: 0.4
+  enemySlowAmount: 0.5
   projectileSpeed: 7
   baseLevel: 1
   baseAttackDamage: 20

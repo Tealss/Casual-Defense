@@ -120,7 +120,7 @@ public class Tower : MonoBehaviour
         towerStats.goldEarnAmount = towerStats.baseGoldEarnAmount;
         towerStats.enemySlowAmount = towerStats.baseEnemySlowAmount + 0.1f * (newLevel - 1);
 
-        Debug.Log($"Attack Damage: {towerStats.attackDamage}, Level: {newLevel}");
+        //Debug.Log($"Attack Damage: {towerStats.attackDamage}, Level: {newLevel}");
     }
 
     private void HandleTowerSelection()
