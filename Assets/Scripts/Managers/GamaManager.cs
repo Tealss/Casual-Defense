@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public Tower[] towers;
     public ItemStats itemStats;
     public int gold;
+    public int ticket;
     public int lifePoints = 1;
     public int totalLifePoints = 1;
 
@@ -45,6 +46,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Screen.orientation = ScreenOrientation.LandscapeLeft;
         LoadPlayerProgress();
         InitializeAllTowers();
         UpdateStartingGold();
@@ -65,13 +67,13 @@ public class GameManager : MonoBehaviour
     private void UpdateStartingGold()
     {
         int lvBonus = playerLevel * 100;
-        gold = 1800 + lvBonus;
+        gold = 2000 + lvBonus;
     }
 
     public void AddExperience(int amount)
     {
         playerExperience += amount;
-        Debug.Log($"Experience Gained: {amount}, Total: {playerExperience}/{experienceToNextLevel}");
+        //Debug.Log($"Experience Gained: {amount}, Total: {playerExperience}/{experienceToNextLevel}");
 
         if (playerExperience >= experienceToNextLevel)
         {
@@ -86,7 +88,7 @@ public class GameManager : MonoBehaviour
         playerExperience -= experienceToNextLevel;
         playerLevel++;
         experienceToNextLevel += 50;
-        Debug.Log($"Level Up! New Level: {playerLevel}, Next Level Requires: {experienceToNextLevel} EXP");
+        //Debug.Log($"Level Up! New Level: {playerLevel}, Next Level Requires: {experienceToNextLevel} EXP");
 
         UpdateStartingGold();
         SavePlayerProgress();
@@ -146,6 +148,10 @@ public class GameManager : MonoBehaviour
     public void AddGold(int amount)
     {
         gold += amount;
+    }
+    public void Addticket(int amount)
+    {
+        ticket += amount;
     }
 
     private IEnumerator IncrementPlayTime()

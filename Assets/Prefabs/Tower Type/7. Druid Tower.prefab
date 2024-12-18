@@ -1473,7 +1473,7 @@ GameObject:
   - component: {fileID: 1030593566183451586}
   - component: {fileID: -7949473643294161384}
   m_Layer: 0
-  m_Name: 7. Crossbow Tower
+  m_Name: 7. Druid Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

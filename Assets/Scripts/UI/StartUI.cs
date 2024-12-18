@@ -16,6 +16,7 @@ public class StartUI : MonoBehaviour
 
     void Update()
     {
+        //Input.GetKeyDown(KeyCode.A), Input.anyKeyDown
         if (Input.anyKeyDown && ! GameManager.I.hasTransitioned)
         {
             GameManager.I.hasTransitioned = true;
@@ -126,7 +127,7 @@ public class StartUI : MonoBehaviour
 
         backgroundAudioSource.Stop();
 
-        SoundManager.I.PlayBackgroundMusic(0);
+        SoundManager.I.PlayBackgroundMusic(1);
 
         backgroundAudioSource = SoundManager.I.BackgroundAudioSource;
         backgroundAudioSource.volume = 0f;

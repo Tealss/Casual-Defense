@@ -32,6 +32,7 @@ public class GameUiManager : MonoBehaviour
     public Text lifeText;
     public Text totalLifeText;
     public Text goldText;
+    public Text ticketText;
 
     [Header("Player UI")]
     public Text playerLevelText;
@@ -82,7 +83,7 @@ public class GameUiManager : MonoBehaviour
             button.onClick.AddListener(RestartGame);
         }
 
-        UpdateGoldUI(GameManager.I.gold);
+        UpdateGoldUI(GameManager.I.gold, GameManager.I.ticket);
         UpdateLifePointsText(GameManager.I.lifePoints, GameManager.I.totalLifePoints);
         UpdatePlayerUI(GameManager.I.playerLevel, GameManager.I.playerExperience, GameManager.I.experienceToNextLevel);
         gameOverPanel.SetActive(false);
@@ -257,9 +258,10 @@ public class GameUiManager : MonoBehaviour
         lifeText.color = lifePoints <= 10 ? Color.red : Color.white;
     }
 
-    public void UpdateGoldUI(int gold)
+    public void UpdateGoldUI(int gold, int ticket)
     {
-        goldText.text = $" :  {gold:N0}";
+        goldText.text = $":  {gold:N0}";
+        ticketText.text = $":  {ticket:N0}";
     }
 
     public void ShowGameOverPanel()
@@ -308,7 +310,7 @@ public class GameUiManager : MonoBehaviour
     {
         while (true)
         {
-            UpdateGoldUI(GameManager.I.gold);
+            UpdateGoldUI(GameManager.I.gold, GameManager.I.ticket);
             yield return new WaitForSeconds(0.1f);
         }
     }
@@ -334,6 +336,21 @@ public class GameUiManager : MonoBehaviour
         }
 
         infoText.text = probabilityString;
+    }
+
+    public void ShowGoldDeductionFeedback(int gold)
+    {
+        RectTransform buttonRectTransform = goldText.GetComponent<RectTransform>();
+        Vector3 buttonPosition = buttonRectTransform.anchoredPosition;
+        FadeOutTextUse.I.SpawnFadeOutText(buttonPosition, $"+ {gold}", Color.yellow, true);
+
+    }
+    public void ShowTicketDeductionFeedback(int ticket)
+    {
+        RectTransform buttonRectTransform = ticketText.GetComponent<RectTransform>();
+        Vector3 buttonPosition = buttonRectTransform.anchoredPosition;
+        FadeOutTextUse.I.SpawnFadeOutText(buttonPosition, $"+ {ticket}", Color.yellow, true);
+
     }
 
     private IEnumerator RefreshProbabilityText()

@@ -266,12 +266,16 @@ public class ItemManager : MonoBehaviour
 
     private void ShowFullInventoryWarning()
     {
-        ShowFeedbackText(buyButton.transform.position, "Full", Color.red);
+        RectTransform buttonRectTransform = buyButton.GetComponent<RectTransform>();
+        Vector3 buttonPosition = buttonRectTransform.anchoredPosition;
+        ShowFeedbackText(buttonPosition, "Full", Color.red);
     }
 
     private void ShowGoldDeductionFeedback(int amount)
     {
-        ShowFeedbackText(buyButton.transform.position, $"- {amount}", Color.blue);
+        RectTransform buttonRectTransform = buyButton.GetComponent<RectTransform>();
+        Vector3 buttonPosition = buttonRectTransform.anchoredPosition;
+        ShowFeedbackText(buttonPosition, $"- {amount}", Color.blue);
     }
 
     private void ShowFeedbackText(Vector3 position, string text, Color color)
@@ -309,12 +313,12 @@ public class ItemManager : MonoBehaviour
         float effect = level * grade;
         return itemType switch
         {
-            0 => $"+ {effect * 10}",
+            0 => $"+ {effect * 20}",
             1 => $"+ {effect * 0.05}",
-            2 => $"+ {effect * 0.1}",
-            3 => $"+ {effect * 0.5}%",
-            4 => $"+ {effect * 0.5}%",
-            5 => $"+ {effect * 3}",
+            2 => $"+ {effect * 0.03}",
+            3 => $"+ {effect * 0.4}%",
+            4 => $"+ {effect * 0.4}%",
+            5 => $"+ {effect * 2}",
             _ => "None",
         };
     }
@@ -323,12 +327,12 @@ public class ItemManager : MonoBehaviour
     {
         switch (itemType)
         {
-            case 0: return level * grade * 10f;
+            case 0: return level * grade * 20f;
             case 1: return level * grade * 0.05f;
-            case 2: return level * grade * 0.1f;
-            case 3: return level * grade * 0.5f;
-            case 4: return level * grade * 0.5f;
-            case 5: return level * grade * 3f;
+            case 2: return level * grade * 0.03f;
+            case 3: return level * grade * 0.4f;
+            case 4: return level * grade * 0.4f;
+            case 5: return level * grade * 2f;
             case 6: return level * grade * 5f;
 
             default: return 0f;

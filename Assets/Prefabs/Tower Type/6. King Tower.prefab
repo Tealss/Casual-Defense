@@ -1027,7 +1027,7 @@ GameObject:
   - component: {fileID: -8337022582056286909}
   - component: {fileID: 915016656785422856}
   m_Layer: 0
-  m_Name: 6. Gold Tower
+  m_Name: 6. King Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

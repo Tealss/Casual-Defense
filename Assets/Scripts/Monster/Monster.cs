@@ -61,7 +61,6 @@ public class Monster : MonoBehaviour
         this.objectPool = objectPool;
         this.currentWaypointIndex = 0;
         isAlive = true;
-
     }
 
     void Update()
@@ -100,23 +99,28 @@ public class Monster : MonoBehaviour
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
-
             int killGold = CalculateKillGold(gameObject.tag);
-
-            Vector3 spawnPosition = transform.position + new Vector3(0, 2f, 0);
-            string addGoldText = $"+ {killGold}";
-            Color textColor = Color.yellow;
-
-            FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
-            if (fadeOutTextSpawner != null)
+            if (isBountyMonster)
             {
-                fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, addGoldText, textColor);
+                int AddTicket = GetTicketMultiplierForBounty(bountyIndex);
+                GameUiManager.I.ShowTicketDeductionFeedback(AddTicket);
+                GameManager.I.Addticket(AddTicket);
             }
+
+            //Vector3 spawnPosition = transform.position + new Vector3(0, 2f, 0);
+            //string addGoldText = $"+ {killGold}";
+            //Color textColor = Color.yellow;
+
+            //FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
+            //if (fadeOutTextSpawner != null)
+            //{
+            //    fadeOutTextSpawner.SpawnFadeOutText(spawnPosition, addGoldText, textColor);
+            //}
 
             currentHealth = 0;
             isAlive = false;
             ReturnToPool();
-            //GameUiManager.I.KillgoldText(killGold);
+            GameUiManager.I.ShowGoldDeductionFeedback(killGold);
             GameManager.I.AddGold(killGold);
         }
 
@@ -154,11 +158,18 @@ public class Monster : MonoBehaviour
         return (bountyIndex >= 0 && bountyIndex < goldMultipliers.Length) ? goldMultipliers[bountyIndex] : 1;
     }
 
+    private int GetTicketMultiplierForBounty(int bountyIndex)
+    {
+        int[] ticketMultipliers = { 2, 4, 6, 8, 10, 12, 15 };
+        return (bountyIndex >= 0 && bountyIndex < ticketMultipliers.Length) ? ticketMultipliers[bountyIndex] : 1;
+    }
+
     private int GetGoldMultiplierForBoss(int bossIndex)
     {
         int[] goldMultipliers = { 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000 };
         return (bossIndex >= 0 && bossIndex < goldMultipliers.Length) ? goldMultipliers[bossIndex] : 1;
     }
+
     private void UpdateHpUI()
     {
         if (hpSliderComponent != null)
@@ -245,6 +256,7 @@ public class Monster : MonoBehaviour
 
         slowCoroutine = StartCoroutine(SlowCoroutine(duration));
     }
+
     private IEnumerator SlowCoroutine(float duration)
     {
         ChangeColor(Color.cyan);
@@ -283,6 +295,7 @@ public class Monster : MonoBehaviour
             }
         }
     }
+
     public void ResetState()
     {
         maxHealth = currentHealth = maxHealth;

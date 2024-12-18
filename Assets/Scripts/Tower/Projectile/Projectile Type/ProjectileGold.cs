@@ -11,7 +11,7 @@ public class ProjectileGold: IProjectileBehavior
             if (monster != null)
             {
 
-                float damage = projectile.goldEarn + projectile.damage * 0.1f;
+                float damage = projectile.goldEarn + projectile.damage * 0.03f;
                 damage *= projectile.level + 1;
 
                 //Debug.Log($"{projectile.level} , {damage}, {projectile.goldEarn}");

@@ -192,7 +192,7 @@ public class WaveManager : MonoBehaviour
         }
 
         GameObject bossMonster = Instantiate(objectPool.bossMonsterPrefabs[bossIndex], waypoints[0].position, Quaternion.identity);
-        int bossHealth = (bossIndex < bossHp.Length) ? bossHp[bossIndex] : 100000; // 기본값 설정
+        int bossHealth = (bossIndex < bossHp.Length) ? bossHp[bossIndex] : 100000;
         InitializeMonsterWithHpSlider(bossMonster, bossHealth);
 
         Monster monster = bossMonster.GetComponent<Monster>();
@@ -211,7 +211,7 @@ public class WaveManager : MonoBehaviour
         }
 
         GameObject bountyMonster = Instantiate(objectPool.bountyMonsterPrefabs[index], waypoints[0].position, Quaternion.identity);
-        int bountyHealth = (index < bountyHp.Length) ? bountyHp[index] : 1000; // 기본값 설정
+        int bountyHealth = (index < bountyHp.Length) ? bountyHp[index] : 1000;
         InitializeMonsterWithHpSlider(bountyMonster, bountyHealth);
 
         Monster monster = bountyMonster.GetComponent<Monster>();
