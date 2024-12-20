@@ -241,7 +241,7 @@ public class GameUiManager : MonoBehaviour
 
     public void UpdateWaveText(int waveNumber)
     {
-        waveText.text = $"{waveNumber}   -";
+        waveText.text = $"{waveNumber}  -";
     }
 
     public void UpdateTimerText(int secondsLeft)

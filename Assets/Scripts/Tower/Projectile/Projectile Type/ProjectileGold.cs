@@ -10,8 +10,8 @@ public class ProjectileGold: IProjectileBehavior
             Monster monster = target.GetComponent<Monster>();
             if (monster != null)
             {
-
-                float damage = projectile.goldEarn + projectile.damage * 0.03f;
+                float basicDamage = projectile.damage * 0.05f;
+                float damage = projectile.goldEarn + basicDamage;
                 damage *= projectile.level + 1;
 
                 //Debug.Log($"{projectile.level} , {damage}, {projectile.goldEarn}");

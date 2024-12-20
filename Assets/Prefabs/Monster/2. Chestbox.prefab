@@ -92,7 +92,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 8}
-  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_LocalScale: {x: 0.45, y: 0.45, z: 0.45}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2308946208867297204}
@@ -160,6 +160,8 @@ MonoBehaviour:
   currentHealth: 0
   addGold: 0
   bountyIndex: 0
+  bossIndex: 0
+  monsterIndex: 0
 --- !u!1 &857662135357816094
 GameObject:
   m_ObjectHideFlags: 0

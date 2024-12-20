@@ -8,6 +8,7 @@ public class ObjectPool : MonoBehaviour
     public GameObject healthBarPrefab;
     public GameObject towerBuildButtonPrefab;
     public GameObject towerMergeButtonPrefab;
+    public GameObject sellButtonPrefab;
 
     public GameObject[] monsterPrefabs;
     public GameObject[] towerPrefabs = new GameObject[7];
@@ -31,6 +32,8 @@ public class ObjectPool : MonoBehaviour
         RegisterPool("HealthBar", healthBarPrefab);
         RegisterPool("TowerBuildButton", towerBuildButtonPrefab);
         RegisterPool("TowerMergeButton", towerMergeButtonPrefab);
+        RegisterPool("SellButton", sellButtonPrefab);
+
         for (int i = 0; i < monsterPrefabs.Length; i++)
         {
             RegisterPool($"Monster_{i}", monsterPrefabs[i]);

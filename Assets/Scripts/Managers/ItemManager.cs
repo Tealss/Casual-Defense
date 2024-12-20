@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
+using System.Collections;
 
 public class ItemManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class ItemManager : MonoBehaviour
     [SerializeField] private int maxLevel = 20;
     [SerializeField] private const int itemCost = 200;
     [SerializeField] private Button buyButton;
+    [SerializeField] private Button sellAllButton;
     [SerializeField] private Text quantityText;
     [SerializeField] private Text[] levelTexts = new Text[6];
     [SerializeField] private Text[] currentLevelTexts = new Text[6];
@@ -27,13 +29,15 @@ public class ItemManager : MonoBehaviour
     private GameObject[] instantiatedItems = new GameObject[6];
     private readonly int[] itemTypesInSlots = new int[6];
 
-
+    private ObjectPool objectPool;
     public event Action OnItemStatsChanged;
     public readonly float[] successRates = { 95f, 90f, 85f, 80f, 75f, 70f, 65f, 60f, 55f, 50f, 45f, 40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f, 3f };
     public readonly float[] probabilities = { 83.894f, 10f, 3f, 1.2f, 0.7f, 0.2f, 0.007f };
     public readonly int[] sellPrices = { 30, 200, 500, 1000, 3000, 5000, 20000 };
     public readonly Color[] gradeColors = { Color.white, new Color(0.7f, 0.9f, 1f), new Color(0.8f, 0.6f, 1f), new Color(1f, 0.6f, 0.8f), new Color(1f, 0.8f, 0.4f), Color.yellow, Color.red };
     public readonly string[] gradeNames = { "Common", "Uncommon", "Rare", "Unique", "Epic", "Legendary", "Mythic" };
+
+    private bool sellButtonActive;
 
     private void Awake()
     {
@@ -51,8 +55,10 @@ public class ItemManager : MonoBehaviour
     private void Start()
     {
         InitializeItemSlotButtons();
+        SetupSellAllButtonEvent();
         SetupBuyButtonEvents();
         itemStats.itemReset();
+        objectPool = FindObjectOfType<ObjectPool>();
         InvokeRepeating(nameof(UpdateBuyButtonState), 0f, 0.1f);
     }
 
@@ -64,23 +70,73 @@ public class ItemManager : MonoBehaviour
 
             itemSlotButtons[index].onClick.RemoveAllListeners();
             itemSlotButtons[index].onClick.AddListener(() => AttemptEnhancement(index));
-            AddRightClickEventForItemSlotButton(itemSlotButtons[index], index);
+            AddLongPressEventForItemSlotButton(itemSlotButtons[index], index);
             UpdateUIForSlot(index);
         }
     }
 
-    private void AddRightClickEventForItemSlotButton(Button button, int index)
+    private void AddLongPressEventForItemSlotButton(Button button, int index)
     {
+
         EventTrigger trigger = button.gameObject.GetComponent<EventTrigger>() ?? button.gameObject.AddComponent<EventTrigger>();
 
         trigger.triggers.Clear();
-        EventTrigger.Entry entry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
-        entry.callback.AddListener((data) =>
+
+        float pressTime = 1f;
+        Coroutine longPressCoroutine = null;
+
+        EventTrigger.Entry pointerDownEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
+        pointerDownEntry.callback.AddListener((data) =>
         {
-            if (((PointerEventData)data).button == PointerEventData.InputButton.Right)
-                SellItem(index);
+            longPressCoroutine = StartCoroutine(LongPressRoutine(button, index, pressTime));
         });
-        trigger.triggers.Add(entry);
+        trigger.triggers.Add(pointerDownEntry);
+
+        EventTrigger.Entry pointerUpEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
+        pointerUpEntry.callback.AddListener((data) =>
+        {
+            if (longPressCoroutine != null)
+            {
+                StopCoroutine(longPressCoroutine);
+                longPressCoroutine = null;
+            }
+        });
+        trigger.triggers.Add(pointerUpEntry);
+    }
+
+    private IEnumerator LongPressRoutine(Button button, int index, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        GameObject sellButton = objectPool.GetFromPool("SellButton", objectPool.sellButtonPrefab);
+
+        RectTransform sellButtonRect = sellButton.GetComponent<RectTransform>();
+        sellButtonRect.SetParent(button.transform, false);
+        sellButtonRect.anchoredPosition = new Vector2(0, 10f);
+
+        itemSlotButtons[index].interactable = false;
+
+        Button sellButtonComponent = sellButton.GetComponent<Button>();
+        sellButtonComponent.onClick.RemoveAllListeners();
+        sellButtonComponent.onClick.AddListener(() =>
+        {
+            SellItem(index);
+            itemSlotButtons[index].interactable = true;
+            objectPool.ReturnToPool("SellButton", sellButton);
+            UpdateUIForSlot(index);
+        });
+
+        StartCoroutine(AutoHideSellButton(sellButton, 1.5f, index));
+    }
+
+    private IEnumerator AutoHideSellButton(GameObject sellButton, float delay, int index)
+    {
+        yield return new WaitForSeconds(delay);
+        if (sellButton != null && sellButton.activeSelf)
+        {
+            objectPool.ReturnToPool("SellButton", sellButton);
+            itemSlotButtons[index].interactable = true;
+        }
     }
 
     private void SetupBuyButtonEvents()
@@ -103,7 +159,7 @@ public class ItemManager : MonoBehaviour
     {
         if (!slotOccupied[index] || currentLevels[index] >= maxLevel) return;
 
-        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[index] + 1));
+        int enhancementCost = Mathf.CeilToInt(100 * Mathf.Pow(1.3f, currentLevels[index] + 1));
         float successRate = successRates[currentLevels[index]];
 
         if (GameManager.I.gold < enhancementCost) return;
@@ -225,7 +281,7 @@ public class ItemManager : MonoBehaviour
     private void UpdateSlotAppearance(int slotIndex, int itemGrade)
     {
         itemSlotButtons[slotIndex].image.color = gradeColors[itemGrade - 1];
-        levelTexts[slotIndex].text = "$ " + Mathf.CeilToInt(100 * Mathf.Pow(1.2f, currentLevels[slotIndex]));
+        levelTexts[slotIndex].text = "$ " + Mathf.CeilToInt(100 * Mathf.Pow(1.3f, currentLevels[slotIndex]));
     }
 
     private void UpdateSlotInfo(int slotIndex, int itemTypeIndex, int itemGrade)
@@ -267,23 +323,24 @@ public class ItemManager : MonoBehaviour
     private void ShowFullInventoryWarning()
     {
         RectTransform buttonRectTransform = buyButton.GetComponent<RectTransform>();
-        Vector3 buttonPosition = buttonRectTransform.anchoredPosition;
-        ShowFeedbackText(buttonPosition, "Full", Color.red);
+
+        Vector2 anchoredPosition = buttonRectTransform.anchoredPosition;
+        anchoredPosition.y += 50f;
+
+        Vector3 textPosition = new Vector3(anchoredPosition.x, anchoredPosition.y, 0f);
+        FadeOutTextUse.I.SpawnFadeOutText(textPosition, $"Full", Color.red, true);
     }
 
     private void ShowGoldDeductionFeedback(int amount)
     {
         RectTransform buttonRectTransform = buyButton.GetComponent<RectTransform>();
-        Vector3 buttonPosition = buttonRectTransform.anchoredPosition;
-        ShowFeedbackText(buttonPosition, $"- {amount}", Color.blue);
-    }
 
-    private void ShowFeedbackText(Vector3 position, string text, Color color)
-    {
-        FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
-        fadeOutTextSpawner?.SpawnFadeOutText(position, text, color, true);
-    }
+        Vector2 anchoredPosition = buttonRectTransform.anchoredPosition;
+        anchoredPosition.y += 50f;
 
+        Vector3 textPosition = new Vector3(anchoredPosition.x, anchoredPosition.y, 0f);
+        FadeOutTextUse.I.SpawnFadeOutText(textPosition, $"- {amount}", Color.red, true);
+    }
 
     public string GetItemDescription(int slotIndex, int grade, int level)
     {
@@ -310,37 +367,58 @@ public class ItemManager : MonoBehaviour
 
     private string GetItemOptionDescription(int itemType, int level, int grade)
     {
-        float effect = level * grade;
+        float adjustedLevel = GetAdjustedLevel(level);
+        float effect = adjustedLevel * grade;
+
         return itemType switch
         {
-            0 => $"+ {effect * 20}",
+            0 => $"+ {effect * 15}",
             1 => $"+ {effect * 0.05}",
             2 => $"+ {effect * 0.03}",
             3 => $"+ {effect * 0.4}%",
             4 => $"+ {effect * 0.4}%",
-            5 => $"+ {effect * 2}",
+            5 => $"+ {effect * 1}",
             _ => "None",
         };
     }
 
     public float GetItemTypeEffect(int itemType, int level, int grade)
     {
+        float adjustedLevel = GetAdjustedLevel(level);
+
         switch (itemType)
         {
-            case 0: return level * grade * 20f;
-            case 1: return level * grade * 0.05f;
-            case 2: return level * grade * 0.03f;
-            case 3: return level * grade * 0.4f;
-            case 4: return level * grade * 0.4f;
-            case 5: return level * grade * 2f;
-            case 6: return level * grade * 5f;
-
+            case 0: return adjustedLevel * grade * 15f;
+            case 1: return adjustedLevel * grade * 0.05f;
+            case 2: return adjustedLevel * grade * 0.03f;
+            case 3: return adjustedLevel * grade * 0.3f;
+            case 4: return adjustedLevel * grade * 0.3f;
+            case 5: return adjustedLevel * grade * 1f;
+            case 6: return adjustedLevel * grade * 0f;
             default: return 0f;
-
-
         }
-
     }
+
+    private float GetAdjustedLevel(int level)
+    {
+        if (level >= 15)
+        {
+            return level * 2.5f;
+        }
+        else if (level >= 10)
+        {
+            return level * 2f;
+        }
+        else if (level >= 5)
+        {
+            return level * 1.5f;
+        }
+        else
+        {
+            return level;
+        }
+    }
+
     public float GetTotalItemEffect(int itemType)
     {
         float totalEffect = 0f;
@@ -380,7 +458,6 @@ public class ItemManager : MonoBehaviour
                 case 4: itemStats.itemCriticalDamage += totalEffect; break;
                 case 5: itemStats.itemGoldEarnAmount += totalEffect; break;
             }
-
             //logMessage += $"{GetItemTypeDescription(itemType)}: Total Effect: {totalEffect}\n";
         }
 
@@ -417,6 +494,7 @@ public class ItemManager : MonoBehaviour
         UpdateUIForSlot(index);
 
         Vector3 spawnPosition = GetButtonPositionInCanvas(itemSlotButtons[index]);
+        spawnPosition.y += 1.5f;
         string sellText = $"+ {sellPrice}";
         Color textColor = Color.yellow;
 
@@ -436,6 +514,55 @@ public class ItemManager : MonoBehaviour
         return anchoredPosition;
     }
 
+    private void SetupSellAllButtonEvent()
+    {
+        sellAllButton.onClick.AddListener(SellAllItems);
+    }
 
+    public void SellAllItems()
+    {
+        int totalGoldEarned = 0;
+
+        for (int i = 0; i < slotOccupied.Length; i++)
+        {
+            if (slotOccupied[i])
+            {
+                int itemGrade = itemGrades[i];
+                int sellPrice = sellPrices[itemGrade - 1];
+
+                totalGoldEarned += sellPrice;
+
+                if (instantiatedItems[i] != null)
+                {
+                    Destroy(instantiatedItems[i]);
+                }
+
+                slotOccupied[i] = false;
+                currentLevels[i] = 0;
+                itemGrades[i] = 0;
+
+                levelTexts[i].text = "Empty";
+                itemSlotButtons[i].image.color = Color.white;
+                UpdateUIForSlot(i);
+            }
+        }
+
+        if (totalGoldEarned > 0)
+        {
+            GameManager.I.AddGold(totalGoldEarned);
+            SoundManager.I.PlaySoundEffect(2);
+
+            Vector3 buttonPosition = GetButtonPositionInCanvas(sellAllButton);
+            buttonPosition.y += 1.5f;
+
+            FadeOutTextUse fadeOutTextSpawner = FindObjectOfType<FadeOutTextUse>();
+            if (fadeOutTextSpawner != null)
+            {
+                fadeOutTextSpawner.SpawnFadeOutText(buttonPosition, $"+ {totalGoldEarned}", Color.yellow, true);
+            }
+        }
+
+        UpdateItemStats();
+    }
 
 }

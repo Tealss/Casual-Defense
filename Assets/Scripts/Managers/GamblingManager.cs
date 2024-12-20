@@ -152,9 +152,9 @@ public class GamblingManager : MonoBehaviour
     {
         switch (matchedCount)
         {
-            case 3: return 3000;
-            case 4: return 5000;
-            case 5: return 10000;
+            case 3: return 5000;
+            case 4: return 10000;
+            case 5: return 25000;
             default: return 0;
         }
     }
@@ -234,9 +234,12 @@ public class GamblingManager : MonoBehaviour
     private void ShowGoldDeductionFeedback()
     {
         RectTransform buttonRectTransform = gambleButton.GetComponent<RectTransform>();
-        Vector3 buttonPosition = buttonRectTransform.anchoredPosition;
-        FadeOutTextUse.I.SpawnFadeOutText(buttonPosition, "Not enough tickets", Color.red, true);
 
+        Vector2 anchoredPosition = buttonRectTransform.anchoredPosition;
+        anchoredPosition.y += 50f;
+
+        Vector3 textPosition = new Vector3(anchoredPosition.x, anchoredPosition.y, 0f);
+        FadeOutTextUse.I.SpawnFadeOutText(textPosition, "Not enough tickets", Color.red, true);
     }
 
 }

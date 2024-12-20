@@ -9,15 +9,17 @@ public class StartUI : MonoBehaviour
     public GameObject[] setTrueObject;
     public GameObject[] gameManagers;
 
+    private bool canProcessInput = false;
+
     void Start()
     {
+        StartCoroutine(EnableInputAfterDelay(2f));
         StartCoroutine(BlinkText());
     }
 
     void Update()
     {
-        //Input.GetKeyDown(KeyCode.A), Input.anyKeyDown
-        if (Input.anyKeyDown && ! GameManager.I.hasTransitioned)
+        if (canProcessInput && Input.anyKeyDown && !GameManager.I.hasTransitioned)
         {
             GameManager.I.hasTransitioned = true;
 
@@ -40,6 +42,12 @@ public class StartUI : MonoBehaviour
             SoundManager.I.PlaySoundEffect(10);
             StartCoroutine(FadeOutAndIn(0f, 1f));
         }
+    }
+
+    private IEnumerator EnableInputAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        canProcessInput = true; // 2초 후 입력 활성화
     }
 
     private IEnumerator BlinkText()
