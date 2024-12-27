@@ -31,7 +31,7 @@ public class WaveManager : MonoBehaviour
 
     [Header("Custom Health Settings")]
     private int[] bountyHp = { 3000, 15000, 50000, 200000, 500000, 2000000, 6000000 };
-    private int[] bossHp = { 5000, 20000, 50000, 100000, 150000, 300000, 500000, 1000000, 3000000, 10000000 };
+    private int[] bossHp = { 20000, 250000, 700000, 1500000, 4000000, 10000000, 30000000, 70000000, 100000000, 300000000 };
 
     private void Awake()
     {

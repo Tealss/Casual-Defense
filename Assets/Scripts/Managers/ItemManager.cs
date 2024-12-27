@@ -143,17 +143,39 @@ public class ItemManager : MonoBehaviour
     {
         buyButton.onClick.AddListener(PurchaseItem);
         EventTrigger trigger = buyButton.gameObject.AddComponent<EventTrigger>();
-        EventTrigger.Entry rightClickEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerClick };
 
-        rightClickEntry.callback.AddListener((data) =>
+        trigger.triggers.Clear(); // Ensure the triggers list is cleared before adding new ones
+
+        float pressTime = 1f; // Press duration threshold in seconds
+        Coroutine longPressCoroutine = null;
+
+        // PointerDown entry for detecting the start of a long press
+        EventTrigger.Entry pointerDownEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerDown };
+        pointerDownEntry.callback.AddListener((data) =>
         {
-            if (((PointerEventData)data).button == PointerEventData.InputButton.Right)
+            longPressCoroutine = StartCoroutine(LongPressRoutine(pressTime));
+        });
+        trigger.triggers.Add(pointerDownEntry);
+
+        // PointerUp entry to stop the long press if it ends early
+        EventTrigger.Entry pointerUpEntry = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
+        pointerUpEntry.callback.AddListener((data) =>
+        {
+            if (longPressCoroutine != null)
             {
-                UpdateBuyQuantity();
+                StopCoroutine(longPressCoroutine);
+                longPressCoroutine = null;
             }
         });
+        trigger.triggers.Add(pointerUpEntry);
+    }
 
-        trigger.triggers.Add(rightClickEntry);
+    private IEnumerator LongPressRoutine(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        // Assuming UpdateBuyQuantity() is a method you want to call on long press
+        UpdateBuyQuantity();
     }
     private void AttemptEnhancement(int index)
     {
@@ -325,7 +347,7 @@ public class ItemManager : MonoBehaviour
         RectTransform buttonRectTransform = buyButton.GetComponent<RectTransform>();
 
         Vector2 anchoredPosition = buttonRectTransform.anchoredPosition;
-        anchoredPosition.y += 50f;
+        anchoredPosition.y += 70f;
 
         Vector3 textPosition = new Vector3(anchoredPosition.x, anchoredPosition.y, 0f);
         FadeOutTextUse.I.SpawnFadeOutText(textPosition, $"Full", Color.red, true);
@@ -336,7 +358,7 @@ public class ItemManager : MonoBehaviour
         RectTransform buttonRectTransform = buyButton.GetComponent<RectTransform>();
 
         Vector2 anchoredPosition = buttonRectTransform.anchoredPosition;
-        anchoredPosition.y += 50f;
+        anchoredPosition.y += 70f;
 
         Vector3 textPosition = new Vector3(anchoredPosition.x, anchoredPosition.y, 0f);
         FadeOutTextUse.I.SpawnFadeOutText(textPosition, $"- {amount}", Color.red, true);
@@ -373,11 +395,11 @@ public class ItemManager : MonoBehaviour
         return itemType switch
         {
             0 => $"+ {effect * 15}",
-            1 => $"+ {effect * 0.05}",
-            2 => $"+ {effect * 0.03}",
-            3 => $"+ {effect * 0.4}%",
-            4 => $"+ {effect * 0.4}%",
-            5 => $"+ {effect * 1}",
+            1 => $"+ {effect * 0.03}",
+            2 => $"+ {effect * 0.01}",
+            3 => $"+ {effect * 0.2}%",
+            4 => $"+ {effect * 0.2}%",
+            5 => $"+ {effect * 0.2}",
             _ => "None",
         };
     }
@@ -389,11 +411,11 @@ public class ItemManager : MonoBehaviour
         switch (itemType)
         {
             case 0: return adjustedLevel * grade * 15f;
-            case 1: return adjustedLevel * grade * 0.05f;
-            case 2: return adjustedLevel * grade * 0.03f;
+            case 1: return adjustedLevel * grade * 0.03f;
+            case 2: return adjustedLevel * grade * 0.01f;
             case 3: return adjustedLevel * grade * 0.3f;
             case 4: return adjustedLevel * grade * 0.3f;
-            case 5: return adjustedLevel * grade * 1f;
+            case 5: return adjustedLevel * grade * 0.2f;
             case 6: return adjustedLevel * grade * 0f;
             default: return 0f;
         }
@@ -403,15 +425,15 @@ public class ItemManager : MonoBehaviour
     {
         if (level >= 15)
         {
-            return level * 2.5f;
+            return level * 4f;
         }
         else if (level >= 10)
         {
-            return level * 2f;
+            return level * 3f;
         }
         else if (level >= 5)
         {
-            return level * 1.5f;
+            return level * 2f;
         }
         else
         {

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.5170289, g: 0.70040125, b: 0.8401835, a: 1}
+  m_IndirectSpecularColor: {r: 0.51640093, g: 0.7004287, b: 0.8403768, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2319,7 +2319,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &72174971
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2338,7 +2338,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -323, y: -20}
+  m_AnchoredPosition: {x: -269.73926, y: 60.000004}
   m_SizeDelta: {x: 169.1588, y: 78.0219}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &72174972
@@ -17140,7 +17140,7 @@ RectTransform:
   m_Father: {fileID: 1058806402}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: -2.6169, y: 0}
   m_SizeDelta: {x: 5.2338, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -22409,7 +22409,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &337350917
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22422,6 +22422,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1617878445}
+  - {fileID: 897241030}
+  - {fileID: 242555413}
+  - {fileID: 894072937}
   - {fileID: 1592343070}
   - {fileID: 730910319}
   - {fileID: 1726736836}
@@ -22431,10 +22435,6 @@ RectTransform:
   - {fileID: 1519565604}
   - {fileID: 1296683634}
   - {fileID: 611107253}
-  - {fileID: 1617878445}
-  - {fileID: 894072937}
-  - {fileID: 242555413}
-  - {fileID: 897241030}
   - {fileID: 850909896}
   - {fileID: 557843922}
   - {fileID: 1133736595}
@@ -30939,7 +30939,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &611107253
 RectTransform:
   m_ObjectHideFlags: 0
@@ -30958,7 +30958,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1092.0956, y: -260.8}
+  m_AnchoredPosition: {x: 1092.0956, y: -207}
   m_SizeDelta: {x: 70, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &611107254
@@ -54622,7 +54622,7 @@ MonoBehaviour:
     m_Bits: 0
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
-  antialiasingMode: 3
+  antialiasingMode: 1
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25
@@ -69333,7 +69333,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1092.0956, y: -342.8}
+  m_AnchoredPosition: {x: 1092.0956, y: -316}
   m_SizeDelta: {x: 70, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1296683635
@@ -91744,7 +91744,7 @@ MonoBehaviour:
     m_Bits: 0
   stopNaNPropagation: 1
   finalBlitToCameraTarget: 0
-  antialiasingMode: 0
+  antialiasingMode: 1
   temporalAntialiasing:
     jitterSpread: 0.75
     sharpness: 0.25
@@ -104442,7 +104442,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -253, y: -19}
+  m_AnchoredPosition: {x: -199.73926, y: 9}
   m_SizeDelta: {x: 450, y: 700}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2120597322
