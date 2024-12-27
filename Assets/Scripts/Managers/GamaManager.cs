@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
     public Tower[] towers;
     public ItemStats itemStats;
     public int gold;
-    public int ticket;
+    public int ticket = 1;
     public int lifePoints = 1;
     public int totalLifePoints = 1;
 
